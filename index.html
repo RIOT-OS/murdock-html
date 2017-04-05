@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="js/moment.js"></script>
+    <title>Murdock &mdash; Pull Requests: RIOT-OS/RIOT</title>
+  </head>
+  <body>
+      <div class="col-md-12">
+      <div class="page-header">
+        <h1>Pull Requests <small>RIOT-OS/RIOT</small></h1>
+      </div>
+      <div id="pull_requests">
+      </div>
+<!--
+      <div id="pagination"  class="text-center">
+        <ul class="pagination">
+          <li class="disabled">
+            <a href="#" class="prev" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
+          <li class="disabled">
+            <a href="#" class="next" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+-->
+    </div>
+    <script>
+    function add_icon(icon_name) {
+	if (icon_name)
+		return "<span class=\"glyphicon glyphicon-" + icon_name + "\" aria-hidden=\"true\"></span> "
+	else
+		return ""
+	}
+
+    var pr_status = { "26" : "DONE" };
+
+    function add_item(obj, idx, type, pr) {
+        var pattern = new RegExp("[0-9]+$")
+        var pr_nr = pattern.exec(pr.url);
+        var d = new Date(pr.since * 1000);
+        var cl;
+        var icon;
+        var title;
+        var duration = "";
+        var runtime_icon = "";
+        var status_html = "";
+
+
+        switch (type) {
+            case 0:
+                icon = "inbox"
+                cl = "info";
+                break;
+            case 1:
+                icon = "wrench"
+                cl = "warning";
+                break;
+            case 2:
+                if (pr.result == "passed") {
+                    icon = "ok"
+                    cl = "success";
+                }
+                else if (pr.result == "errored") {
+                    icon = "remove"
+                    cl = "danger";
+                }
+                runtime_icon = "hourglass";
+                duration = moment.duration(pr.runtime * -1000).humanize();
+                status_html = pr.status_html;
+                break;
+            default:
+                icon = "question-sign"
+                cl = "default";
+                break;
+        }
+        if (type == 2) {
+            title = "<a href=\"" + pr.output_url + "\">" + pr.title + "</a>";
+        }
+        else {
+            title = pr.title;
+        }
+        obj.append("<div id=\"pr-" + idx + "\" class=\"panel panel-" + cl + "\">" +
+                     "<div class=\"panel-heading\">" +
+                       "<h3 class=\"panel-title\">" +
+                         "<span class=\"glyphicon glyphicon-" + icon + "\" aria-hidden=\"true\"></span> " + title +
+                       "</h3>" +
+                     "</div>" +
+                     "<div class=\"panel-body\">" +
+                           "<div class=\"row\">" +
+                           "<div class=\"col-md-2\">" +
+                             "<span class=\"glyphicon glyphicon-user\" aria-hidden=\"true\"></span> " + pr.user +
+                           "</div>" +
+                           "<div class=\"col-md-2\">" +
+                             "<span class=\"glyphicon glyphicon-link\" aria-hidden=\"true\"></span> " +
+                             "<a href=\"" + pr.url + "\" target=\"_blank\">PR #" + pr_nr + "</a>" +
+                           "</div>" +
+                           "<div class=\"col-md-2\">" +
+                             "<span class=\"glyphicon glyphicon-tag\" aria-hidden=\"true\"></span> " +
+                             "<a href=\"https://github.com/RIOT-OS/RIOT/commit/" + pr.commit + "\" target=\"_blank\">" +
+                               "<code>" + pr.commit.substring(0,7) + "</code>" +
+                             "</a>" +
+                           "</div>" +
+                           "<div class=\"col-md-4\">" +
+                             "<span class=\"glyphicon glyphicon-calendar\" aria-hidden=\"true\"></span> " +
+                             d.toLocaleString() + " <div class=\"since\" style=\"display: inline\" since=\"" + (pr.since * 1000) + "\">()</div>" +
+                           "</div>" +
+                           "<div class=\"col-md-2\">" +
+                             add_icon(runtime_icon) + duration +
+                           "</div>" +
+                           "</div>" +
+                           "<div class=\"row\" id=\"pr-" + pr_nr + "-status\">" + status_html +"</div>" +
+                     "</div>" +
+                   "</div>");
+    }
+
+    function get_prs() {
+      $.ajax({
+          url: "https://ci.riot-labs.de/devel/api/pull_requests",
+          context: $('#pull_requests')
+      }).done(function(prs) {
+          $(this).empty()
+          if (prs.queued) {
+              prs.queued.sort(function(a,b){ return b.since - a.since });
+              for (i = 0; i < prs.queued.length; i++) {
+                  add_item($(this), i, 0, prs.queued[i]);
+              }
+          }
+          if (prs.building) {
+              prs.building.sort(function(a,b){ return b.since - a.since });
+              for (i = 0; i < prs.building.length; i++) {
+                  add_item($(this), i, 1, prs.building[i]);
+              }
+          }
+          if (prs.finished) {
+              prs.finished.sort(function(a,b){ return b.since - a.since });
+              for (i = 0; i < prs.finished.length; i++) {
+                  add_item($(this), i, 2, prs.finished[i]);
+              }
+          }
+          update_durations();
+      });
+    }
+
+  function connect_status() {
+      // setup websocket with callbacks
+      var ws = new WebSocket('wss://ci.riot-labs.de/devel/status');
+      ws.onopen = function() {
+          get_prs();
+      };
+      ws.onclose = function() {
+        setTimeout(connect_status, 1000);
+      };
+      ws.onmessage = function(event) {
+          msg = JSON.parse(event.data);
+          if (msg.cmd == "reload_prs") {
+              get_prs();
+          }
+          else if (msg.cmd == "prstatus") {
+              prnum = msg.prnum
+              document.getElementById('pr-' + prnum + '-status').innerHTML = msg.html;
+          }
+      };
+    }
+
+    function update_durations() {
+        var elems = document.querySelectorAll('div.since');
+        for(var i=0;i<elems.length;i++) {
+            var elem = elems[i];
+            d = new Date(parseInt(elem.getAttribute("since")));
+            elem.innerHTML = "(" + moment(d).fromNow() + ")";
+        }
+    }
+
+    setInterval(update_durations, 10*1000);
+
+    connect_status();
+    </script>
+  </body>
+</html>
