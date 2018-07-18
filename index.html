@@ -43,9 +43,9 @@
 	}
 
 
-    function add_item(obj, idx, type, pr) {
+    function add_item(obj, type, pr) {
         var pattern = new RegExp("[0-9]+$")
-        var pr_nr = pattern.exec(pr.url);
+        var prnum = pattern.exec(pr.url);
         var d = new Date(pr.since * 1000);
         var cl;
         var icon;
@@ -88,7 +88,7 @@
         else {
             title = pr.title;
         }
-        obj.append("<div id=\"pr-" + idx + "\" class=\"panel panel-" + cl + "\">" +
+        obj.append("<div id=\"pr-" + prnum + "\" class=\"panel panel-" + cl + "\">" +
                      "<div class=\"panel-heading\">" +
                        "<h3 class=\"panel-title\">" +
                          "<span class=\"glyphicon glyphicon-" + icon + "\" aria-hidden=\"true\"></span> " + title +
@@ -101,7 +101,7 @@
                            "</div>" +
                            "<div class=\"col-md-2\">" +
                              "<span class=\"glyphicon glyphicon-link\" aria-hidden=\"true\"></span> " +
-                             "<a href=\"" + pr.url + "\" target=\"_blank\">PR #" + pr_nr + "</a>" +
+                             "<a href=\"" + pr.url + "\" target=\"_blank\">PR #" + prnum + "</a>" +
                            "</div>" +
                            "<div class=\"col-md-2\">" +
                              "<span class=\"glyphicon glyphicon-tag\" aria-hidden=\"true\"></span> " +
@@ -117,7 +117,7 @@
                              add_icon(runtime_icon) + duration +
                            "</div>" +
                            "</div>" +
-                           "<div class=\"row\" id=\"pr-" + pr_nr + "-status\">" + status_html +"</div>" +
+                           "<div class=\"row\" id=\"pr-" + prnum + "-status\">" + status_html +"</div>" +
                      "</div>" +
                    "</div>");
     }
@@ -131,19 +131,19 @@
           if (prs.queued) {
               prs.queued.sort(function(a,b){ return b.since - a.since });
               for (i = 0; i < prs.queued.length; i++) {
-                  add_item($(this), i, 0, prs.queued[i]);
+                  add_item($(this), 0, prs.queued[i]);
               }
           }
           if (prs.building) {
               prs.building.sort(function(a,b){ return b.since - a.since });
               for (i = 0; i < prs.building.length; i++) {
-                  add_item($(this), i, 1, prs.building[i]);
+                  add_item($(this), 1, prs.building[i]);
               }
           }
           if (prs.finished) {
               prs.finished.sort(function(a,b){ return b.since - a.since });
               for (i = 0; i < prs.finished.length; i++) {
-                  add_item($(this), i, 2, prs.finished[i]);
+                  add_item($(this), 2, prs.finished[i]);
               }
           }
           update_durations();
