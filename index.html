@@ -81,6 +81,67 @@
       }
     }
 
+    function progress_bar(percent) {
+      return '<div class="progress">' +
+               '<div class="progress-bar progress-bar-striped" ' +
+                    'role="progressbar" ' +
+                    'aria-valuenow="' + percent + '" ' +
+                    'aria-valuemin="0" aria-valuemax="100" ' +
+                    'style="width:' + percent + '%">' + percent + '%' +
+               '</div>' +
+             '</div>';
+    }
+
+    function pr_status(status) {
+      var divider = "";
+      var stat_html = "";
+      var failed_jobs_html = "";
+      var percent = 0;
+      var text = null;
+      var eta = "";
+
+      if (status.total && status.passed && status.failed &&
+          (status.total >= (status.passed + status.failed))) {
+        var done = status.passed + status.failed;
+        percent = Math.round((done * 100) / status.total);
+        text = glyphicon("stats") +
+          ' fail: ' + status.failed +
+          ' pass: ' + status.passed +
+          ' done: ' + done + '/' + status.total;
+        eta = glyphicon("time") + ' ' + status.eta;
+      }
+      else if (status.status) {
+        text = glyphicon("transfer") + ' ' + status.status;
+      }
+
+      if (text) {
+        stat_html += bs_row(bs_col(progress_bar(percent), 6) +
+                            bs_col(text, 4) +
+                            bs_col(eta, 2));
+      }
+      if (status.failed_jobs) {
+        if (status.failed_jobs.length > 0) {
+          failed_jobs_html += "<h5><strong>Failed jobs:</strong></h5>";
+        }
+        var gridsize = 4;
+        var row_content = "";
+        for (var i = 0; i < status.failed_jobs.length; i++) {
+          var failed_job = status.failed_jobs[i];
+          if ((i % gridsize) == gridsize) {
+            failed_jobs_html += bs_row(row_content);
+            row_content = "";
+          }
+          if (failed_job.href) {
+            failed_job.name = '<a href="' + failed_job.href + '"> ' +
+              failed_job.name + ' </a>';
+          }
+          row_content += bs_col(failed_job.name, Math.floor(12 / gridsize));
+        }
+        failed_jobs_html += bs_row(row_content);
+      }
+      return bs_col(divider + stat_html + failed_jobs_html, 12);
+    }
+
     function add_item(obj, type, pr) {
         var pattern = new RegExp("[0-9]+$")
         var prnum = pattern.exec(pr.url);
@@ -113,7 +174,12 @@
                 }
                 runtime_icon = "hourglass";
                 duration = moment.duration(pr.runtime * -1000).humanize();
-                status_html = pr.status_html;
+                if (pr.status_html) {
+                  status_html = pr.status_html;
+                }
+                else if (pr.status) {
+                  status_html = pr_status(pr.status);
+                }
                 break;
             default:
                 icon = "question-sign"
@@ -173,6 +239,24 @@
       });
     }
 
+    function update_status(event) {
+      var msg = JSON.parse(event.data);
+      if (msg.cmd == "reload_prs") {
+        get_prs();
+      }
+      else if (msg.cmd == "prstatus") {
+        var prnum = msg.prnum;
+        var html;
+        if (msg.html) {
+          html = msg.html;
+        }
+        else if (msg.status) {
+          html = pr_status(msg.status);
+        }
+        $('#pr-' + prnum + '-status').html(html);
+      }
+    }
+
   function connect_status() {
       // setup websocket with callbacks
       var ws = new WebSocket('wss://ci.riot-os.org/devel/status');
@@ -182,16 +266,7 @@
       ws.onclose = function() {
         setTimeout(connect_status, 1000);
       };
-      ws.onmessage = function(event) {
-          msg = JSON.parse(event.data);
-          if (msg.cmd == "reload_prs") {
-              get_prs();
-          }
-          else if (msg.cmd == "prstatus") {
-              prnum = msg.prnum
-              document.getElementById('pr-' + prnum + '-status').innerHTML = msg.html;
-          }
-      };
+      ws.onmessage = update_status;
     }
 
     function update_durations() {
