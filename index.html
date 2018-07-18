@@ -93,6 +93,22 @@
     }
 
     function pr_status(status) {
+      /* the status parameter is expected to be an object with the following
+       * attributes:
+       *  - total (optional): total number of jobs to execute for the PR
+       *  - passed (optional): total number of jobs already done and passed
+       *    for the PR
+       *  - failed (optional): total number of jobs already done and failed
+       *    for the PR
+       *  - eta (required, when total, passed, and failed are provided,
+       *    otherwise optional): current ETA for the processing of the PR
+       *  - status (optional): a status text for the PR
+       *  - failed_jobs (optional): list of jobs (may be of length 0) that are
+       *    already done and failed. An object in this list is expected to have
+       *    the following attributes:
+       *      - name (required): the name of the job
+       *      - href (optional): a link to the logfile of the job
+       */
       var divider = "";
       var stat_html = "";
       var failed_jobs_html = "";
