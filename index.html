@@ -143,7 +143,7 @@
         var row_content = "";
         for (var i = 0; i < status.failed_jobs.length; i++) {
           var failed_job = status.failed_jobs[i];
-          if ((i % gridsize) == gridsize) {
+          if ((i > 0) && ((i % gridsize) == 0)) {
             failed_jobs_html += bs_row(row_content);
             row_content = "";
           }
