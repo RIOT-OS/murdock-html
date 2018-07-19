@@ -78,7 +78,7 @@ function progress_bar(percent) {
          '</div>';
 }
 
-function pr_status(status) {
+function pr_status(prnum, status) {
   /* the status parameter is expected to be an object with the following
    * attributes:
    *  - total (optional): total number of jobs to execute for the PR
@@ -137,8 +137,11 @@ function pr_status(status) {
         row_content = "";
       }
       if (failed_job.href) {
-        failed_job.name = '<a href="' + failed_job.href + '"> ' +
-          failed_job.name + ' </a>';
+        var id = "job-" + prnum + "-" + job_id(failed_job.name);
+        failed_job.name = '<a class="job-link" ' +
+                             'id="' + id + '" ' +
+                             'href="' + failed_job.href + '">' +
+                             failed_job.name + ' </a>';
       }
       row_content += bs_col(failed_job.name, Math.floor(12 / gridsize));
     }
@@ -185,7 +188,7 @@ function add_item(obj, type, pr) {
               status_html = pr.status_html;
             }
             else if (pr.status) {
-              status_html = pr_status(pr.status);
+              status_html = pr_status(prnum, pr.status);
             }
             break;
         default:
@@ -230,6 +233,20 @@ function add_item(obj, type, pr) {
                bs_row(item_content) +
                bs_row(status_html, status_id),
                panel_id, ["panel-" + cl]));
+    $(".job-link").unbind().click(job_link)
+}
+
+function scroll_to_details(hash) {
+  var pattern = new RegExp("^#job-[0-9]+-.*-details$")
+  var match = pattern.exec(hash);
+  if (match) {
+    var target_id = hash.slice(0, -("-details".length));
+    var target = $(target_id);
+    $(window).on("hashchange", function() {
+      // Do nothing
+    });
+    job_load_details_from_obj(target);
+  }
 }
 
 function get_prs() {
@@ -257,6 +274,7 @@ function get_prs() {
           }
       }
       update_durations();
+      scroll_to_details(location.hash);
   });
 }
 
@@ -326,9 +344,10 @@ function update_status(event) {
       html = msg.html;
     }
     else if (msg.status) {
-      html = pr_status(msg.status);
+      html = pr_status(msg.prnum, msg.status);
     }
     $('#pr-' + prnum + '-status').html(html);
+    $(".job-link").click(job_link)
   }
 }
 
@@ -349,4 +368,67 @@ function update_durations() {
         d = new Date(parseInt(elem.getAttribute("since")));
         elem.innerHTML = "(" + moment(d).fromNow() + ")";
     }
+}
+
+function job_id(job_name) {
+  return job_name.replace(/[/:]/g, "-");
+}
+
+function job_load_details(obj, prnum, job_id, job_link) {
+  obj.parent().parent().after(
+    bs_row("", id=job_id + "-details",
+      extraclasses=["job-" + prnum + "-details"])
+  );
+  obj.addClass("detailed-job")
+  var details = $("#" + job_id + "-details");
+  $.ajax(job_link).done(function(data) {
+    var ansi_up = new AnsiUp;
+    details.html(
+      bs_col(
+        '<pre id="' + job_id + '-pre" style="display: none; max-height: 85em;">' +
+        '<a href="' + job_link + '">' + job_link + '</a>\n\n' +
+        ansi_up.ansi_to_html(data) + '</pre>',
+        12
+      )
+    );
+    var pre = $("#" + job_id + "-pre");
+    pre.slideDown({ duration: 400, queue: false }, "swing");
+    $([document.documentElement, document.body]).animate({
+      scrollTop: $("#" + job_id).offset().top - 70
+    }, 400, function () {
+      $(".dejagged").remove();
+    });
+    window.location.hash = "#" + job_id + "-details";
+  })
+}
+
+function job_load_details_from_obj(obj) {
+  var job_link_obj = obj;
+  var job_id = job_link_obj.attr("id");
+  var job_link = job_link_obj.attr("href")
+  var prnum = job_id.split("-")[1];
+  var only_remove = ($("#" + job_id + "-details").length > 0);
+  var open_job_details = $(".job-" + prnum + "-details");
+  var any_open = (open_job_details.length > 0)
+  // prevents jumping to the top when window is too small
+  $("html").append('<div class="dejagged" style="margin-top: 1000px;">');
+  $(".job-" + prnum + "-details,.detailed-job").removeClass("detailed-job")
+  open_job_details.slideUp(400, function() {
+    $(this).remove();
+    if (!only_remove) {
+      job_load_details(job_link_obj, prnum, job_id, job_link);
+    }
+    else {
+      window.location.hash = "#";
+      $(".dejagged").remove();
+    }
+  });
+  if (!any_open) {
+    job_load_details(job_link_obj, prnum, job_id, job_link);
+  }
+}
+
+function job_link(event) {
+  event.preventDefault();
+  job_load_details_from_obj($(this));
 }

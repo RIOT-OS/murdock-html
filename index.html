@@ -8,9 +8,31 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
     <script src="js/murdock-config.js"></script>
     <script src="js/moment.js"></script>
+    <script src="js/ansi_up.js"></script>
     <title>Murdock &mdash; Pull Requests: RIOT-OS/RIOT</title>
+    <style>
+      /* some fiddling with the top nav bar */
+      body {
+        padding-top: 70px;
+      }
+
+      div.job-details {
+        padding-top: 70px;
+        margin-top: -70px;
+      }
+
+      a:hover.detailed-job {
+        color: #c7254e;
+        text-decoration: none;
+      }
+
+      a.detailed-job {
+        color: #c7254e;
+        text-decoration: none;
+      }
+    </style>
   </head>
-  <body style="padding-top: 70px;">
+  <body>
       <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container-fluid">
           <!-- Brand and toggle get grouped for better mobile display -->
