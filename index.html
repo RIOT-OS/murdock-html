@@ -125,7 +125,7 @@
 
     function get_prs() {
       $.ajax({
-          url: "https://ci.riot-labs.de/devel/api/pull_requests",
+          url: "https://ci.riot-os.org/devel/api/pull_requests",
           context: $('#pull_requests')
       }).done(function(prs) {
           $(this).empty()
@@ -153,7 +153,7 @@
 
   function connect_status() {
       // setup websocket with callbacks
-      var ws = new WebSocket('wss://ci.riot-labs.de/devel/status');
+      var ws = new WebSocket('wss://ci.riot-os.org/devel/status');
       ws.onopen = function() {
           get_prs();
       };
