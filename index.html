@@ -117,7 +117,9 @@
       var text = null;
       var eta = "";
 
-      if (status.total && status.passed && status.failed &&
+      if (status.hasOwnProperty('total') &&
+          status.hasOwnProperty('passed') &&
+          status.hasOwnProperty('failed') &&
           (status.total >= (status.passed + status.failed))) {
         var done = status.passed + status.failed;
         percent = Math.round((done * 100) / status.total);
@@ -125,7 +127,8 @@
           ' fail: ' + status.failed +
           ' pass: ' + status.passed +
           ' done: ' + done + '/' + status.total;
-        eta = glyphicon("time") + ' ' + status.eta;
+        eta = glyphicon("time") + ' ' +
+              moment.duration(status.eta, "seconds").humanize(true);
       }
       else if (status.status) {
         text = glyphicon("transfer") + ' ' + status.status;
