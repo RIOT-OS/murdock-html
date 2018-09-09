@@ -178,7 +178,9 @@ function add_item(obj, type, pr) {
                 cl = "danger";
             }
             runtime_icon = "hourglass";
-            duration = moment.duration(pr.runtime * -1000).humanize();
+            if (pr.runtime) {
+              duration = moment.duration(pr.runtime * -1000).humanize();
+            }
             if (pr.status_html) {
               status_html = pr.status_html;
             }
@@ -197,29 +199,43 @@ function add_item(obj, type, pr) {
     else {
         title = pr.title;
     }
-    obj.append(bs_panel(glyphicon(icon) + " " + title,
-               bs_row(bs_col(glyphicon("user") + " " + pr.user, 2) +
+    var item_content = "";
+    if (pr.url) {
+      item_content += bs_col(glyphicon("user") + " " + pr.user, 2) +
                       bs_col(glyphicon("link") +
                         ' <a href="' + pr.url + '" target="_blank">' +
-                        'PR #' + prnum + '</a>', 2) +
-                      bs_col(glyphicon("tag") +
-                        ' <a href="https://github.com/RIOT-OS/RIOT/commit/' +
-                        pr.commit + '" target="_blank">' +
-                        "<code>" + pr.commit.substring(0,7) +
-                        "</code></a>", 2) +
-                      bs_col(glyphicon("calendar") + " " +
-                        d.toLocaleString() + ' <div ' +
-                        'class="since" style="display: inline"' +
-                        'since="' + (pr.since * 1000) + '">()</div>', 4) +
-                      bs_col(glyphicon(runtime_icon) + " " + duration, 2)) +
-               bs_row(status_html, "pr-" + prnum + "-status"),
-               "pr-" + prnum, ["panel-" + cl]));
+                        'PR #' + prnum + '</a>', 2);
+    }
+    item_content += bs_col(glyphicon("tag") +
+                      ' <a href="https://github.com/RIOT-OS/RIOT/commit/' +
+                      pr.commit + '" target="_blank">' +
+                      "<code>" + pr.commit.substring(0,7) +
+                      "</code></a>", 2) +
+                    bs_col(glyphicon("calendar") + " " +
+                      d.toLocaleString() + ' <div ' +
+                      'class="since" style="display: inline"' +
+                      'since="' + (pr.since * 1000) + '"></div>', 4);
+    if (duration.length > 0) {
+      bs_col(glyphicon(runtime_icon) + " " + duration, 2);
+    }
+    var panel_id;
+    if (prnum) {
+      panel_id = "pr-" + prnum;
+    }
+    else {
+      panel_id = "n-" + pr.since + "-" + pr.commit;
+    }
+    var status_id = panel_id + "-status";
+    obj.append(bs_panel(glyphicon(icon) + " " + title,
+               bs_row(item_content) +
+               bs_row(status_html, status_id),
+               panel_id, ["panel-" + cl]));
 }
 
 function get_prs() {
   $.ajax({
       url: "https://" + murdockConfig.baseURL + "/api/pull_requests",
-      context: $('#pull_requests')
+      context: $('#pull_requests'),
   }).done(function(prs) {
       $(this).empty()
       if (prs.queued) {
@@ -244,6 +260,60 @@ function get_prs() {
   });
 }
 
+function build_branches_menu(active_branch) {
+  var branches = [{name: "master"}]; /* TODO get from server */
+  var branches_menu = $("#branches-menu");
+
+  if (!active_branch) {
+    var active_branch = location.hash.substr(1);
+
+    if (branches.filter(branch => branch.name == active_branch).length == 0) {
+      active_branch = murdockConfig.default_branch;
+    }
+  }
+  branches_menu.empty();
+  branches.forEach(function(branch) {
+    var branch_entry = $('<li></li>');
+    var branch_link = branch_entry.html('<a href="#' + branch.name + '">' +
+                                        branch.name + '</a>');
+    if (branch.name == active_branch) {
+      branch_entry.addClass("active");
+    }
+    else {
+      branch_link.click(function (ev) {
+        build_branches_menu(branch.name);
+        get_nightlies(ev, branch.name);
+      })
+    }
+    branches_menu.append(branch_entry);
+  });
+}
+
+function get_nightlies(ev, branch) {
+  var nightlies = $('#nightlies');
+  if (!branch) {
+    branch = murdockConfig.default_branch;
+  }
+  nightlies.empty()
+  $.ajax({
+    url: "https://" + murdockConfig.baseURL + "/" + murdockConfig.repo_path +
+         "/" + branch + "/nightlies.json",
+    context: nightlies,
+  }).done(function(nightlies) {
+    for (i = 0; i < nightlies.length; i++) {
+      nightlies[i].title = new Date(nightlies[i].since * 1000).toLocaleDateString(
+          navigator.language,
+          {weekday: "short", year: "numeric", month: "short", day: "numeric"}
+        ) + " (" + nightlies[i].commit.substring(0, 7) + ")";
+      nightlies[i].output_url = "https://" + murdockConfig.baseURL + "/" +
+            murdockConfig.repo_path + "/" + branch + "/" + nightlies[i].commit +
+            "/output.html";
+      add_item($(this), 2, nightlies[i]);
+    }
+    update_durations();
+  });
+}
+
 function update_status(event) {
   var msg = JSON.parse(event.data);
   if (msg.cmd == "reload_prs") {
@@ -262,12 +332,10 @@ function update_status(event) {
   }
 }
 
-function connect_status() {
+function connect_status(f) {
   // setup websocket with callbacks
   var ws = new WebSocket('wss://' + murdockConfig.baseURL + '/status');
-  ws.onopen = function() {
-      get_prs();
-  };
+  ws.onopen = f;
   ws.onclose = function() {
     setTimeout(connect_status, 1000);
   };

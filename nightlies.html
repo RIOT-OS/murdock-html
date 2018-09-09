@@ -29,18 +29,22 @@
           <!-- Collect the nav links, forms, and other content for toggling -->
           <div class="collapse navbar-collapse" id="navbar-collapse">
             <ul class="nav navbar-nav">
-              <li class="active">
-                <a href="#">Pull Requests <span class="sr-only">(current)</span></a>
-              </li>
               <li>
-                <a href="nightlies.html">Nightlies</a>
+                <a href="index.html">Pull Requests</a>
+              </li>
+              <li class="active">
+                <a href="#">Nightlies <span class="sr-only">(current)</span></a>
               </li>
             </ul>
           </div>
         </div>
       </nav>
       <div class="container">
-      <div id="pull_requests">
+      <ul id="branches-menu" style="margin-bottom: 20px;" class="nav nav-pills">
+      </ul>
+      <div class="row">
+      <div class="col-md-12" id="nightlies">
+      </div>
       </div>
 <!--
       <div id="pagination"  class="text-center">
@@ -64,9 +68,10 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     <script src="js/murdock.js"></script>
     <script>
+      build_branches_menu();
       setInterval(update_durations, 10*1000);
 
-      connect_status(get_prs);
+      connect_status(get_nightlies);
     </script>
   </body>
 </html>
