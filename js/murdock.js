@@ -216,7 +216,7 @@ function add_item(obj, type, pr) {
                       'class="since" style="display: inline"' +
                       'since="' + (pr.since * 1000) + '"></div>', 4);
     if (duration.length > 0) {
-      bs_col(glyphicon(runtime_icon) + " " + duration, 2);
+      item_content += bs_col(glyphicon(runtime_icon) + " " + duration, 2);
     }
     var panel_id;
     if (prnum) {
