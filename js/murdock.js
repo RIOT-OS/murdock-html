@@ -140,7 +140,8 @@ function pr_status(status) {
         failed_job.name = '<a href="' + failed_job.href + '"> ' +
           failed_job.name + ' </a>';
       }
-      row_content += bs_col(failed_job.name, Math.floor(12 / gridsize));
+      row_content += bs_col(failed_job.name, Math.floor(12 / gridsize),
+                            ["pr-status-job"]);
     }
     failed_jobs_html += bs_row(row_content);
   }
