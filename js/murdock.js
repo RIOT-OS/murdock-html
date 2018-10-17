@@ -216,6 +216,17 @@ function add_item(obj, type, pr) {
                       d.toLocaleString() + ' <div ' +
                       'class="since" style="display: inline"' +
                       'since="' + (pr.since * 1000) + '"></div>', 4);
+    if (pr.robot_url) {
+      robot = "ok";
+      color = "success";
+      if (pr.robot == "fail") {
+          robot = "remove";
+          color = "danger";
+      }
+      item_content += bs_col(glyphicon("wrench") + 
+                        ' <a href="' + pr.robot_url + '" target="_blank"> ' +
+                        'HIL periph_i2c (SAMR21-XPRO) </a>', 3, [ "bg-" + color ]);
+    }
     if (duration.length > 0) {
       item_content += bs_col(glyphicon(runtime_icon) + " " + duration, 2);
     }
@@ -309,6 +320,10 @@ function get_nightlies(ev, branch) {
       nightlies[i].output_url = "https://" + murdockConfig.baseURL + "/" +
             murdockConfig.repo_path + "/" + branch + "/" + nightlies[i].commit +
             "/output.html";
+      nightlies[i].robot_url = "https://" + murdockConfig.baseURL + "/" +
+            murdockConfig.repo_path + "/" + branch + "/" + nightlies[i].commit +
+            "/robot/samr21-xpro/tests_periph_i2c" +
+            "/report.html";
       add_item($(this), 2, nightlies[i]);
     }
     update_durations();
