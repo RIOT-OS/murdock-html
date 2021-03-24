@@ -216,6 +216,17 @@ function add_item(obj, type, pr) {
                       d.toLocaleString() + ' <div ' +
                       'class="since" style="display: inline"' +
                       'since="' + (pr.since * 1000) + '"></div>', 4);
+    if (pr.robot_url) {
+      robot = "ok";
+      color = "success";
+      if (pr.robot == "fail") {
+          robot = "remove";
+          color = "danger";
+      }
+      item_content += bs_col(glyphicon("wrench") + 
+                        ' <a href="' + pr.robot_url + '" target="_blank"> ' +
+                        'HIL Test Results </a>', 2, [ "bg-" + color ]);
+    }
     if (duration.length > 0) {
       item_content += bs_col(glyphicon(runtime_icon) + " " + duration, 2);
     }
@@ -302,6 +313,7 @@ function get_nightlies(ev, branch) {
     context: nightlies,
   }).done(function(nightlies) {
     for (i = 0; i < nightlies.length; i++) {
+      console.log(nightlies[i]);
       nightlies[i].title = new Date(nightlies[i].since * 1000).toLocaleDateString(
           navigator.language,
           {weekday: "short", year: "numeric", month: "short", day: "numeric"}
@@ -309,6 +321,9 @@ function get_nightlies(ev, branch) {
       nightlies[i].output_url = "https://" + murdockConfig.baseURL + "/" +
             murdockConfig.repo_path + "/" + branch + "/" + nightlies[i].commit +
             "/output.html";
+      nightlies[i].robot_url = "https://" + murdockConfig.baseURL + "/" +
+            murdockConfig.repo_path + "/" + branch + "/" + nightlies[i].commit +
+            "/robot/robot.xml";
       add_item($(this), 2, nightlies[i]);
     }
     update_durations();
