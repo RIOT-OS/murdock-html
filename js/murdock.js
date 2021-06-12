@@ -43,24 +43,26 @@ function bs_row(content, id, extraclasses) {
 }
 
 function bs_col(content, width, extraclasses) {
-  return '<div class="col-md-' + width +
+  return '<div class="align-middle col-md-' + width +
     extraclasses_append(extraclasses) + '">' + content + "</div>";
 }
 
-function bs_panel(title, body, id, extraclasses) {
-  return '<div' + id_attr(id) + ' class="panel' +
-    extraclasses_append(extraclasses) + '">' +
-                 '<div class="panel-heading">' +
-                   '<h3 class="panel-title">' + title + '</h3>' +
+function bs_card(title, body, id, status) {
+  return '<div' + id_attr(id) + ' class="card m-2 border-' + status + '">' +
+                 '<div class="card-header text-white bg-' + status + '">' +
+                    title +
                  '</div>' +
-                 '<div class="panel-body">' + body + '</div>' +
+                 '<div class="card-body">' + body + '</div>' +
                "</div>"
 }
 
-function glyphicon(icon_name) {
+function fa(icon_name) {
+  return fa_color(icon_name, "black")
+}
+
+function fa_color(icon_name, color) {
   if (icon_name) {
-    return "<span class=\"glyphicon glyphicon-" + icon_name +
-           "\"aria-hidden=\"true\"></span>";
+    return '<span class="mx-1" style="font-size: 1rem;color: '+ color +';"><i class="fa fa-' + icon_name + '"></i></span>'
   }
   else {
     return "";
@@ -68,7 +70,7 @@ function glyphicon(icon_name) {
 }
 
 function progress_bar(percent) {
-  return '<div class="progress">' +
+  return '<div class="progress" style="margin:3px;">' +
            '<div class="progress-bar progress-bar-striped" ' +
                 'role="progressbar" ' +
                 'aria-valuenow="' + percent + '" ' +
@@ -108,15 +110,15 @@ function pr_status(status) {
       (status.total >= (status.passed + status.failed))) {
     var done = status.passed + status.failed;
     percent = Math.round((done * 100) / status.total);
-    text = glyphicon("stats") +
+    text = fa("bar-chart") +
       ' fail: ' + status.failed +
       ' pass: ' + status.passed +
       ' done: ' + done + '/' + status.total;
-    eta = glyphicon("time") + ' ' +
+    eta = fa("clock-o") + ' ' +
           moment.duration(status.eta, "seconds").humanize(true);
   }
   else if (status.status) {
-    text = glyphicon("transfer") + ' ' + status.status;
+    text = fa("exchange") + ' ' + status.status;
   }
 
   if (text) {
@@ -126,7 +128,7 @@ function pr_status(status) {
   }
   if (status.failed_jobs) {
     if (status.failed_jobs.length > 0) {
-      failed_jobs_html += "<h5><strong>Failed jobs:</strong></h5>";
+      failed_jobs_html += "<strong>Failed jobs:</strong>";
     }
     var gridsize = 4;
     var row_content = "";
@@ -137,7 +139,7 @@ function pr_status(status) {
         row_content = "";
       }
       if (failed_job.href) {
-        failed_job.name = '<a href="' + failed_job.href + '"> ' +
+        failed_job.name = '<a class="text-danger link-underline-hover" href="' + failed_job.href + '"> ' +
           failed_job.name + ' </a>';
       }
       row_content += bs_col(failed_job.name, Math.floor(12 / gridsize),
@@ -171,14 +173,14 @@ function add_item(obj, type, pr) {
             break;
         case 2:
             if (pr.result == "passed") {
-                icon = "ok"
+                icon = "check"
                 cl = "success";
             }
             else if (pr.result == "errored") {
-                icon = "remove"
+                icon = "times"
                 cl = "danger";
             }
-            runtime_icon = "hourglass";
+            runtime_icon = "clock-o";
             if (pr.runtime) {
               duration = moment.duration(pr.runtime * -1000).humanize();
             }
@@ -190,34 +192,34 @@ function add_item(obj, type, pr) {
             }
             break;
         default:
-            icon = "question-sign"
-            cl = "default";
+            icon = "question"
+            cl = "secondary";
             break;
     }
     if (type == 2) {
-        title = "<a href=\"" + pr.output_url + "\">" + pr.title + "</a>";
+        title = fa_color(icon, "white") + '<span><a class="link-light link-underline-hover" href="' + pr.output_url + '">' + pr.title + '</a></span>';
     }
     else {
-        title = pr.title;
+        title = fa_color(icon, "white") + pr.title;
     }
     var item_content = "";
     if (pr.url) {
-      item_content += bs_col(glyphicon("user") + " " + pr.user, 2) +
-                      bs_col(glyphicon("link") +
-                        ' <a href="' + pr.url + '" target="_blank">' +
+      item_content += bs_col(fa("user") + " " + pr.user, 2) +
+                      bs_col(fa("link") +
+                        ' <a class="link-underline-hover text-' + cl + '" href="' + pr.url + '" target="_blank">' +
                         'PR #' + prnum + '</a>', 2);
     }
-    item_content += bs_col(glyphicon("tag") +
-                      ' <a href="https://github.com/RIOT-OS/RIOT/commit/' +
+    item_content += bs_col(fa("tag") +
+                      '<a class="link-underline-hover text-' + cl + '" href="https://github.com/RIOT-OS/RIOT/commit/' +
                       pr.commit + '" target="_blank">' +
-                      "<code>" + pr.commit.substring(0,7) +
-                      "</code></a>", 2) +
-                    bs_col(glyphicon("calendar") + " " +
+                      '<span class="text-' + cl + '"><pre>' + pr.commit.substring(0,7) +
+                      '</pre></span></a>', 2) +
+                    bs_col(fa("calendar") + " " +
                       d.toLocaleString() + ' <div ' +
                       'class="since" style="display: inline"' +
                       'since="' + (pr.since * 1000) + '"></div>', 4);
     if (duration.length > 0) {
-      item_content += bs_col(glyphicon(runtime_icon) + " " + duration, 2);
+      item_content += bs_col(fa(runtime_icon) + " " + duration, 2);
     }
     var panel_id;
     if (prnum) {
@@ -227,10 +229,10 @@ function add_item(obj, type, pr) {
       panel_id = "n-" + pr.since + "-" + pr.commit;
     }
     var status_id = panel_id + "-status";
-    obj.append(bs_panel(glyphicon(icon) + " " + title,
+    obj.append(bs_card(title,
                bs_row(item_content) +
                bs_row(status_html, status_id),
-               panel_id, ["panel-" + cl]));
+               panel_id, cl));
 }
 
 function get_prs() {
@@ -274,11 +276,10 @@ function build_branches_menu(active_branch) {
   }
   branches_menu.empty();
   branches.forEach(function(branch) {
-    var branch_entry = $('<li></li>');
-    var branch_link = branch_entry.html('<a href="#' + branch.name + '">' +
-                                        branch.name + '</a>');
+    var branch_entry = $('<li class="nav-item m-1"></li>');
+    var branch_link = $('<a class="nav-link" aria-current="page" href="#' + branch.name + '">' + branch.name + '</a>');
     if (branch.name == active_branch) {
-      branch_entry.addClass("active");
+      branch_link.addClass("active");
     }
     else {
       branch_link.click(function (ev) {
@@ -286,6 +287,7 @@ function build_branches_menu(active_branch) {
         get_nightlies(ev, branch.name);
       })
     }
+    branch_entry.append(branch_link);
     branches_menu.append(branch_entry);
   });
 }
