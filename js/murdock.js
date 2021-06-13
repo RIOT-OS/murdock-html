@@ -165,11 +165,11 @@ function add_item(obj, type, pr) {
     switch (type) {
         case 0:
             icon = "inbox"
-            cl = "info";
+            cl = "secondary";
             break;
         case 1:
             icon = "wrench"
-            cl = "warning";
+            cl = "primary";
             break;
         case 2:
             if (pr.result == "passed") {
