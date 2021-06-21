@@ -128,7 +128,7 @@ function pr_status(status) {
   }
   if (status.failed_jobs) {
     if (status.failed_jobs.length > 0) {
-      failed_jobs_html += "<h6 class='my-2'><strong>Failed jobs:</strong></h6>";
+      failed_jobs_html += "<h6 class='my-2 mx-1'><strong>Failed jobs:</strong></h6>";
     }
     var gridsize = 4;
     var row_content = "";
