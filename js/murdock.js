@@ -48,8 +48,9 @@ function bs_col(content, width, extraclasses) {
 }
 
 function bs_card(title, body, id, status) {
+  let textColor = (["success", "danger"].includes(status)) ? "white" : "dark";
   return '<div' + id_attr(id) + ' class="card m-2 border-' + status + '">' +
-                 '<div class="card-header text-white bg-' + status + '">' +
+                 '<div class="card-header text-' + textColor + ' bg-' + status + '">' +
                     title +
                  '</div>' +
                  '<div class="card-body">' + body + '</div>' +
@@ -165,11 +166,11 @@ function add_item(obj, type, pr) {
     switch (type) {
         case 0:
             icon = "inbox"
-            cl = "secondary";
+            cl = "info";
             break;
         case 1:
             icon = "wrench"
-            cl = "primary";
+            cl = "warning";
             break;
         case 2:
             if (pr.result == "passed") {
@@ -200,19 +201,20 @@ function add_item(obj, type, pr) {
         title = fa_color(icon, "white") + '<span><a class="link-light link-underline-hover" href="' + pr.output_url + '">' + pr.title + '</a></span>';
     }
     else {
-        title = fa_color(icon, "white") + pr.title;
+        title = fa_color(icon, "dark") + pr.title;
     }
     var item_content = "";
+    let linkColor = (["success", "danger"].includes(status)) ? cl : "primary";
     if (pr.url) {
       item_content += bs_col(fa("user") + " " + pr.user, 2) +
                       bs_col(fa("link") +
-                        ' <a class="link-underline-hover text-' + cl + '" href="' + pr.url + '" target="_blank">' +
+                        ' <a class="link-underline-hover text-' + linkColor + '" href="' + pr.url + '" target="_blank">' +
                         'PR #' + prnum + '</a>', 2);
     }
     item_content += bs_col(fa("tag") +
-                      '<a class="link-underline-hover text-' + cl + '" href="https://github.com/RIOT-OS/RIOT/commit/' +
+                      '<a class="link-underline-hover text-' + linkColor + '" href="https://github.com/RIOT-OS/RIOT/commit/' +
                       pr.commit + '" target="_blank">' +
-                      '<span class="text-' + cl + '"><pre>' + pr.commit.substring(0,7) +
+                      '<span class="text-' + linkColor + '"><pre>' + pr.commit.substring(0,7) +
                       '</pre></span></a>', 2) +
                     bs_col(fa("calendar") + " " +
                       d.toLocaleString() + ' <div ' +
