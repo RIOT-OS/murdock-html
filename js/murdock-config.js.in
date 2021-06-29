@@ -1,5 +1,0 @@
-var murdockConfig={
-    'baseURL' : 'ci.riot-os.org',
-    'repo_path': 'RIOT-OS/RIOT',
-    'default_branch': 'master',
-}
