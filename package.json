@@ -19,7 +19,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --passWithNoTests --watchAll=false",
+    "test": "react-scripts test --passWithNoTests --watchAll=false --collect-coverage",
     "lint": "eslint src/.",
     "eject": "react-scripts eject"
   },
