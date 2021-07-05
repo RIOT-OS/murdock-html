@@ -60,12 +60,12 @@ test('fetch and display basic nightlies', async () => {
     await waitFor(() => screen.getByText('master'));
 
     const dateErrored = new Date(1623550884.0 * 1000);
-    expect(screen.queryByText(`${dateErrored.toLocaleString()} (${moment(dateErrored).fromNow()})`)).toBeInTheDocument();
+    expect(screen.getByText(`${dateErrored.toLocaleString()} (${moment(dateErrored).fromNow()})`)).toBeInTheDocument();
 
     const dateSuccess = new Date(1623292442.0 * 1000);
     const dateSuccessString = `${dateSuccess.toLocaleString()} (${moment(dateSuccess).fromNow()})`
     expect(screen.queryByText(dateSuccessString)).not.toBeInTheDocument();
-    expect(screen.queryByText('Show more')).toBeInTheDocument();
+    expect(screen.getByText('Show more')).toBeInTheDocument();
 
     fireEvent.click(screen.getByText('Show more'));
     await waitFor(() => screen.getByText(dateSuccessString));
