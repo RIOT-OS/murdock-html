@@ -27,20 +27,20 @@ import { CommitCol, DateCol, LinkCol, LoadingSpinner, RuntimeCol, ShowMore, User
 
 test('loading spinner', async () => {
     render(<LoadingSpinner />);
-    expect(screen.queryByText('Loading...')).toBeDefined();
+    expect(screen.getByText('Loading...')).toBeDefined();
 })
 
 test('show more button', async () => {
     render(<div><ShowMore onclick={() => {document.getElementById("test").innerHTML = "clicked"}} /><div id="test">test</div></div>);
-    expect(screen.queryByText('Show more')).toBeDefined();
-    expect(screen.queryByText('test')).toBeDefined();
+    expect(screen.getByText('Show more')).toBeDefined();
+    expect(screen.getByText('test')).toBeDefined();
     fireEvent.click(screen.getByText('Show more'))
-    expect(screen.queryByText('clicked')).toBeDefined();
+    expect(screen.getByText('clicked')).toBeDefined();
 })
 
 test('link column', async () => {
     render(<LinkCol color="danger" url="http://localhost/test" title="test" />);
-    expect(screen.queryByText((content, element) => {
+    expect(screen.getByText((content, element) => {
         return (
             element.className === "link-underline-hover text-danger" &&
             element.href === "http://localhost/test" &&
@@ -53,7 +53,7 @@ test('link column', async () => {
 
 test('commit column', async () => {
     render(<CommitCol color="success" commit="123456789abcdef" />);
-    expect(screen.queryByText((content, element) => {
+    expect(screen.getByText((content, element) => {
         return (
             element.className === "link-underline-hover text-success" &&
             element.href === "https://github.com/RIOT-OS/RIOT/commit/123456789abcdef" &&
@@ -67,15 +67,15 @@ test('commit column', async () => {
 test('date column', async () => {
     const date = new Date(123456000);
     render(<DateCol date={date} />);
-    expect(screen.queryByText(`${date.toLocaleString()} (${moment(date).fromNow()})`)).toBeDefined();
+    expect(screen.getByText(`${date.toLocaleString()} (${moment(date).fromNow()})`)).toBeDefined();
 })
 
 test('runtime column', async () => {
     render(<RuntimeCol runtime="42.3" />);
-    expect(screen.queryByText("42.3")).toBeDefined();
+    expect(screen.getByText("42.3")).toBeDefined();
 })
 
 test('user column', async () => {
     render(<UserCol user="toto" />);
-    expect(screen.queryByText("toto")).toBeDefined();
+    expect(screen.getByText("toto")).toBeDefined();
 })
