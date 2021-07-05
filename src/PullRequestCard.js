@@ -27,7 +27,7 @@ import { cardColor, cardIcon, linkColor, textColor } from './constants';
 import { prNumberFromUrl } from './utils';
 import { CommitCol, DateCol, LinkCol, RuntimeCol, UserCol } from './components';
 
-const PullRequestCardTitle = (props) => {
+export const PullRequestCardTitle = (props) => {
     return (
         <>
         {cardIcon[props.prType]}
@@ -36,7 +36,7 @@ const PullRequestCardTitle = (props) => {
     );
 }
 
-const PullRequestCardInfo = (props) => {
+export const PullRequestCardInfo = (props) => {
     const prDate = new Date(props.prSince * 1000);
 
     return (
@@ -50,7 +50,7 @@ const PullRequestCardInfo = (props) => {
     );
 }
 
-const PullRequestCardStatus = (props) => {
+export const PullRequestCardStatus = (props) => {
     if ((!props.status) || 
         (props.prType === "errored" && ((!props.status.status) || (props.status.status && props.status.status !== "canceled"))) ||
         (!["errored", "building"].includes(props.prType))) {
@@ -102,7 +102,7 @@ const PullRequestCardStatus = (props) => {
         <div className="row">
             <div className="col col-md-6">
                 <div className="progress my-1 me-1">
-                    <div className={`progress-bar progress-bar-striped`} role="progressbar"
+                    <div className="progress-bar progress-bar-striped" role="progressbar"
                             style={{ width: `${progressPercent}%` }}
                             aria-valuenow={progressPercent} aria-valuemin="0" aria-valuemax="100">
                         {progressPercent}%
@@ -114,7 +114,7 @@ const PullRequestCardStatus = (props) => {
     );
 }
 
-const PullRequestCardFailedJobs = (props) => {
+export const PullRequestCardFailedJobs = (props) => {
     if (!["building", "errored"].includes(props.prType) || !props.status) {
         return null;
     }
@@ -134,7 +134,7 @@ const PullRequestCardFailedJobs = (props) => {
     ) : null;
 
     return (
-        <div>
+        <>
         {(failed_jobs) ? (
             <div className="row">
                 <h6 className='my-2'><strong>Failed jobs:</strong></h6>
@@ -143,11 +143,11 @@ const PullRequestCardFailedJobs = (props) => {
                 </div>
             </div>
         ) : null}
-        </div>
+        </>
     );
 }
 
-const PullRequestCard = (props) => {
+export const PullRequestCard = (props) => {
     let prType = (props.pr_type === "finished") ? props.pr.result: props.pr_type;
 
     return (
@@ -184,5 +184,3 @@ const PullRequestCard = (props) => {
         </div>
     );
 };
-
-export default PullRequestCard;
