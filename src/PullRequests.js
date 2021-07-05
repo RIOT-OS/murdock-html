@@ -25,7 +25,7 @@ import { useState, useEffect } from 'react';
 import Websocket from 'react-websocket';
 import axios from 'axios';
 
-import PullRequestCard from './PullRequestCard';
+import { PullRequestCard } from './PullRequestCard';
 import { LoadingSpinner, ShowMore } from './components';
 import { itemsDisplayedStep } from './constants';
 import { prNumberFromUrl } from './utils';
