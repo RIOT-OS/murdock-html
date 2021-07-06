@@ -21,7 +21,7 @@
  * Author: Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
-import { useState, useEffect } from 'react';
+import { Component } from 'react';
 import axios from 'axios';
 
 import { cardColor, cardIcon, linkColor, textColor, itemsDisplayedStep, nightliesRootUrl } from './constants';
@@ -68,64 +68,75 @@ const BranchMenuItem = (props) => {
     )
 }
 
-const Nightlies = () => {
-    const [nightlies, setNightlies] = useState([{"branch": "master", "jobs": []}]);
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [jobsDisplayedLimit, setJobsDisplayedLimit] = useState(itemsDisplayedStep);
+class Nightlies extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            fetched: false,
+            currentIndex: 0,
+            nightlies: [{"branch": "master", "jobs": []}],
+            jobsDisplayedLimit: itemsDisplayedStep,
+        };
+        this.fetchNightlies = this.fetchNightlies.bind(this);
+        this.handleMenuItemClick = this.handleMenuItemClick.bind(this);
+        this.displayMore = this.displayMore.bind(this);
+    }
 
-    const fetchNightlies = (index) => {
-        const nightliesUrl = `${nightliesRootUrl}/${nightlies[index].branch}/nightlies.json`;
+    fetchNightlies(index) {
+        const nightliesUrl = `${nightliesRootUrl}/${this.state.nightlies[index].branch}/nightlies.json`;
         axios.get(nightliesUrl).then(res => {
-            let nightliesCloned = nightlies.slice();
+            let nightliesCloned = this.state.nightlies.slice();
             nightliesCloned[index].jobs = res.data;
-            setNightlies(nightliesCloned);
+            this.setState({
+                fetched: true,
+                currentIndex: index,
+                nightlies: nightliesCloned,
+            })
         })
         .catch(function (error) {
             console.log(error);
         });
     }
 
-    const handleMenuItemClick = (index) => {
-        if (index !== currentIndex) {
-            setCurrentIndex(index);
-        }
-
-        if (!nightlies[index].jobs.length) {
-            fetchNightlies(index);
+    handleMenuItemClick(index) {
+        if (index !== this.state.currentIndex) {
+            if (!this.state.nightlies[index].jobs.length) {
+                this.fetchNightlies(index);
+            }
+            else {
+                this.setState({currentIndex: index})
+            }
         }
     }
 
-    const displayMore = () => {
-        let jobsLimit = jobsDisplayedLimit;
-        setJobsDisplayedLimit(jobsLimit + itemsDisplayedStep);
+    displayMore() {
+        this.setState({jobsDisplayedLimit: this.state.jobsDisplayedLimit + itemsDisplayedStep})
     }
 
-    useEffect(() => {
+    componentDidMount() {
         document.title = "Murdock - Nightlies"
-        if (!nightlies[currentIndex].jobs.length) {
-            fetchNightlies(currentIndex);
-        }
-    });
+        this.fetchNightlies(0);
+    }
 
-    const branchMenu = (
-        <ul className="nav nav-pills">
-        {nightlies.map((nightliesItem, index) => <BranchMenuItem key={`menu_${nightliesItem.branch}_${index}`} branch={nightliesItem.branch} onclick={handleMenuItemClick(index)} />)}
-        </ul>
-    );
-
-    return (
-        <div>
-            <div className="container">
-            {(nightlies[0].jobs.length) ? branchMenu : null}
-            {(nightlies[currentIndex].jobs.length) ? (
-                nightlies[currentIndex].jobs.slice(0, jobsDisplayedLimit).map((job, index) => <NightlyJob key={`job_${index}`} job={job} branch={nightlies[currentIndex].branch} />)
-            ) : (
-                <LoadingSpinner />
-            )}
-            {(nightlies[currentIndex].jobs.length && nightlies[currentIndex].jobs.length > itemsDisplayedStep) ? <ShowMore onclick={displayMore} /> : null}
-            </div>
-        </div>
-    );
+    render() {
+        return (
+            <>
+                <div className="container">
+                {(this.state.fetched) ? (
+                    <ul className="nav nav-pills">
+                        {this.state.nightlies.map((nightliesItem, index) => <BranchMenuItem key={`menu_${nightliesItem.branch}_${index}`} branch={nightliesItem.branch} onclick={this.handleMenuItemClick(index)} />)}
+                    </ul>
+                ) : null}
+                {(this.state.fetched) ? (
+                    this.state.nightlies[this.state.currentIndex].jobs.slice(0, this.state.jobsDisplayedLimit).map((job, index) => <NightlyJob key={`job_${index}`} job={job} branch={this.state.nightlies[this.state.currentIndex].branch} />)
+                ) : (
+                    <LoadingSpinner />
+                )}
+                {(this.state.nightlies[this.state.currentIndex].jobs.length && this.state.nightlies[this.state.currentIndex].jobs.length > itemsDisplayedStep) ? <ShowMore onclick={this.displayMore} /> : null}
+                </div>
+            </>
+        );
+    }
 }
 
 export default Nightlies;
