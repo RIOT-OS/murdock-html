@@ -27,7 +27,7 @@ import axios from 'axios';
 
 import { PullRequestCard } from './PullRequestCard';
 import { LoadingSpinner, ShowMore } from './components';
-import { itemsDisplayedStep } from './constants';
+import { itemsDisplayedStep, prApiUrl, wsUrl } from './constants';
 import { prNumberFromUrl } from './utils';
 
 class PullRequests extends Component {
@@ -48,7 +48,7 @@ class PullRequests extends Component {
     }
 
     fetchPullRequests() {
-        axios.get(process.env.REACT_APP_MURDOCK_PR_API_URL)
+        axios.get(prApiUrl)
             .then(res => {
                 const pulls = res.data;
                 const queued = (pulls.queued) ? pulls.queued.sort((a, b) => b.since - a.since) : [];
@@ -103,19 +103,17 @@ class PullRequests extends Component {
             <div>
                 <div className="container">
                     {(this.state.fetched) ? (
-                        <div>
+                        <>
                         {this.state.prsQueued.map(pr => <PullRequestCard key={`pr_${prNumberFromUrl(pr.url)}`} pr_type="queued" pr={pr} />)}
                         {this.state.prsBuilding.map(pr => <PullRequestCard key={`pr_${prNumberFromUrl(pr.url)}`} pr_type="building" pr={pr} />)}
                         {this.state.prsFinished.slice(0, this.state.prsFinishedDisplayedLimit).map(pr => <PullRequestCard key={`pr_${prNumberFromUrl(pr.url)}`} pr_type="finished" pr={pr} />)}
-                        </div>
-                    ) : (
-                        <LoadingSpinner />
-                    )
+                        </>
+                    ) : <LoadingSpinner />
                     }
                     {(this.state.prsFinished.length && this.state.prsFinished.length > itemsDisplayedStep) ? <ShowMore onclick={this.displayMore} /> : null}
                 </div>
                 <Websocket
-                    url={process.env.REACT_APP_MURDOCK_WS_URL}
+                    url={wsUrl}
                     onOpen={this.handleWsOpen}
                     onMessage={this.handleWsData}
                     onClose={this.handleWsClose}
