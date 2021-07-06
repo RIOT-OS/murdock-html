@@ -21,7 +21,7 @@
  * Author: Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
-import { useState, useEffect } from 'react';
+import { Component } from 'react';
 import Websocket from 'react-websocket';
 import axios from 'axios';
 
@@ -30,94 +30,99 @@ import { LoadingSpinner, ShowMore } from './components';
 import { itemsDisplayedStep } from './constants';
 import { prNumberFromUrl } from './utils';
 
-const PullRequests = () => {
-    const [pullRequestsFetched, setPullRequestsFetched] = useState(false);
-    const [pullRequestsQueued, setPullRequestsQueued] = useState([]);
-    const [pullRequestBuilding, setPullRequestBuilding] = useState([]);
-    const [pullRequestsFinished, setPullRequestsFinished] = useState([]);
-    const [pullRequestsFinishedDisplayedLimit, setPullRequestsFinishedDisplayedLimit] = useState(itemsDisplayedStep);
+class PullRequests extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            fetched: false,
+            prsQueued: [],
+            prsBuilding: [],
+            prsFinished: [],
+            prsFinishedDisplayedLimit: itemsDisplayedStep,
+        };
+        this.fetchPullRequests = this.fetchPullRequests.bind(this);
+        this.handleWsData = this.handleWsData.bind(this);
+        this.handleWsOpen = this.handleWsOpen.bind(this);
+        this.handleWsClose = this.handleWsClose.bind(this);
+        this.displayMore = this.displayMore.bind(this);
+    }
 
-    const fetchPullRequests = () => {
+    fetchPullRequests() {
         axios.get(process.env.REACT_APP_MURDOCK_PR_API_URL)
             .then(res => {
                 const pulls = res.data;
-                (pulls.queued) ? 
-                    setPullRequestsQueued(pulls.queued.sort((a, b) => b.since - a.since)) :
-                    setPullRequestsQueued([]);
-                (pulls.building) ?
-                    setPullRequestBuilding(pulls.building.sort((a, b) => b.since - a.since)) :
-                    setPullRequestBuilding([]);
-                (pulls.finished) ?
-                    setPullRequestsFinished(pulls.finished.sort((a, b) => b.since - a.since)) :
-                    setPullRequestsFinished([]);
+                const queued = (pulls.queued) ? pulls.queued.sort((a, b) => b.since - a.since) : [];
+                const building = (pulls.building) ? pulls.building.sort((a, b) => b.since - a.since) : [];
+                const finished = (pulls.finished) ? pulls.finished.sort((a, b) => b.since - a.since) : [];
+                const newState = { 
+                    fetched : true,
+                    prsQueued: queued,
+                    prsBuilding: building,
+                    prsFinished: finished,
+                }
+                this.setState(newState);
             })
             .catch(function (error) {
                 console.log(error);
             });
-        setPullRequestsFetched(true);
     }
 
-    const handleWsData = (data) => {
+    handleWsData(data) {
         const msg = JSON.parse(data);
         if (msg.cmd === "reload_prs") {
-            fetchPullRequests();
+            this.fetchPullRequests();
         }
-        else if (msg.cmd === "prstatus" && pullRequestsFetched) {
-            if (pullRequestBuilding.length) {
-                let prBuilding = pullRequestBuilding.slice();
-                prBuilding[0].status = msg.status;
-                setPullRequestBuilding(prBuilding);
+        else if (msg.cmd === "prstatus" && this.state.fetched) {
+            if (this.state.prsBuilding.length) {
+                let pulls = this.state.prsBuilding.slice();
+                pulls[0].status = msg.status;
+                this.setState({prsBuilding: pulls});
             }
         }
     }
 
-    const handleWsOpen = () => {
+    handleWsOpen() {
         console.debug("Websocket opened");
-        fetchPullRequests();
     }
 
-    const handleWsClose = () => {
+    handleWsClose() {
         console.debug("Websocket closed");
     }
 
-    const displayMore = () => {
-        let prFinishedDisplayedLimit = pullRequestsFinishedDisplayedLimit;
-        setPullRequestsFinishedDisplayedLimit(prFinishedDisplayedLimit + itemsDisplayedStep);
+    displayMore() {
+        this.setState({prsFinishedDisplayedLimit: this.state.prsFinishedDisplayedLimit + itemsDisplayedStep});
     }
 
-    useEffect(() => {
-        document.title = "Murdock - Pull Requests"
-    });
+    componentDidMount() {
+        document.title = "Murdock - Pull Requests";
+        this.fetchPullRequests();
+    }
 
-    const prList = (
-        <div>
-        {pullRequestsQueued.map(pr => <PullRequestCard key={`pr_${prNumberFromUrl(pr.url)}`} pr_type="queued" pr={pr} />)}
-        {pullRequestBuilding.map(pr => <PullRequestCard key={`pr_${prNumberFromUrl(pr.url)}`} pr_type="building" pr={pr} />)}
-        {pullRequestsFinished.slice(0, pullRequestsFinishedDisplayedLimit).map(pr => <PullRequestCard key={`pr_${prNumberFromUrl(pr.url)}`} pr_type="finished" pr={pr} />)}
-        </div>
-    );
-
-    return (
-        <div>
-            <div className="container">
-                {(pullRequestsFetched) ? (
-                    <div>
-                    {prList}
-                    </div>
-                ) : (
-                    <LoadingSpinner />
-                )
-                }
-                {(pullRequestsFinished.length && pullRequestsFinished.length > itemsDisplayedStep) ? <ShowMore onclick={displayMore} /> : null}
+    render() {
+        return (
+            <div>
+                <div className="container">
+                    {(this.state.fetched) ? (
+                        <div>
+                        {this.state.prsQueued.map(pr => <PullRequestCard key={`pr_${prNumberFromUrl(pr.url)}`} pr_type="queued" pr={pr} />)}
+                        {this.state.prsBuilding.map(pr => <PullRequestCard key={`pr_${prNumberFromUrl(pr.url)}`} pr_type="building" pr={pr} />)}
+                        {this.state.prsFinished.slice(0, this.state.prsFinishedDisplayedLimit).map(pr => <PullRequestCard key={`pr_${prNumberFromUrl(pr.url)}`} pr_type="finished" pr={pr} />)}
+                        </div>
+                    ) : (
+                        <LoadingSpinner />
+                    )
+                    }
+                    {(this.state.prsFinished.length && this.state.prsFinished.length > itemsDisplayedStep) ? <ShowMore onclick={this.displayMore} /> : null}
+                </div>
+                <Websocket
+                    url={process.env.REACT_APP_MURDOCK_WS_URL}
+                    onOpen={this.handleWsOpen}
+                    onMessage={this.handleWsData}
+                    onClose={this.handleWsClose}
+                />
             </div>
-            <Websocket
-                url={process.env.REACT_APP_MURDOCK_WS_URL}
-                onOpen={handleWsOpen}
-                onMessage={handleWsData}
-                onClose={handleWsClose}
-            />
-        </div>
-    );
+        );
+    }
 }
 
 export default PullRequests;
