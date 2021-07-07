@@ -34,7 +34,7 @@ class PullRequests extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            fetched: false,
+            isFetched: false,
             prsQueued: [],
             prsBuilding: [],
             prsFinished: [],
@@ -55,7 +55,7 @@ class PullRequests extends Component {
                 const building = (pulls.building) ? pulls.building.sort((a, b) => b.since - a.since) : [];
                 const finished = (pulls.finished) ? pulls.finished.sort((a, b) => b.since - a.since) : [];
                 const newState = { 
-                    fetched : true,
+                    isFetched : true,
                     prsQueued: queued,
                     prsBuilding: building,
                     prsFinished: finished,
@@ -72,7 +72,7 @@ class PullRequests extends Component {
         if (msg.cmd === "reload_prs") {
             this.fetchPullRequests();
         }
-        else if (msg.cmd === "prstatus" && this.state.fetched) {
+        else if (msg.cmd === "prstatus" && this.state.isFetched) {
             if (this.state.prsBuilding.length) {
                 let pulls = this.state.prsBuilding.slice();
                 pulls[0].status = msg.status;
@@ -82,11 +82,11 @@ class PullRequests extends Component {
     }
 
     handleWsOpen() {
-        console.debug("Websocket opened");
+        console.log("Websocket opened");
     }
 
     handleWsClose() {
-        console.debug("Websocket closed");
+        console.log("Websocket closed");
     }
 
     displayMore() {
@@ -95,14 +95,16 @@ class PullRequests extends Component {
 
     componentDidMount() {
         document.title = "Murdock - Pull Requests";
-        this.fetchPullRequests();
+        if (!this.state.isFetched) {
+            this.fetchPullRequests();
+        }
     }
 
     render() {
         return (
             <div>
                 <div className="container">
-                    {(this.state.fetched) ? (
+                    {(this.state.isFetched) ? (
                         <>
                         {this.state.prsQueued.map(pr => <PullRequestCard key={`pr_${prNumberFromUrl(pr.url)}`} pr_type="queued" pr={pr} />)}
                         {this.state.prsBuilding.map(pr => <PullRequestCard key={`pr_${prNumberFromUrl(pr.url)}`} pr_type="building" pr={pr} />)}
