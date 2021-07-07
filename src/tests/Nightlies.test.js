@@ -28,7 +28,6 @@ import { fireEvent, render, screen, waitFor} from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 
 import Nightlies from '../Nightlies';
-import * as constants from '../constants';
 
 const server = setupServer(
     rest.get('/master/nightlies.json', (req, res, ctx) => {
@@ -54,8 +53,6 @@ afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
 test('fetch and display basic nightlies', async () => {
-    constants.nightliesRootUrl = "";
-    constants.itemsDisplayedStep = 1;
     await waitFor(() => render(<Nightlies />));
     await waitFor(() => screen.getByText('master'));
 
