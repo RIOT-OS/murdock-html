@@ -38,6 +38,14 @@ npm run build
 The content of the `build` folder contains the built application which can be
 deployed as-is on a web server.
 
+### Run tests
+
+Use:
+
+```
+npm run test
+```
+
 ### Check code quality
 
 Use:
@@ -45,5 +53,3 @@ Use:
 ```
 npm run lint
 ```
-
-No test is provided yet.
