@@ -95,7 +95,6 @@ afterAll(() => server.close())
 
 test('fetch and display pull requests', async () => {
     await waitFor(() => render(<PullRequests />));
-    expect(screen.getByText('Loading...')).toBeDefined();
     await waitFor(() => screen.queryByText((content, element) => {
         return element.className === "card m-2 border-info";
     }));
