@@ -106,9 +106,9 @@ class PullRequests extends Component {
                 <div className="container">
                     {(this.state.isFetched) ? (
                         <>
-                        {this.state.prsQueued.map(pr => <PullRequestCard key={`pr_${prNumberFromUrl(pr.url)}`} pr_type="queued" pr={pr} />)}
-                        {this.state.prsBuilding.map(pr => <PullRequestCard key={`pr_${prNumberFromUrl(pr.url)}`} pr_type="building" pr={pr} />)}
-                        {this.state.prsFinished.slice(0, this.state.prsFinishedDisplayedLimit).map(pr => <PullRequestCard key={`pr_${prNumberFromUrl(pr.url)}`} pr_type="finished" pr={pr} />)}
+                        {this.state.prsQueued.map((pr, index) => <PullRequestCard key={`queued_pr_${prNumberFromUrl(pr.url)}_${index}`} pr_type="queued" pr={pr} />)}
+                        {this.state.prsBuilding.map(pr => <PullRequestCard key={`building_pr_${prNumberFromUrl(pr.url)}`} pr_type="building" pr={pr} />)}
+                        {this.state.prsFinished.slice(0, this.state.prsFinishedDisplayedLimit).map((pr, index) => <PullRequestCard key={`finished_pr_${prNumberFromUrl(pr.url)}_${index}`} pr_type="finished" pr={pr} />)}
                         </>
                     ) : <LoadingSpinner />
                     }
