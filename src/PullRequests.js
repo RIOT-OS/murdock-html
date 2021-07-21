@@ -75,7 +75,12 @@ class PullRequests extends Component {
         else if (msg.cmd === "prstatus" && this.state.isFetched) {
             if (this.state.prsBuilding.length) {
                 let pulls = this.state.prsBuilding.slice();
-                pulls[0].status = msg.status;
+                for (let idx = 0; idx < pulls.length; idx++) {
+                    let prNum = prNumberFromUrl(pulls[idx].url);
+                    if (prNum === msg.prnum) {
+                        pulls[idx].status = msg.status;
+                    }
+                }
                 this.setState({prsBuilding: pulls});
             }
         }
