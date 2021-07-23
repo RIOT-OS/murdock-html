@@ -62,8 +62,9 @@ class PullRequests extends Component {
                 }
                 this.setState(newState);
             })
-            .catch(function (error) {
+            .catch(error => {
                 console.log(error);
+                this.setState({ isFetched : true });
             });
     }
 
