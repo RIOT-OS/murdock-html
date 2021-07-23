@@ -24,7 +24,6 @@
 import moment from 'moment';
 
 import { cardColor, cardIcon, linkColor, textColor } from './constants';
-import { prNumberFromUrl } from './utils';
 import { CommitCol, DateCol, LinkCol, RuntimeCol, UserCol } from './components';
 
 export const PullRequestCardTitle = (props) => {
@@ -164,7 +163,7 @@ export const PullRequestCard = (props) => {
                 <PullRequestCardInfo
                     prType={prType}
                     user={props.pr.user}
-                    prNum={prNumberFromUrl(props.pr.url)}
+                    prNum={props.pr.prnum}
                     prUrl={props.pr.url}
                     prCommit={props.pr.commit}
                     prRuntime={props.pr.runtime}
@@ -176,7 +175,7 @@ export const PullRequestCard = (props) => {
                 />
                 <PullRequestCardFailedJobs
                     prType={prType}
-                    prNum={prNumberFromUrl(props.pr.url)}
+                    prNum={props.pr.prnum}
                     status={props.pr.status}
                 />
             </div>

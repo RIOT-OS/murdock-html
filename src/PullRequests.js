@@ -28,7 +28,6 @@ import axios from 'axios';
 import { PullRequestCard } from './PullRequestCard';
 import { LoadingSpinner, ShowMore } from './components';
 import { itemsDisplayedStep, prApiUrl, wsUrl } from './constants';
-import { prNumberFromUrl } from './utils';
 
 class PullRequests extends Component {
     constructor(props) {
@@ -47,18 +46,19 @@ class PullRequests extends Component {
         this.displayMore = this.displayMore.bind(this);
     }
 
-    fetchPullRequests() {
-        axios.get(prApiUrl)
+    fetchPullRequests(limit) {
+        axios.get(`${prApiUrl}?limit=${limit}`)
             .then(res => {
                 const pulls = res.data;
-                const queued = (pulls.queued) ? pulls.queued.sort((a, b) => b.since - a.since) : [];
-                const building = (pulls.building) ? pulls.building.sort((a, b) => b.since - a.since) : [];
-                const finished = (pulls.finished) ? pulls.finished.sort((a, b) => b.since - a.since) : [];
+                const queued = (pulls.queued) ? pulls.queued : [];
+                const building = (pulls.building) ? pulls.building : [];
+                const finished = (pulls.finished) ? pulls.finished : [];
                 const newState = { 
                     isFetched : true,
                     prsQueued: queued,
                     prsBuilding: building,
                     prsFinished: finished,
+                    prsFinishedDisplayedLimit: (limit !== this.state.prsFinishedDisplayedLimit) ? limit : this.state.prsFinishedDisplayedLimit
                 }
                 this.setState(newState);
             })
@@ -70,15 +70,14 @@ class PullRequests extends Component {
 
     handleWsData(data) {
         const msg = JSON.parse(data);
-        if (msg.cmd === "reload_prs") {
-            this.fetchPullRequests();
+        if (msg.cmd === "reload") {
+            this.fetchPullRequests(this.state.prsFinishedDisplayedLimit);
         }
-        else if (msg.cmd === "prstatus" && this.state.isFetched) {
+        else if (msg.cmd === "status" && this.state.isFetched) {
             if (this.state.prsBuilding.length) {
                 let pulls = this.state.prsBuilding.slice();
                 for (let idx = 0; idx < pulls.length; idx++) {
-                    let prNum = prNumberFromUrl(pulls[idx].url);
-                    if (prNum === msg.prnum) {
+                    if (pulls[idx].commit === msg.commit) {
                         pulls[idx].status = msg.status;
                     }
                 }
@@ -96,13 +95,13 @@ class PullRequests extends Component {
     }
 
     displayMore() {
-        this.setState({prsFinishedDisplayedLimit: this.state.prsFinishedDisplayedLimit + itemsDisplayedStep});
+        this.fetchPullRequests(this.state.prsFinished.length + itemsDisplayedStep);
     }
 
     componentDidMount() {
         document.title = "Murdock - Pull Requests";
         if (!this.state.isFetched) {
-            this.fetchPullRequests();
+            this.fetchPullRequests(this.state.prsFinishedDisplayedLimit);
         }
     }
 
@@ -112,13 +111,13 @@ class PullRequests extends Component {
                 <div className="container">
                     {(this.state.isFetched) ? (
                         <>
-                        {this.state.prsQueued.map((pr, index) => <PullRequestCard key={`queued_pr_${prNumberFromUrl(pr.url)}_${index}`} pr_type="queued" pr={pr} />)}
-                        {this.state.prsBuilding.map(pr => <PullRequestCard key={`building_pr_${prNumberFromUrl(pr.url)}`} pr_type="building" pr={pr} />)}
-                        {this.state.prsFinished.slice(0, this.state.prsFinishedDisplayedLimit).map((pr, index) => <PullRequestCard key={`finished_pr_${prNumberFromUrl(pr.url)}_${index}`} pr_type="finished" pr={pr} />)}
+                        {this.state.prsQueued.map(pr => <PullRequestCard key={`queued_pr_${pr.prnum}_${pr.commit}`} pr_type="queued" pr={pr} />)}
+                        {this.state.prsBuilding.map(pr => <PullRequestCard key={`building_pr_${pr.prnum}_${pr.commit}`} pr_type="building" pr={pr} />)}
+                        {this.state.prsFinished.map(pr => <PullRequestCard key={`finished_pr_${pr.prnum}_${pr.commit}`} pr_type="finished" pr={pr} />)}
                         </>
                     ) : <LoadingSpinner />
                     }
-                    {(this.state.prsFinished.length && this.state.prsFinished.length > itemsDisplayedStep) ? <ShowMore onclick={this.displayMore} /> : null}
+                    {(this.state.prsFinished.length && this.state.prsFinished.length === this.state.prsFinishedDisplayedLimit) ? <ShowMore onclick={this.displayMore} /> : null}
                 </div>
                 <Websocket
                     url={wsUrl}
