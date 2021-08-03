@@ -89,7 +89,7 @@ test('pull request success card info', async () => {
     expect(screen.getByText((content, element) => {
         return (
             element.className === "link-underline-hover text-success" &&
-            element.href === "https://github.com/RIOT-OS/RIOT/commit/56789abcdef" &&
+            element.href === `https://github.com/${process.env.REACT_APP_GITHUB_REPO}/commit/56789abcdef` &&
             element.target === "_blank" &&
             element.rel === "noreferrer noopener" &&
             content === "56789ab"

@@ -56,7 +56,7 @@ test('commit column', async () => {
     expect(screen.getByText((content, element) => {
         return (
             element.className === "link-underline-hover text-success" &&
-            element.href === "https://github.com/RIOT-OS/RIOT/commit/123456789abcdef" &&
+            element.href === `https://github.com/${process.env.REACT_APP_GITHUB_REPO}/commit/123456789abcdef` &&
             element.target === "_blank" &&
             element.rel === "noreferrer noopener" &&
             content === "1234567"
