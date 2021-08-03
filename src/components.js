@@ -67,7 +67,7 @@ export const CommitCol = (props) => {
     return (
         <div className="col col-md-2">
             <i className="bi-tag me-1"></i>
-            <a className={`link-underline-hover text-${props.color}`} href={`https://github.com/RIOT-OS/RIOT/commit/${props.commit}`} target="_blank" rel="noreferrer noopener">{props.commit.substring(0, 7)}</a>
+            <a className={`link-underline-hover text-${props.color}`} href={`https://github.com/${process.env.REACT_APP_GITHUB_REPO}/commit/${props.commit}`} target="_blank" rel="noreferrer noopener">{props.commit.substring(0, 7)}</a>
         </div>
     );
 };

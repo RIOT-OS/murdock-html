@@ -34,7 +34,7 @@ const NightlyJob = (props) => {
         {weekday: "short", year: "numeric", month: "short", day: "numeric"}
     );
     const type = props.job.result;
-    const resultUrl = `https://ci.riot-os.org/RIOT-OS/RIOT/${props.branch}/${props.job.commit}/output.html`;
+    const resultUrl = `https://ci.riot-os.org/${process.env.REACT_APP_GITHUB_REPO}/${props.branch}/${props.job.commit}/output.html`;
 
     return (
         <div>
