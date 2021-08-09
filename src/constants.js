@@ -22,8 +22,8 @@
  */
 
 export const nightliesRootUrl = process.env.REACT_APP_NIGHTLIES_ROOT_URL;
-export const prApiUrl = process.env.REACT_APP_MURDOCK_PR_API_URL;
-export const wsUrl = process.env.REACT_APP_MURDOCK_WS_URL;
+export const murdockHttpBaseUrl = process.env.REACT_APP_MURDOCK_HTTP_BASE_URL;
+export const murdockWsUrl = process.env.REACT_APP_MURDOCK_WS_URL;
 
 export const itemsDisplayedStep = parseInt(process.env.REACT_APP_ITEM_DISPLAYED_STEP);
 

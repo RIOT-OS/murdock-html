@@ -22,16 +22,62 @@
  */
 
 import moment from 'moment';
+import axios from 'axios';
 
-import { cardColor, cardIcon, linkColor, textColor } from './constants';
+import { 
+    cardColor, cardIcon, linkColor, textColor, murdockHttpBaseUrl
+} from './constants';
 import { CommitCol, DateCol, LinkCol, RuntimeCol, UserCol } from './components';
 
 export const PullRequestCardTitle = (props) => {
+
+    const removeJob = (type) => {
+        axios.delete(
+            `${murdockHttpBaseUrl}/api/jobs/${type}/${props.pr.commit}`,
+            {
+                headers: {
+                    "Authorization": props.user.token,
+                },
+            },
+        )
+        .catch(error => {
+            console.log(error);
+        });
+    }
+
+    const cancel = () => {
+        console.log(`Canceling queued job ${props.pr.commit} (PR #${props.pr.prnum})`)
+        removeJob("queued");
+    }
+
+    const stop = () => {
+        console.log(`Stopping building job ${props.pr.commit} (PR #${props.pr.prnum})`)
+        removeJob("building");
+    }
+
+    const cancelAction = (props.permissions === "push" && props.prType === "queued") ? (
+        <button className="btn badge bg-info text-dark" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cancel" onClick={cancel}>
+            <i className="bi-x-circle-fill"></i>
+        </button>
+    ) : null;
+
+    const stopAction = (props.permissions === "push" && props.prType === "building") ? (
+        <button className="btn badge bg-warning text-dark" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Stop" onClick={stop}>
+            <i className="bi-stop-circle-fill"></i>
+        </button>
+    ) : null;
+
     return (
-        <>
-        {cardIcon[props.prType]}
-        {(props.url) ? <a className="link-light link-underline-hover" href={props.url} target="_blank" rel="noreferrer noopener">{props.title}</a> : props.title}
-        </>
+        <div className="row align-items-center">
+            <div className="col-md-10">
+                {cardIcon[props.prType]}
+                {(props.pr.output_url) ? <a className="link-light link-underline-hover" href={props.pr.output_url} target="_blank" rel="noreferrer noopener">{props.pr.title}</a> : props.pr.title}
+            </div>
+            <div className="col-md-2 text-end">
+            {cancelAction}
+            {stopAction}
+            </div>
+        </div>
     );
 }
 
@@ -155,8 +201,9 @@ export const PullRequestCard = (props) => {
             <div className={`card-header text-${textColor[prType]} bg-${cardColor[prType]}`}>
                 <PullRequestCardTitle
                     prType={prType}
-                    title={props.pr.title}
-                    url={props.pr.output_url}
+                    pr={props.pr}
+                    user={props.user}
+                    permissions={props.permissions}
                 />
             </div>
             <div className="card-body">

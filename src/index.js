@@ -26,6 +26,7 @@ import ReactDOM from 'react-dom';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
 import './custom.css'
 
 import Murdock from './Murdock';

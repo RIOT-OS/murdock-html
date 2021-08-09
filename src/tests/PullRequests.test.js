@@ -34,6 +34,7 @@ const server = setupServer(
         const limit = req.url.searchParams.get('limit')
         let finished = [
             {
+                "id": "123",
                 "output_url": "https://ci.riot-os.org/RIOT-OS/RIOT/16620/951822c41b34cf62ed29ab58ed1e34cbbcd3894b/output.html",
                 "result": "passed",
                 "runtime": 2392.292683839798,
@@ -46,6 +47,7 @@ const server = setupServer(
                 "since": 1625648719.7717128
             },
             {
+                "id": "1234",
                 "output_url": "https://ci.riot-os.org/RIOT-OS/RIOT/15030/1dc94b981680ab30351df64b3f5a2c1e6e8cc9b0/output.html",
                 "result": "errored",
                 "runtime": 2488.577573299408,

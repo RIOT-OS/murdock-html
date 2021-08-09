@@ -30,11 +30,12 @@ import {
     useLocation
   } from 'react-router-dom';
 
+import GithubUserButton from './GithubUserButton';
+
 import { LoadingSpinner } from './components';
 
 const PullRequests = lazy(() => import('./PullRequests'));
 const Nightlies = lazy(() => import('./Nightlies'));
-
 
 const MurdockNavBar = () => {
     const location = useLocation();
@@ -58,6 +59,9 @@ const MurdockNavBar = () => {
                     <Link to="/nightlies" className={location.pathname === "/nightlies" ? "nav-link active": "nav-link"}>Nightlies</Link>
                   </li>
                 </ul>
+              </div>
+              <div className="d-flex">
+                <GithubUserButton />
               </div>
             </div>
           </nav>

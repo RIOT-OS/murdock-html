@@ -27,13 +27,16 @@ import axios from 'axios';
 
 import { PullRequestCard } from './PullRequestCard';
 import { LoadingSpinner, ShowMore } from './components';
-import { itemsDisplayedStep, prApiUrl, wsUrl } from './constants';
+import { itemsDisplayedStep, murdockHttpBaseUrl, murdockWsUrl } from './constants';
+import { defaultLoginUser, getUserFromStorage } from './userStorage';
 
 class PullRequests extends Component {
     constructor(props) {
         super(props);
         this.state = {
             isFetched: false,
+            userPermissions: "unknown",
+            user: defaultLoginUser,
             prsQueued: [],
             prsBuilding: [],
             prsFinished: [],
@@ -47,7 +50,7 @@ class PullRequests extends Component {
     }
 
     fetchPullRequests(limit) {
-        axios.get(`${prApiUrl}?limit=${limit}`)
+        axios.get(`${murdockHttpBaseUrl}/api/jobs?limit=${limit}`)
             .then(res => {
                 const pulls = res.data;
                 const queued = (pulls.queued) ? pulls.queued : [];
@@ -67,6 +70,39 @@ class PullRequests extends Component {
                 this.setState({ isFetched : true });
             });
     }
+
+    getUserPermissions() {
+        const user = getUserFromStorage();
+
+        if (user.login === "anonymous") {
+            this.setState({
+                user: defaultLoginUser, userPermissions: "no",
+            });
+            return;
+        }
+
+        axios.get(
+            `https://api.github.com/repos/${process.env.REACT_APP_GITHUB_REPO}`,
+            { headers: {Authorization: `token ${user.token}`}},
+        )
+        .then(res => {
+            if (res.data.permissions && res.data.permissions.push) {
+                this.setState({
+                    user: user, userPermissions: "push",
+                });
+            } else {
+                this.setState({
+                    user: user, userPermissions: "no",
+                });
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            this.setState({
+                user: defaultLoginUser, userPermissions: "no",
+            });
+        });
+    };
 
     handleWsData(data) {
         const msg = JSON.parse(data);
@@ -103,6 +139,9 @@ class PullRequests extends Component {
         if (!this.state.isFetched) {
             this.fetchPullRequests(this.state.prsFinishedDisplayedLimit);
         }
+        if (this.state.userPermissions === "unknown") {
+            this.getUserPermissions();
+        }
     }
 
     render() {
@@ -111,16 +150,16 @@ class PullRequests extends Component {
                 <div className="container">
                     {(this.state.isFetched) ? (
                         <>
-                        {this.state.prsQueued.map(pr => <PullRequestCard key={`queued_pr_${pr.prnum}_${pr.commit}`} pr_type="queued" pr={pr} />)}
-                        {this.state.prsBuilding.map(pr => <PullRequestCard key={`building_pr_${pr.prnum}_${pr.commit}`} pr_type="building" pr={pr} />)}
-                        {this.state.prsFinished.map(pr => <PullRequestCard key={`finished_pr_${pr.prnum}_${pr.commit}`} pr_type="finished" pr={pr} />)}
+                        {this.state.prsQueued.map(pr => <PullRequestCard key={`queued_pr_${pr.prnum}_${pr.commit}`} pr_type="queued" pr={pr} user={this.state.user} permissions={this.state.userPermissions}/>)}
+                        {this.state.prsBuilding.map(pr => <PullRequestCard key={`building_pr_${pr.prnum}_${pr.commit}`} pr_type="building" pr={pr} user={this.state.user} permissions={this.state.userPermissions}/>)}
+                        {this.state.prsFinished.map(pr => <PullRequestCard key={`finished_pr_${pr.id}`} pr_type="finished" pr={pr} user={this.state.user} permissions={this.state.userPermissions}/>)}
                         </>
                     ) : <LoadingSpinner />
                     }
                     {(this.state.prsFinished.length && this.state.prsFinished.length === this.state.prsFinishedDisplayedLimit) ? <ShowMore onclick={this.displayMore} /> : null}
                 </div>
                 <Websocket
-                    url={wsUrl}
+                    url={murdockWsUrl}
                     onOpen={this.handleWsOpen}
                     onMessage={this.handleWsData}
                     onClose={this.handleWsClose}

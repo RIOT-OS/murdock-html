@@ -29,9 +29,14 @@ import {
     PullRequestCardTitle,
     PullRequestCardStatus
 } from '../PullRequestCard';
+import { defaultLoginUser } from '../userStorage';
 
 test('pull request success card title', async () => {
-    render(<PullRequestCardTitle title="test" prType="passed" url="http://localhost/test" />);
+    const pr = {
+        title: "test",
+        output_url: "http://localhost/test",
+    }
+    render(<PullRequestCardTitle prType="passed" pr={pr} user={defaultLoginUser} />);
     expect(screen.getByText((content, element) => {
         return (
             element.className === "link-light link-underline-hover" &&
@@ -44,7 +49,12 @@ test('pull request success card title', async () => {
 })
 
 test('pull request errored card title', async () => {
-    render(<PullRequestCardTitle title="test" prType="errored" url="http://localhost/test" />);
+    const pr = {
+        title: "test",
+        output_url: "http://localhost/test",
+    }
+
+    render(<PullRequestCardTitle prType="errored" pr={pr} user={defaultLoginUser} />);
     expect(screen.getByText((content, element) => {
         return (
             element.className === "link-light link-underline-hover" &&
@@ -57,7 +67,8 @@ test('pull request errored card title', async () => {
 })
 
 test('pull request building card title', async () => {
-    render(<PullRequestCardTitle title="test" prType="building" />);
+    const pr = { title: "test" };
+    render(<PullRequestCardTitle prType="building" pr={pr} />);
     expect(screen.getByText("test")).toBeDefined();
 
     expect(screen.queryByText((content, element) => {
@@ -66,7 +77,8 @@ test('pull request building card title', async () => {
 })
 
 test('pull request queued card title', async () => {
-    render(<PullRequestCardTitle title="test" prType="queued" />);
+    const pr = { title: "test" };
+    render(<PullRequestCardTitle title="test" prType="queued" pr={pr} />);
     expect(screen.getByText("test")).toBeDefined();
     expect(screen.queryByText((content, element) => {
         return element.className === "link-light link-underline-hover" && element.href
@@ -292,7 +304,9 @@ test('pull request card', async () => {
                         "runtime": "42",
                         "since": 1234567789,
                     }
-                } />);
+                }
+                user={defaultLoginUser}
+                />);
         cleanup();
     }
 })
