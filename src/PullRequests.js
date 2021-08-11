@@ -37,31 +37,31 @@ class PullRequests extends Component {
             isFetched: false,
             userPermissions: "unknown",
             user: defaultLoginUser,
-            prsQueued: [],
-            prsBuilding: [],
-            prsFinished: [],
-            prsFinishedDisplayedLimit: itemsDisplayedStep,
+            jobsQueued: [],
+            jobsBuilding: [],
+            jobsFinished: [],
+            jobsFinishedDisplayedLimit: itemsDisplayedStep,
         };
-        this.fetchPullRequests = this.fetchPullRequests.bind(this);
+        this.fetchJobs = this.fetchJobs.bind(this);
         this.handleWsData = this.handleWsData.bind(this);
         this.handleWsOpen = this.handleWsOpen.bind(this);
         this.handleWsClose = this.handleWsClose.bind(this);
         this.displayMore = this.displayMore.bind(this);
     }
 
-    fetchPullRequests(limit) {
+    fetchJobs(limit) {
         axios.get(`${murdockHttpBaseUrl}/api/jobs?limit=${limit}`)
             .then(res => {
-                const pulls = res.data;
-                const queued = (pulls.queued) ? pulls.queued : [];
-                const building = (pulls.building) ? pulls.building : [];
-                const finished = (pulls.finished) ? pulls.finished : [];
+                const jobs = res.data;
+                const queued = (jobs.queued) ? jobs.queued : [];
+                const building = (jobs.building) ? jobs.building : [];
+                const finished = (jobs.finished) ? jobs.finished : [];
                 const newState = { 
                     isFetched : true,
-                    prsQueued: queued,
-                    prsBuilding: building,
-                    prsFinished: finished,
-                    prsFinishedDisplayedLimit: (limit !== this.state.prsFinishedDisplayedLimit) ? limit : this.state.prsFinishedDisplayedLimit
+                    jobsQueued: queued,
+                    jobsBuilding: building,
+                    jobsFinished: finished,
+                    jobsFinishedDisplayedLimit: (limit !== this.state.jobsFinishedDisplayedLimit) ? limit : this.state.jobsFinishedDisplayedLimit
                 }
                 this.setState(newState);
             })
@@ -107,17 +107,17 @@ class PullRequests extends Component {
     handleWsData(data) {
         const msg = JSON.parse(data);
         if (msg.cmd === "reload") {
-            this.fetchPullRequests(this.state.prsFinishedDisplayedLimit);
+            this.fetchJobs(this.state.jobsFinishedDisplayedLimit);
         }
         else if (msg.cmd === "status" && this.state.isFetched) {
-            if (this.state.prsBuilding.length) {
-                let pulls = this.state.prsBuilding.slice();
-                for (let idx = 0; idx < pulls.length; idx++) {
-                    if (pulls[idx].commit === msg.commit) {
-                        pulls[idx].status = msg.status;
+            if (this.state.jobsBuilding.length) {
+                let jobs = this.state.jobsBuilding.slice();
+                for (let idx = 0; idx < jobs.length; idx++) {
+                    if (jobs[idx].commit === msg.commit) {
+                        jobs[idx].status = msg.status;
                     }
                 }
-                this.setState({prsBuilding: pulls});
+                this.setState({jobsBuilding: jobs});
             }
         }
     }
@@ -131,13 +131,13 @@ class PullRequests extends Component {
     }
 
     displayMore() {
-        this.fetchPullRequests(this.state.prsFinished.length + itemsDisplayedStep);
+        this.fetchJobs(this.state.jobsFinished.length + itemsDisplayedStep);
     }
 
     componentDidMount() {
         document.title = "Murdock - Pull Requests";
         if (!this.state.isFetched) {
-            this.fetchPullRequests(this.state.prsFinishedDisplayedLimit);
+            this.fetchJobs(this.state.jobsFinishedDisplayedLimit);
         }
         if (this.state.userPermissions === "unknown") {
             this.getUserPermissions();
@@ -150,13 +150,13 @@ class PullRequests extends Component {
                 <div className="container">
                     {(this.state.isFetched) ? (
                         <>
-                        {this.state.prsQueued.map(pr => <PullRequestCard key={`queued_pr_${pr.prnum}_${pr.commit}`} pr_type="queued" pr={pr} user={this.state.user} permissions={this.state.userPermissions}/>)}
-                        {this.state.prsBuilding.map(pr => <PullRequestCard key={`building_pr_${pr.prnum}_${pr.commit}`} pr_type="building" pr={pr} user={this.state.user} permissions={this.state.userPermissions}/>)}
-                        {this.state.prsFinished.map(pr => <PullRequestCard key={`finished_pr_${pr.id}`} pr_type="finished" pr={pr} user={this.state.user} permissions={this.state.userPermissions}/>)}
+                        {this.state.jobsQueued.map(job => <PullRequestCard key={`queued_job_${job.commit}`} job_type="queued" job={job} user={this.state.user} permissions={this.state.userPermissions}/>)}
+                        {this.state.jobsBuilding.map(job => <PullRequestCard key={`building_job_${job.commit}`} job_type="building" job={job} user={this.state.user} permissions={this.state.userPermissions}/>)}
+                        {this.state.jobsFinished.map(job => <PullRequestCard key={`finished_job_${job.id}`} job_type="finished" job={job} user={this.state.user} permissions={this.state.userPermissions}/>)}
                         </>
                     ) : <LoadingSpinner />
                     }
-                    {(this.state.prsFinished.length && this.state.prsFinished.length === this.state.prsFinishedDisplayedLimit) ? <ShowMore onclick={this.displayMore} /> : null}
+                    {(this.state.jobsFinished.length && this.state.jobsFinished.length === this.state.jobsFinishedDisplayedLimit) ? <ShowMore onclick={this.displayMore} /> : null}
                 </div>
                 <Websocket
                     url={murdockWsUrl}
