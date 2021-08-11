@@ -55,15 +55,36 @@ export const PullRequestCardTitle = (props) => {
         removeJob("building");
     }
 
+    const restart = () => {
+        console.log(`Restarting job ${props.job.prinfo.commit} (PR #${props.job.prinfo.number})`)
+        axios.post(
+            `${murdockHttpBaseUrl}/api/jobs/finished/${props.job.id}`, {},
+            {
+                headers: {
+                    "Authorization": props.user.token,
+                },
+            },
+        )
+        .catch(error => {
+            console.log(error);
+        });
+    }
+
     const cancelAction = (props.permissions === "push" && props.jobType === "queued") ? (
-        <button className="btn badge bg-info text-dark" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cancel" onClick={cancel}>
+        <button className={`btn badge bg-${cardColor[props.jobType]} text-${textColor[props.jobType]}`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cancel" onClick={cancel}>
             <i className="bi-x-circle-fill"></i>
         </button>
     ) : null;
 
     const stopAction = (props.permissions === "push" && props.jobType === "building") ? (
-        <button className="btn badge bg-warning text-dark" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Abort" onClick={abort}>
+        <button className={`btn badge bg-${cardColor[props.jobType]} text-${textColor[props.jobType]}`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Abort" onClick={abort}>
             <i className="bi-x-circle-fill"></i>
+        </button>
+    ) : null;
+
+    const restartAction = (props.permissions === "push" && ["passed", "errored"].includes(props.jobType)) ? (
+        <button className={`btn badge bg-${cardColor[props.jobType]} text-${textColor[props.jobType]}`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Restart" onClick={restart}>
+            <i className="bi-arrow-up-circle-fill"></i>
         </button>
     ) : null;
 
@@ -76,6 +97,7 @@ export const PullRequestCardTitle = (props) => {
             <div className="col-md-2 text-end">
             {cancelAction}
             {stopAction}
+            {restartAction}
             </div>
         </div>
     );
