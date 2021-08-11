@@ -113,7 +113,7 @@ class PullRequests extends Component {
             if (this.state.jobsBuilding.length) {
                 let jobs = this.state.jobsBuilding.slice();
                 for (let idx = 0; idx < jobs.length; idx++) {
-                    if (jobs[idx].commit === msg.commit) {
+                    if (jobs[idx].prinfo.commit === msg.commit) {
                         jobs[idx].status = msg.status;
                     }
                 }

@@ -32,11 +32,13 @@ import {
 import { defaultLoginUser } from '../userStorage';
 
 test('pull request success card title', async () => {
-    const pr = {
-        title: "test",
+    const job = {
+        prinfo: {
+            title: "test",
+        },
         output_url: "http://localhost/test",
     }
-    render(<PullRequestCardTitle prType="passed" pr={pr} user={defaultLoginUser} />);
+    render(<PullRequestCardTitle jobType="passed" job={job} user={defaultLoginUser} />);
     expect(screen.getByText((content, element) => {
         return (
             element.className === "link-light link-underline-hover" &&
@@ -49,12 +51,14 @@ test('pull request success card title', async () => {
 })
 
 test('pull request errored card title', async () => {
-    const pr = {
-        title: "test",
+    const job = {
+        prinfo: {
+            title: "test",
+        },
         output_url: "http://localhost/test",
     }
 
-    render(<PullRequestCardTitle prType="errored" pr={pr} user={defaultLoginUser} />);
+    render(<PullRequestCardTitle jobType="errored" job={job} user={defaultLoginUser} />);
     expect(screen.getByText((content, element) => {
         return (
             element.className === "link-light link-underline-hover" &&
@@ -67,8 +71,8 @@ test('pull request errored card title', async () => {
 })
 
 test('pull request building card title', async () => {
-    const pr = { title: "test" };
-    render(<PullRequestCardTitle prType="building" pr={pr} />);
+    const job = { prinfo: { title: "test" } };
+    render(<PullRequestCardTitle jobType="building" job={job} />);
     expect(screen.getByText("test")).toBeDefined();
 
     expect(screen.queryByText((content, element) => {
@@ -77,8 +81,8 @@ test('pull request building card title', async () => {
 })
 
 test('pull request queued card title', async () => {
-    const pr = { title: "test" };
-    render(<PullRequestCardTitle title="test" prType="queued" pr={pr} />);
+    const job = { prinfo: { title: "test" } };
+    render(<PullRequestCardTitle title="test" jobType="queued" job={job} />);
     expect(screen.getByText("test")).toBeDefined();
     expect(screen.queryByText((content, element) => {
         return element.className === "link-light link-underline-hover" && element.href
@@ -86,7 +90,7 @@ test('pull request queued card title', async () => {
 })
 
 test('pull request success card info', async () => {
-    render(<PullRequestCardInfo user="toto" prType="passed" prNum="12345" prUrl="http://localhost/test" prSince="1234567" prCommit="56789abcdef" />);
+    render(<PullRequestCardInfo user="toto" jobType="passed" prNum="12345" prUrl="http://localhost/test" jobSince="1234567" prCommit="56789abcdef" />);
 
     expect(screen.getByText("toto")).toBeDefined();
     expect(screen.getByText((content, element) => {
@@ -114,7 +118,7 @@ test('pull request success card info', async () => {
 })
 
 test('pull request success with runtime card info', async () => {
-    render(<PullRequestCardInfo user="toto" prType="passed" prNum="12345" prUrl="http://localhost/test" prSince="1234567" prCommit="56789abcdef" prRuntime="42.3" />);
+    render(<PullRequestCardInfo user="toto" jobType="passed" prNum="12345" prUrl="http://localhost/test" jobSince="1234567" prCommit="56789abcdef" jobRuntime="42.3" />);
     expect(screen.getByText((content, element) => {
         return (
             element.className === "bi-clock me-1"
@@ -123,7 +127,7 @@ test('pull request success with runtime card info', async () => {
 })
 
 test('pull request errored card info', async () => {
-    render(<PullRequestCardInfo user="toto" prType="errored" prNum="12345" prUrl="http://localhost/test" prSince="1234567" prCommit="56789abcdef" />);
+    render(<PullRequestCardInfo user="toto" jobType="errored" prNum="12345" prUrl="http://localhost/test" jobSince="1234567" prCommit="56789abcdef" />);
     expect(screen.getByText("toto")).toBeDefined();
     expect(screen.getByText((content, element) => {
         return (
@@ -140,7 +144,7 @@ test('pull request errored card info', async () => {
 })
 
 test('pull request building card info', async () => {
-    render(<PullRequestCardInfo user="toto" prType="building" prNum="12345" prUrl="http://localhost/test" prSince="1234567" prCommit="56789abcdef" />);
+    render(<PullRequestCardInfo user="toto" jobType="building" prNum="12345" prUrl="http://localhost/test" jobSince="1234567" prCommit="56789abcdef" />);
     expect(screen.getByText("toto")).toBeDefined();
     expect(screen.getByText((content, element) => {
         return (
@@ -157,9 +161,9 @@ test('pull request building card info', async () => {
 })
 
 test('pull request status null', async () => {
-    const prTypes = ["building", "errored", "passed", "queued"]
-    for (let idx = 0; idx < prTypes.length; ++idx ) {
-        render(<PullRequestCardStatus prType={prTypes[idx]} status="test" />);
+    const jobTypes = ["building", "errored", "passed", "queued"]
+    for (let idx = 0; idx < jobTypes.length; ++idx ) {
+        render(<PullRequestCardStatus jobType={jobTypes[idx]} status="test" />);
         expect(screen.queryByText((content, element) => {
             return element.className === "row";
         })).toBeNull();
@@ -168,7 +172,7 @@ test('pull request status null', async () => {
 })
 
 test('pull request status errored and canceled', async () => {
-    render(<PullRequestCardStatus prType="errored" status={{"status": "canceled"}} />);
+    render(<PullRequestCardStatus jobType="errored" status={{"status": "canceled"}} />);
     expect(screen.getByText((content, element) => {
         return element.className === "row";
     })).toBeDefined();
@@ -180,7 +184,7 @@ test('pull request status errored and canceled', async () => {
 })
 
 test('pull request status building with string status', async () => {
-    render(<PullRequestCardStatus prType="building" status={{"status": "collecting jobs"}} />);
+    render(<PullRequestCardStatus jobType="building" status={{"status": "collecting jobs"}} />);
     expect(screen.getByText((content, element) => {
         return element.className === "row";
     })).toBeDefined();
@@ -192,7 +196,7 @@ test('pull request status building with string status', async () => {
 })
 
 test('pull request status building with progress', async () => {
-    render(<PullRequestCardStatus prType="building" status={{ "total": 123, "passed": 101, "failed": 2 , "eta": 42}} />);
+    render(<PullRequestCardStatus jobType="building" status={{ "total": 123, "passed": 101, "failed": 2 , "eta": 42}} />);
     expect(screen.queryByText((content, element) => {
         return element.className === "row";
     })).toBeDefined();
@@ -207,9 +211,9 @@ test('pull request status building with progress', async () => {
 })
 
 test('pull request failed jobs null', async () => {
-    const prTypes = ["building", "errored", "passed", "queued"]
-    for (let idx = 0; idx < prTypes.length; ++idx ) {
-        render(<PullRequestCardFailedJobs prType={prTypes[idx]} prNum="12345" status="" />);
+    const jobTypes = ["building", "errored", "passed", "queued"]
+    for (let idx = 0; idx < jobTypes.length; ++idx ) {
+        render(<PullRequestCardFailedJobs jobType={jobTypes[idx]} prNum="12345" status="" />);
         expect(screen.queryByText((content, element) => {
             return content === "Failed jobs:";
         })).toBeNull();
@@ -221,9 +225,9 @@ test('pull request failed jobs null', async () => {
 })
 
 test('pull request failed jobs empty', async () => {
-    const prTypes = ["building", "errored", "passed", "queued"]
-    for (let idx = 0; idx < prTypes.length; ++idx ) {
-        render(<PullRequestCardFailedJobs prType={prTypes[idx]} prNum="12345" status={{ "failed_jobs": [] }} />);
+    const jobTypes = ["building", "errored", "passed", "queued"]
+    for (let idx = 0; idx < jobTypes.length; ++idx ) {
+        render(<PullRequestCardFailedJobs jobType={jobTypes[idx]} prNum="12345" status={{ "failed_jobs": [] }} />);
         expect(screen.queryByText((content, element) => {
             return content === "Failed jobs:";
         })).toBeNull();
@@ -235,10 +239,10 @@ test('pull request failed jobs empty', async () => {
 })
 
 test('pull request failed jobs no href', async () => {
-    const prTypes = ["building", "errored"]
-    for (let idx = 0; idx < prTypes.length; ++idx ) {
+    const jobTypes = ["building", "errored"]
+    for (let idx = 0; idx < jobTypes.length; ++idx ) {
         render(<PullRequestCardFailedJobs
-                    prType={prTypes[idx]}
+                    jobType={jobTypes[idx]}
                     prNum="12345"
                     status={{ "failed_jobs": [{"name": "test1"}, {"name": "test2"}] }}
                 />);
@@ -261,10 +265,10 @@ test('pull request failed jobs no href', async () => {
 })
 
 test('pull request failed jobs with href', async () => {
-    const prTypes = ["building", "errored"]
-    for (let idx = 0; idx < prTypes.length; ++idx ) {
+    const jobTypes = ["building", "errored"]
+    for (let idx = 0; idx < jobTypes.length; ++idx ) {
         render(<PullRequestCardFailedJobs
-                    prType={prTypes[idx]}
+                    jobType={jobTypes[idx]}
                     prNum="12345"
                     status={{ "failed_jobs": [
                         {"name": "test1", "href": "test1_href"},
@@ -290,17 +294,20 @@ test('pull request failed jobs with href', async () => {
 })
 
 test('pull request card', async () => {
-    const prTypes = ["finished", "building"]
-    for (let idx = 0; idx < prTypes.length; ++idx ) {
+    const jobTypes = ["finished", "building"]
+    for (let idx = 0; idx < jobTypes.length; ++idx ) {
         render(<PullRequestCard
-                pr_type={prTypes[idx]}
-                pr={
+                job_type={jobTypes[idx]}
+                job={
                     {
-                        "result": (prTypes[idx] === "finished") ? "passed" : null,
-                        "title": "test",
-                        "user": "toto",
-                        "url": "test_url/12345",
-                        "commit": "1234556789",
+                        "result": (jobTypes[idx] === "finished") ? "passed" : null,
+                        "prinfo": {
+                            "title": "test",
+                            "user": "toto",
+                            "url": "test_url/12345",
+                            "number": 12345,
+                            "commit": "1234556789",
+                        },
                         "runtime": "42",
                         "since": 1234567789,
                     }
