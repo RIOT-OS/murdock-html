@@ -152,7 +152,7 @@ class PullRequests extends Component {
                         <>
                         {this.state.jobsQueued.map(job => <PullRequestCard key={`queued_job_${job.prinfo.commit}`} job_type="queued" job={job} user={this.state.user} permissions={this.state.userPermissions}/>)}
                         {this.state.jobsBuilding.map(job => <PullRequestCard key={`building_job_${job.prinfo.commit}`} job_type="building" job={job} user={this.state.user} permissions={this.state.userPermissions}/>)}
-                        {this.state.jobsFinished.map(job => <PullRequestCard key={`finished_job_${job.id}`} job_type="finished" job={job} user={this.state.user} permissions={this.state.userPermissions}/>)}
+                        {this.state.jobsFinished.map(job => <PullRequestCard key={`finished_job_${job.uid}`} job_type="finished" job={job} user={this.state.user} permissions={this.state.userPermissions}/>)}
                         </>
                     ) : <LoadingSpinner />
                     }
