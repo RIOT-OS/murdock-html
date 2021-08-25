@@ -71,20 +71,20 @@ export const PullRequestCardTitle = (props) => {
     }
 
     const cancelAction = (props.permissions === "push" && props.jobType === "queued") ? (
-        <button className={`btn badge bg-${cardColor[props.jobType]} text-${textColor[props.jobType]}`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cancel" onClick={cancel}>
-            <i className="bi-x-circle-fill"></i>
+        <button className={`btn badge bg-${cardColor[props.jobType]} text-danger fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cancel" onClick={cancel}>
+            <i className="bi-x-circle"></i>
         </button>
     ) : null;
 
     const stopAction = (props.permissions === "push" && props.jobType === "building") ? (
-        <button className={`btn badge bg-${cardColor[props.jobType]} text-${textColor[props.jobType]}`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Abort" onClick={abort}>
-            <i className="bi-x-circle-fill"></i>
+        <button className={`btn badge bg-${cardColor[props.jobType]} text-danger fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Abort" onClick={abort}>
+            <i className="bi-x-circle"></i>
         </button>
     ) : null;
 
     const restartAction = (props.permissions === "push" && ["passed", "errored"].includes(props.jobType)) ? (
-        <button className={`btn badge bg-${cardColor[props.jobType]} text-${textColor[props.jobType]}`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Restart" onClick={restart}>
-            <i className="bi-arrow-up-circle-fill"></i>
+        <button className={`btn badge bg-${cardColor[props.jobType]} text-${textColor[props.jobType]} fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Restart" onClick={restart}>
+            <i className="bi-arrow-clockwise"></i>
         </button>
     ) : null;
 
