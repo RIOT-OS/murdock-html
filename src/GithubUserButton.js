@@ -58,11 +58,11 @@ class GithubUserButton extends Component {
             ) : (
                 <>
                 <div className="dropdown">
-                    <div className="btn dropdown-toggle" type="button" id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img className="rounded me-1" src={this.state.user.avatarUrl} alt="GitHub Avatar" height="24" data-bs-toggle="tooltip" data-bs-placement="bottom" title={this.state.user.login}></img>
+                    <div className="dropdown-toggle" type="button" id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img className="rounded" src={this.state.user.avatarUrl} alt="GitHub Avatar" height="24" data-bs-toggle="tooltip" data-bs-placement="bottom" title={this.state.user.login}></img>
                     </div>
-                    <ul className="dropdown-menu" aria-labelledby="userMenuButton">
-                        <li><span className="dropdown-item btn" onClick={this.logout}>Logout</span></li>
+                    <ul className="dropdown-menu dropdown-menu-sm-end" aria-labelledby="userMenuButton">
+                        <li><button className="dropdown-item" type="button" onClick={this.logout}><div className="text-center">Logout</div></button></li>
                     </ul>
                 </div>
                 </>
