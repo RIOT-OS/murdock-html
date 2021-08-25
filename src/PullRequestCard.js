@@ -58,7 +58,7 @@ export const PullRequestCardTitle = (props) => {
     const restart = () => {
         console.log(`Restarting job ${props.job.prinfo.commit} (PR #${props.job.prinfo.number})`)
         axios.post(
-            `${murdockHttpBaseUrl}/api/jobs/finished/${props.job.id}`, {},
+            `${murdockHttpBaseUrl}/api/jobs/finished/${props.job.uid}`, {},
             {
                 headers: {
                     "Authorization": props.user.token,
