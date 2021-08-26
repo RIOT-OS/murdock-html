@@ -34,6 +34,7 @@ class PullRequests extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            alerts: [],
             isFetched: false,
             userPermissions: "unknown",
             user: defaultLoginUser,
@@ -47,6 +48,7 @@ class PullRequests extends Component {
         this.handleWsOpen = this.handleWsOpen.bind(this);
         this.handleWsClose = this.handleWsClose.bind(this);
         this.displayMore = this.displayMore.bind(this);
+        this.notify = this.notify.bind(this);
     }
 
     fetchJobs(limit) {
@@ -144,15 +146,28 @@ class PullRequests extends Component {
         }
     }
 
+    notify(uid, result, message) {
+        const alertsList = this.state.alerts.slice();
+        alertsList.push({uid: uid, result: result, message: message})
+        this.setState({alerts: alertsList.reverse()});
+        setTimeout(() => {
+            const alertsList = this.state.alerts.filter(item => item.uid !== uid);
+            this.setState({alerts: alertsList});
+        }, 4000);
+    }
+
     render() {
         return (
             <div>
+                <div className="position-fixed bottom-0 end-0" style={{zIndex:1000}}>
+                    {this.state.alerts.map(item => <div key={item.uid} className={`alert alert-${item.result} alert-dismissible shadow fade show me-2`} role="alert">{item.message}</div>)}
+                </div>
                 <div className="container">
                     {(this.state.isFetched) ? (
                         <>
-                        {this.state.jobsQueued.map(job => <PullRequestCard key={job.uid} job_type="queued" job={job} user={this.state.user} permissions={this.state.userPermissions}/>)}
-                        {this.state.jobsBuilding.map(job => <PullRequestCard key={job.uid} job_type="building" job={job} user={this.state.user} permissions={this.state.userPermissions}/>)}
-                        {this.state.jobsFinished.map(job => <PullRequestCard key={job.uid} job_type="finished" job={job} user={this.state.user} permissions={this.state.userPermissions}/>)}
+                        {this.state.jobsQueued.map(job => <PullRequestCard key={job.uid} job_type="queued" job={job} user={this.state.user} permissions={this.state.userPermissions} notify={this.notify}/>)}
+                        {this.state.jobsBuilding.map(job => <PullRequestCard key={job.uid} job_type="building" job={job} user={this.state.user} permissions={this.state.userPermissions} notify={this.notify}/>)}
+                        {this.state.jobsFinished.map(job => <PullRequestCard key={job.uid} job_type="finished" job={job} user={this.state.user} permissions={this.state.userPermissions} notify={this.notify}/>)}
                         </>
                     ) : <LoadingSpinner />
                     }

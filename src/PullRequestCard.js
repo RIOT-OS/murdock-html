@@ -40,7 +40,13 @@ export const PullRequestCardTitle = (props) => {
                 },
             },
         )
+        .then(() => {
+            const action = (type === "queued") ? "canceled" : "aborted";
+            props.notify(props.job.uid, "info", `Job ${props.job.prinfo.commit} (PR #${props.job.prinfo.number}) ${action}`)
+        })
         .catch(error => {
+            const action = (type === "queued") ? "cancel" : "abort";
+            props.notify(props.job.uid, "danger", `Failed to ${action} job ${props.job.prinfo.commit} (PR #${props.job.prinfo.number})`)
             console.log(error);
         });
     }
@@ -65,7 +71,11 @@ export const PullRequestCardTitle = (props) => {
                 },
             },
         )
+        .then(() => {
+            props.notify(props.job.uid, "info", `Job ${props.job.prinfo.commit} (PR #${props.job.prinfo.number}) restarted`)
+        })
         .catch(error => {
+            props.notify(props.job.uid, "danger", `Failed to restart job ${props.job.prinfo.commit} (PR #${props.job.prinfo.number})`)
             console.log(error);
         });
     }
@@ -226,6 +236,7 @@ export const PullRequestCard = (props) => {
                     job={props.job}
                     user={props.user}
                     permissions={props.permissions}
+                    notify={props.notify}
                 />
             </div>
             <div className="card-body">
