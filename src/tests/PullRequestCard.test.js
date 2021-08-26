@@ -300,6 +300,7 @@ test('pull request card', async () => {
                 job_type={jobTypes[idx]}
                 job={
                     {
+                        "uid": "1234",
                         "result": (jobTypes[idx] === "finished") ? "passed" : null,
                         "prinfo": {
                             "title": "test",
