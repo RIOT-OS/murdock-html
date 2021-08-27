@@ -21,7 +21,7 @@
  * Author: Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useState } from 'react';
 import {
     BrowserRouter as Router,
     Switch,
@@ -32,13 +32,41 @@ import {
 
 import GithubUserButton from './GithubUserButton';
 
+import {
+  defaultLoginUser,
+  getUserFromStorage, removeUserFromStorage, storeUserToStorage
+} from './userStorage';
 import { LoadingSpinner } from './components';
 
 const PullRequests = lazy(() => import('./PullRequests'));
 const Nightlies = lazy(() => import('./Nightlies'));
 
 const MurdockNavBar = () => {
+    const [user, setUser] = useState(getUserFromStorage());
     const location = useLocation();
+
+    const onLoginSuccess = (response) => {
+      const loggedUser = {
+          login: response.profile.name,
+          avatarUrl: response.profile.profilePicURL,
+          token: response.token.accessToken,
+          expiresAt: response.token.expiresAt,
+      }
+      storeUserToStorage(loggedUser);
+      setUser(loggedUser);
+      window.location.reload();
+    };
+
+    const onLoginFailure = (error) => {
+      console.error(error);
+      setUser(defaultLoginUser);
+    };
+
+    const onLogout = () => {
+      removeUserFromStorage(user);
+      setUser(defaultLoginUser);
+      window.location.reload();
+    };
 
     return (
         <div>
@@ -58,7 +86,7 @@ const MurdockNavBar = () => {
                   </li>
                 </ul>
                 <div className="d-flex align-items-center">
-                  <GithubUserButton />
+                  <GithubUserButton user={user} onLoginSuccess={onLoginSuccess} onLoginFailure={onLoginFailure} onLogout={onLogout}/>
                 </div>
               </div>
             </div>
