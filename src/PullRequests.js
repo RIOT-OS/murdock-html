@@ -114,14 +114,22 @@ class PullRequests extends Component {
         setTimeout(() => {
             const alertsList = this.state.alerts.filter(item => item.uid !== uid);
             this.setState({alerts: alertsList});
-        }, 4000);
+        }, 6000);
     }
 
     render() {
         return (
             <div>
-                <div className="position-fixed bottom-0 end-0" style={{zIndex:1000}}>
-                    {this.state.alerts.map(item => <div key={item.uid} className={`alert alert-${item.result} alert-dismissible shadow fade show me-2`} role="alert">{item.message}</div>)}
+                <div className="position-fixed bottom-0 end-0 p-3" style={{zIndex:11}}>
+                    {
+                        this.state.alerts.map(item => (
+                            <div key={item.uid} className="toast show m-1" role="alert" aria-live="assertive" aria-atomic="true">
+                                <div className={`toast-body text-${item.result}`}>
+                                    <i className={`bi-${(item.result === "danger") ? "x" : "info"}-circle-fill me-2`}></i>{item.message}
+                                </div>
+                            </div>
+                        ))
+                    }
                 </div>
                 <div className="container">
                     {(this.state.isFetched) ? (

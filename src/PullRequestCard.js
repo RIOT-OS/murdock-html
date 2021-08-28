@@ -42,11 +42,11 @@ export const PullRequestCardTitle = (props) => {
         )
         .then(() => {
             const action = (type === "queued") ? "canceled" : "aborted";
-            props.notify(props.job.uid, "info", `Job ${props.job.prinfo.commit} (PR #${props.job.prinfo.number}) ${action}`)
+            props.notify(props.job.uid, "info", `Job ${props.job.prinfo.commit.substring(0, 7)} (PR #${props.job.prinfo.number}) ${action}`)
         })
         .catch(error => {
             const action = (type === "queued") ? "cancel" : "abort";
-            props.notify(props.job.uid, "danger", `Failed to ${action} job ${props.job.prinfo.commit} (PR #${props.job.prinfo.number})`)
+            props.notify(props.job.uid, "danger", `Failed to ${action} job ${props.job.prinfo.commit.substring(0, 7)} (PR #${props.job.prinfo.number})`)
             console.log(error);
         });
     }
@@ -72,10 +72,10 @@ export const PullRequestCardTitle = (props) => {
             },
         )
         .then(() => {
-            props.notify(props.job.uid, "info", `Job ${props.job.prinfo.commit} (PR #${props.job.prinfo.number}) restarted`)
+            props.notify(props.job.uid, "info", `Job ${props.job.prinfo.commit.substring(0, 7)} (PR #${props.job.prinfo.number}) restarted`)
         })
         .catch(error => {
-            props.notify(props.job.uid, "danger", `Failed to restart job ${props.job.prinfo.commit} (PR #${props.job.prinfo.number})`)
+            props.notify(props.job.uid, "danger", `Failed to restart job ${props.job.prinfo.commit.substring(0, 7)} (PR #${props.job.prinfo.number})`)
             console.log(error);
         });
     }
