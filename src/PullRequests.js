@@ -28,7 +28,6 @@ import axios from 'axios';
 import { PullRequestCard } from './PullRequestCard';
 import { LoadingSpinner, ShowMore } from './components';
 import { itemsDisplayedStep, murdockHttpBaseUrl, murdockWsUrl } from './constants';
-import { defaultLoginUser, getUserFromStorage } from './userStorage';
 
 class PullRequests extends Component {
     constructor(props) {
@@ -36,8 +35,6 @@ class PullRequests extends Component {
         this.state = {
             alerts: [],
             isFetched: false,
-            userPermissions: "unknown",
-            user: defaultLoginUser,
             jobsQueued: [],
             jobsBuilding: [],
             jobsFinished: [],
@@ -72,39 +69,6 @@ class PullRequests extends Component {
                 this.setState({ isFetched : true });
             });
     }
-
-    getUserPermissions() {
-        const user = getUserFromStorage();
-
-        if (user.login === "anonymous") {
-            this.setState({
-                user: defaultLoginUser, userPermissions: "no",
-            });
-            return;
-        }
-
-        axios.get(
-            `https://api.github.com/repos/${process.env.REACT_APP_GITHUB_REPO}`,
-            { headers: {Authorization: `token ${user.token}`}},
-        )
-        .then(res => {
-            if (res.data.permissions && res.data.permissions.push) {
-                this.setState({
-                    user: user, userPermissions: "push",
-                });
-            } else {
-                this.setState({
-                    user: user, userPermissions: "no",
-                });
-            }
-        })
-        .catch(error => {
-            console.log(error);
-            this.setState({
-                user: defaultLoginUser, userPermissions: "no",
-            });
-        });
-    };
 
     handleWsData(data) {
         const msg = JSON.parse(data);
@@ -141,9 +105,6 @@ class PullRequests extends Component {
         if (!this.state.isFetched) {
             this.fetchJobs(this.state.jobsFinishedDisplayedLimit);
         }
-        if (this.state.userPermissions === "unknown") {
-            this.getUserPermissions();
-        }
     }
 
     notify(uid, result, message) {
@@ -165,9 +126,9 @@ class PullRequests extends Component {
                 <div className="container">
                     {(this.state.isFetched) ? (
                         <>
-                        {this.state.jobsQueued.map(job => <PullRequestCard key={job.uid} job_type="queued" job={job} user={this.state.user} permissions={this.state.userPermissions} notify={this.notify}/>)}
-                        {this.state.jobsBuilding.map(job => <PullRequestCard key={job.uid} job_type="building" job={job} user={this.state.user} permissions={this.state.userPermissions} notify={this.notify}/>)}
-                        {this.state.jobsFinished.map(job => <PullRequestCard key={job.uid} job_type="finished" job={job} user={this.state.user} permissions={this.state.userPermissions} notify={this.notify}/>)}
+                        {this.state.jobsQueued.map(job => <PullRequestCard key={job.uid} job_type="queued" job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
+                        {this.state.jobsBuilding.map(job => <PullRequestCard key={job.uid} job_type="building" job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
+                        {this.state.jobsFinished.map(job => <PullRequestCard key={job.uid} job_type="finished" job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
                         </>
                     ) : <LoadingSpinner />
                     }

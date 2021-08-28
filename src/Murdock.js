@@ -21,7 +21,7 @@
  * Author: Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
-import { Suspense, lazy, useState } from 'react';
+import { Suspense, lazy, Component } from 'react';
 import {
     BrowserRouter as Router,
     Switch,
@@ -30,6 +30,7 @@ import {
     useLocation
   } from 'react-router-dom';
 
+import axios from 'axios';
 import GithubUserButton from './GithubUserButton';
 
 import {
@@ -41,32 +42,8 @@ import { LoadingSpinner } from './components';
 const PullRequests = lazy(() => import('./PullRequests'));
 const Nightlies = lazy(() => import('./Nightlies'));
 
-const MurdockNavBar = () => {
-    const [user, setUser] = useState(getUserFromStorage());
+const MurdockNavBar = (props) => {
     const location = useLocation();
-
-    const onLoginSuccess = (response) => {
-      const loggedUser = {
-          login: response.profile.name,
-          avatarUrl: response.profile.profilePicURL,
-          token: response.token.accessToken,
-          expiresAt: response.token.expiresAt,
-      }
-      storeUserToStorage(loggedUser);
-      setUser(loggedUser);
-      window.location.reload();
-    };
-
-    const onLoginFailure = (error) => {
-      console.error(error);
-      setUser(defaultLoginUser);
-    };
-
-    const onLogout = () => {
-      removeUserFromStorage(user);
-      setUser(defaultLoginUser);
-      window.location.reload();
-    };
 
     return (
         <div>
@@ -86,7 +63,7 @@ const MurdockNavBar = () => {
                   </li>
                 </ul>
                 <div className="d-flex align-items-center">
-                  <GithubUserButton user={user} onLoginSuccess={onLoginSuccess} onLoginFailure={onLoginFailure} onLogout={onLogout}/>
+                  <GithubUserButton user={props.user} onLoginSuccess={props.onLoginSuccess} onLoginFailure={props.onLoginFailure} onLogout={props.onLogout} />
                 </div>
               </div>
             </div>
@@ -95,16 +72,82 @@ const MurdockNavBar = () => {
     );
 }
 
-const Murdock = () => (
-    <Router>
-        <MurdockNavBar />
-        <Suspense fallback={<div className="container"><LoadingSpinner /></div>}>
-            <Switch>
-                <Route exact path="/" component={PullRequests} />
-                <Route path="/nightlies" component={Nightlies}/>
-            </Switch>
-        </Suspense>
-    </Router>
-);
+class Murdock extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+        user: getUserFromStorage(),
+        userPermissions: "unknown",
+    };
+    this.onLoginSuccess = this.onLoginSuccess.bind(this);
+    this.onLoginFailure = this.onLoginFailure.bind(this);
+    this.onLogout = this.onLogout.bind(this);
+    this.fetchUserPermissions = this.fetchUserPermissions.bind(this);
+  };
+
+  onLoginSuccess(response) {
+    const loggedUser = {
+        login: response.profile.name,
+        avatarUrl: response.profile.profilePicURL,
+        token: response.token.accessToken,
+        expiresAt: response.token.expiresAt,
+    }
+    storeUserToStorage(loggedUser);
+    this.fetchUserPermissions(loggedUser);
+  };
+
+  onLoginFailure(error) {
+    console.error(error);
+    this.setState({user: defaultLoginUser, userPermissions: "no"});
+  };
+
+  onLogout() {
+    removeUserFromStorage(this.state.user);
+    this.setState({user: defaultLoginUser, userPermissions: "no"});
+  };
+
+  fetchUserPermissions(loggedUser) {
+    if (loggedUser === "anonymous") {
+      this.setState({user: defaultLoginUser, userPermissions: "no"});
+      return;
+    }
+
+    axios.get(
+      `https://api.github.com/repos/${process.env.REACT_APP_GITHUB_REPO}`,
+      { headers: {Authorization: `token ${loggedUser.token}`}},
+    )
+    .then(res => {
+      if (res.data.permissions && res.data.permissions.push) {
+        this.setState({user: loggedUser, userPermissions: "push"});
+      } else {
+        this.setState({user: loggedUser, userPermissions: "no"});
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      this.setState({user: loggedUser, userPermissions: "no"});
+    });
+  };
+
+  componentDidMount() {
+    if (this.state.userPermissions === "unknown") {
+      this.fetchUserPermissions(this.state.user);
+    }
+  };
+
+  render() {
+    return (
+      <Router>
+          <MurdockNavBar user={this.state.user} onLoginSuccess={this.onLoginSuccess} onLoginFailure={this.onLoginFailure} onLogout={this.onLogout} />
+          <Suspense fallback={<div className="container"><LoadingSpinner /></div>}>
+              <Switch>
+                  <Route exact path="/" render={() => <PullRequests user={this.state.user} userPermissions={this.state.userPermissions} />} />
+                  <Route path="/nightlies" component={Nightlies}/>
+              </Switch>
+          </Suspense>
+      </Router>
+    )
+  }
+};
 
 export default Murdock;
