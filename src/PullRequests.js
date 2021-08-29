@@ -49,7 +49,7 @@ class PullRequests extends Component {
     }
 
     fetchJobs(limit) {
-        axios.get(`${murdockHttpBaseUrl}/api/jobs?limit=${limit}`)
+        axios.get(`${murdockHttpBaseUrl}/jobs?limit=${limit}`)
             .then(res => {
                 const jobs = res.data;
                 const queued = (jobs.queued) ? jobs.queued : [];

@@ -33,7 +33,7 @@ export const PullRequestCardTitle = (props) => {
 
     const removeJob = (type) => {
         axios.delete(
-            `${murdockHttpBaseUrl}/api/jobs/${type}/${props.job.prinfo.commit}`,
+            `${murdockHttpBaseUrl}/jobs/${type}/${props.job.prinfo.commit}`,
             {
                 headers: {
                     "Authorization": props.user.token,
@@ -64,7 +64,7 @@ export const PullRequestCardTitle = (props) => {
     const restart = () => {
         console.log(`Restarting job ${props.job.prinfo.commit} (PR #${props.job.prinfo.number})`)
         axios.post(
-            `${murdockHttpBaseUrl}/api/jobs/finished/${props.job.uid}`, {},
+            `${murdockHttpBaseUrl}/jobs/finished/${props.job.uid}`, {},
             {
                 headers: {
                     "Authorization": props.user.token,

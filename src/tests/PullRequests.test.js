@@ -30,7 +30,7 @@ import WS from 'jest-websocket-mock';
 import PullRequests from '../PullRequests';
 
 const server = setupServer(
-    rest.get('/api/jobs', (req, res, ctx) => {
+    rest.get('/jobs', (req, res, ctx) => {
         const limit = req.url.searchParams.get('limit')
         let finished = [
             {
