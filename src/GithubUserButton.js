@@ -23,7 +23,7 @@ const GithubUserButton = (props) => {
                     <img className="rounded" src={props.user.avatarUrl} alt="GitHub Avatar" height="28" data-bs-toggle="tooltip" data-bs-placement="bottom" title={props.user.login}></img>
                 </div>
                 <ul className="dropdown-menu dropdown-menu-sm-end" aria-labelledby="userMenuButton">
-                    <li><button className="dropdown-item" type="button" onClick={props.onLogout}><div className="text-center">Logout</div></button></li>
+                    <li><button className="dropdown-item" type="button" onClick={props.onLogout}><div className="text-center">Logout <i className="bi-box-arrow-right"></i></div></button></li>
                 </ul>
             </div>
             </>
