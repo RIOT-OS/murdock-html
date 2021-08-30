@@ -27,7 +27,7 @@ import { fireEvent, render, screen, waitFor} from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import WS from 'jest-websocket-mock';
 
-import PullRequests from '../PullRequests';
+import Dashboard from '../Dashboard';
 
 const server = setupServer(
     rest.get('/jobs', (req, res, ctx) => {
@@ -39,12 +39,15 @@ const server = setupServer(
                 "result": "passed",
                 "runtime": 2392.292683839798,
                 "status": {},
+                "commit": {
+                    "sha": "951822c41b34cf62ed29ab58ed1e34cbbcd3894b",
+                    "author": "MrKevinWeiss",
+                },
                 "prinfo": {
                     "title": "drivers/sx126x: fix netdev send and recv function [backport 2021.07]",
                     "user": "MrKevinWeiss",
                     "number": "16620",
                     "url": "https://github.com/RIOT-OS/RIOT/pull/16620",
-                    "commit": "951822c41b34cf62ed29ab58ed1e34cbbcd3894b",
                 },
                 "since": 1625648719.7717128
             },
@@ -61,12 +64,15 @@ const server = setupServer(
                         }
                     ]
                 },
+                "commit": {
+                    "sha": "1dc94b981680ab30351df64b3f5a2c1e6e8cc9b0",
+                    "author": "jia200x",
+                },
                 "prinfo": {
                     "title": "drivers/sx127x: remove ZTIMER_USEC dependency",
                     "user": "jia200x",
                     "number": "15030",
                     "url": "https://github.com/RIOT-OS/RIOT/pull/15030",
-                    "commit": "1dc94b981680ab30351df64b3f5a2c1e6e8cc9b0",
                 },
                 "since": 1625238690.1669567
             },
@@ -76,12 +82,15 @@ const server = setupServer(
                 "building": [
                     {
                         "uid": "12345",
+                        "commit": {
+                            "sha": "5ef4c0a778ab7d4f625d63fdafe5e8347bfe479d",
+                            "author": "MrKevinWeiss",
+                        },
                         "prinfo": {
                             "title": "netdev/lora: fix size of NETOPT_RX_SYMBOL_TIMEOUT [backport 2021.07]",
                             "user": "MrKevinWeiss",
                             "number": "16621",
                             "url": "https://github.com/RIOT-OS/RIOT/pull/16621",
-                            "commit": "5ef4c0a778ab7d4f625d63fdafe5e8347bfe479d",
                         },
                         "since": 1625648720.3770814
                     }
@@ -89,12 +98,15 @@ const server = setupServer(
                 "queued": [
                     {
                         "uid": "123456",
+                        "commit": {
+                            "sha": "13274da74ab861830ed4f1216aceccf50548b27d",
+                            "author": "jia200x",
+                        },
                         "prinfo": {
                             "title": "gnrc_lorawan: fix gnrc_pktbuf_release_error (introduced by #16080) [backport 2021.07",
                             "user": "jia200x",
                             "number": "16622",
                             "url": "https://github.com/RIOT-OS/RIOT/pull/16622",
-                            "commit": "13274da74ab861830ed4f1216aceccf50548b27d",
                         },
                         "since": 1625646859.5628495
                     }
@@ -112,7 +124,7 @@ afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
 test('fetch and display pull requests', async () => {
-    await waitFor(() => render(<PullRequests />));
+    await waitFor(() => render(<Dashboard />));
     await waitFor(() => screen.queryByText((content, element) => {
         return element.className === "card m-2 border-info";
     }));

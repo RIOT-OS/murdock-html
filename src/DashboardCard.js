@@ -29,11 +29,12 @@ import {
 } from './constants';
 import { CommitCol, DateCol, LinkCol, RuntimeCol, UserCol } from './components';
 
-export const PullRequestCardTitle = (props) => {
+export const DashboardCardTitle = (props) => {
 
     const removeJob = (type) => {
+        const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.branch})`
         axios.delete(
-            `${murdockHttpBaseUrl}/jobs/${type}/${props.job.prinfo.commit}`,
+            `${murdockHttpBaseUrl}/jobs/${type}/${props.job.commit.sha}`,
             {
                 headers: {
                     "Authorization": props.user.token,
@@ -42,27 +43,30 @@ export const PullRequestCardTitle = (props) => {
         )
         .then(() => {
             const action = (type === "queued") ? "canceled" : "aborted";
-            props.notify(props.job.uid, "info", `Job ${props.job.prinfo.commit.substring(0, 7)} (PR #${props.job.prinfo.number}) ${action}`)
+            props.notify(props.job.uid, "info", `Job ${props.job.commit.sha.substring(0, 7)} ${context} ${action}`)
         })
         .catch(error => {
             const action = (type === "queued") ? "cancel" : "abort";
-            props.notify(props.job.uid, "danger", `Failed to ${action} job ${props.job.prinfo.commit.substring(0, 7)} (PR #${props.job.prinfo.number})`)
+            props.notify(props.job.uid, "danger", `Failed to ${action} job ${props.job.commit.sha.substring(0, 7)} ${context}`)
             console.log(error);
         });
     }
 
     const cancel = () => {
-        console.log(`Canceling queued job ${props.job.prinfo.commit} (PR #${props.job.prinfo.number})`)
+        const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.branch})`
+        console.log(`Canceling queued job ${props.job.commit.sha} ${context}`)
         removeJob("queued");
     }
 
     const abort = () => {
-        console.log(`Stopping building job ${props.job.prinfo.commit} (PR #${props.job.prinfo.number})`)
+        const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.branch})`
+        console.log(`Stopping building job ${props.job.commit.sha} ${context}`)
         removeJob("building");
     }
 
     const restart = () => {
-        console.log(`Restarting job ${props.job.prinfo.commit} (PR #${props.job.prinfo.number})`)
+        const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.branch})`
+        console.log(`Restarting job ${props.job.commit.sha} ${context}`)
         axios.post(
             `${murdockHttpBaseUrl}/jobs/finished/${props.job.uid}`, {},
             {
@@ -72,10 +76,10 @@ export const PullRequestCardTitle = (props) => {
             },
         )
         .then(() => {
-            props.notify(props.job.uid, "info", `Job ${props.job.prinfo.commit.substring(0, 7)} (PR #${props.job.prinfo.number}) restarted`)
+            props.notify(props.job.uid, "info", `Job ${props.job.commit.sha.substring(0, 7)} ${context} restarted`)
         })
         .catch(error => {
-            props.notify(props.job.uid, "danger", `Failed to restart job ${props.job.prinfo.commit.substring(0, 7)} (PR #${props.job.prinfo.number})`)
+            props.notify(props.job.uid, "danger", `Failed to restart job ${props.job.commit.sha.substring(0, 7)} ${context}`)
             console.log(error);
         });
     }
@@ -98,11 +102,13 @@ export const PullRequestCardTitle = (props) => {
         </button>
     ) : null;
 
+    const title = (props.job.prinfo) ? props.job.prinfo.title : props.job.branch
+
     return (
         <div className="row align-items-center">
             <div className="col-md-10">
                 {cardIcon[props.jobType]}
-                {(props.job.output_url) ? <a className="link-light link-underline-hover" href={props.job.output_url} target="_blank" rel="noreferrer noopener">{props.job.prinfo.title}</a> : props.job.prinfo.title}
+                {(props.job.output_url) ? <a className="link-light link-underline-hover" href={props.job.output_url} target="_blank" rel="noreferrer noopener">{title}</a> : title}
             </div>
             <div className="col-md-2 text-end">
             {cancelAction}
@@ -113,21 +119,27 @@ export const PullRequestCardTitle = (props) => {
     );
 }
 
-export const PullRequestCardInfo = (props) => {
-    const prDate = new Date(props.jobSince * 1000);
+export const DashboardCardInfo = (props) => {
+    const prDate = new Date(props.job.since * 1000);
 
     return (
         <div className="row">
-            <UserCol user={props.user} />
-            <LinkCol title={`PR #${props.prNum}`} url={props.prUrl} color={linkColor[props.jobType]} />
-            <CommitCol color={linkColor[props.jobType]} commit={props.prCommit} />
+            <UserCol user={props.job.commit.author} />
+            {
+                (props.job.prinfo) ? (
+                    <LinkCol title={`PR #${props.job.prinfo.number}`} url={props.job.prinfo.url} color={linkColor[props.jobType]} />
+                ): (
+                    <LinkCol title={`${props.job.branch}`} url={`https://github.com/${process.env.REACT_APP_GITHUB_REPO}/tree/${props.job.branch}`} color={linkColor[props.jobType]} />
+                )
+            }
+            <CommitCol color={linkColor[props.jobType]} commit={props.job.commit.sha} />
             <DateCol date={prDate} />
-            {(props.jobRuntime) ? <RuntimeCol runtime={moment.duration(props.jobRuntime * -1000).humanize()} /> : null}
+            {(props.job.runtime) ? <RuntimeCol runtime={moment.duration(props.job.runtime * -1000).humanize()} /> : null}
         </div>
     );
 }
 
-export const PullRequestCardStatus = (props) => {
+export const DashboardCardStatus = (props) => {
     if ((!props.status) || 
         (props.jobType === "errored" && ((!props.status.status) || (props.status.status && props.status.status !== "canceled"))) ||
         (!["errored", "building"].includes(props.jobType))) {
@@ -191,14 +203,14 @@ export const PullRequestCardStatus = (props) => {
     );
 }
 
-export const PullRequestCardFailedJobs = (props) => {
-    if (!["building", "errored"].includes(props.jobType) || !props.status) {
+export const DashboardCardFailedJobs = (props) => {
+    if (!["building", "errored"].includes(props.jobType) || !props.job.status) {
         return null;
     }
 
-    const failed_jobs = (props.status.failed_jobs && props.status.failed_jobs.length) ? (
-        props.status.failed_jobs.map((jobs, index) =>
-            <div key={`pr-${props.prNum}-${jobs.name}-${index}`} className="col-md-3 px-2">
+    const failed_jobs = (props.job.status.failed_jobs && props.job.status.failed_jobs.length) ? (
+        props.job.status.failed_jobs.map((jobs, index) =>
+            <div key={`pr-${props.job.uid}-${jobs.name}-${index}`} className="col-md-3 px-2">
             {(jobs.href) ? (
                 <a className="text-danger link-underline-hover" href={`${jobs.href}`}>
                     {jobs.name}
@@ -224,14 +236,14 @@ export const PullRequestCardFailedJobs = (props) => {
     );
 }
 
-export const PullRequestCard = (props) => {
+export const DashboardCard = (props) => {
     let jobType = (props.job_type === "finished") ? props.job.result: props.job_type;
 
     return (
         <div>
         <div className={`card m-2 border-${cardColor[jobType]}`}>
             <div className={`card-header text-${textColor[jobType]} bg-${cardColor[jobType]}`}>
-                <PullRequestCardTitle
+                <DashboardCardTitle
                     jobType={jobType}
                     job={props.job}
                     user={props.user}
@@ -240,24 +252,9 @@ export const PullRequestCard = (props) => {
                 />
             </div>
             <div className="card-body">
-                <PullRequestCardInfo
-                    jobType={jobType}
-                    user={props.job.prinfo.user}
-                    prNum={props.job.prinfo.number}
-                    prUrl={props.job.prinfo.url}
-                    prCommit={props.job.prinfo.commit}
-                    jobRuntime={props.job.runtime}
-                    jobSince={props.job.since}
-                />
-                <PullRequestCardStatus
-                    jobType={jobType}
-                    status={props.job.status}
-                />
-                <PullRequestCardFailedJobs
-                    jobType={jobType}
-                    prNum={props.job.prinfo.number}
-                    status={props.job.status}
-                />
+                <DashboardCardInfo jobType={jobType} job={props.job} />
+                <DashboardCardStatus jobType={jobType} status={props.job.status} />
+                <DashboardCardFailedJobs jobType={jobType} job={props.job} />
             </div>
         </div>
         </div>

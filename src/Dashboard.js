@@ -25,11 +25,11 @@ import { Component } from 'react';
 import Websocket from 'react-websocket';
 import axios from 'axios';
 
-import { PullRequestCard } from './PullRequestCard';
+import { DashboardCard } from './DashboardCard';
 import { LoadingSpinner, ShowMore } from './components';
 import { itemsDisplayedStep, murdockHttpBaseUrl, murdockWsUrl } from './constants';
 
-class PullRequests extends Component {
+class Dashboard extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -79,7 +79,7 @@ class PullRequests extends Component {
             if (this.state.jobsBuilding.length) {
                 let jobs = this.state.jobsBuilding.slice();
                 for (let idx = 0; idx < jobs.length; idx++) {
-                    if (jobs[idx].prinfo.commit === msg.commit) {
+                    if (jobs[idx].commit.sha === msg.commit) {
                         jobs[idx].status = msg.status;
                     }
                 }
@@ -134,9 +134,9 @@ class PullRequests extends Component {
                 <div className="container">
                     {(this.state.isFetched) ? (
                         <>
-                        {this.state.jobsQueued.map(job => <PullRequestCard key={job.uid} job_type="queued" job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
-                        {this.state.jobsBuilding.map(job => <PullRequestCard key={job.uid} job_type="building" job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
-                        {this.state.jobsFinished.map(job => <PullRequestCard key={job.uid} job_type="finished" job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
+                        {this.state.jobsQueued.map(job => <DashboardCard key={job.uid} job_type="queued" job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
+                        {this.state.jobsBuilding.map(job => <DashboardCard key={job.uid} job_type="building" job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
+                        {this.state.jobsFinished.map(job => <DashboardCard key={job.uid} job_type="finished" job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
                         </>
                     ) : <LoadingSpinner />
                     }
@@ -153,4 +153,4 @@ class PullRequests extends Component {
     }
 }
 
-export default PullRequests;
+export default Dashboard;

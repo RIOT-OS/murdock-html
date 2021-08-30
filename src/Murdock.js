@@ -39,7 +39,7 @@ import {
 } from './userStorage';
 import { LoadingSpinner } from './components';
 
-const PullRequests = lazy(() => import('./PullRequests'));
+const Dashboard = lazy(() => import('./Dashboard'));
 const Nightlies = lazy(() => import('./Nightlies'));
 
 const MurdockNavBar = (props) => {
@@ -56,10 +56,13 @@ const MurdockNavBar = (props) => {
               <div className="collapse navbar-collapse" id="navbarNav">
                 <ul className="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll">
                   <li className="nav-item">
-                    <Link to="/" className={location.pathname === "/" ? "nav-link active": "nav-link"}>Pull Requests</Link>
+                    <Link to="/" className={location.pathname === "/" ? "nav-link active": "nav-link"}>Dashboard</Link>
                   </li>
                   <li className="nav-item">
                     <Link to="/nightlies" className={location.pathname === "/nightlies" ? "nav-link active": "nav-link"}>Nightlies</Link>
+                  </li>
+                  <li className="nav-item">
+                    <a className="nav-link" href={`${process.env.REACT_APP_MURDOCK_HTTP_BASE_URL}/api`} target="_blank" rel="noopener noreferrer">API <i className="bi-box-arrow-up-right"></i></a>
                   </li>
                 </ul>
                 <div className="d-flex align-items-center">
@@ -141,7 +144,7 @@ class Murdock extends Component {
           <MurdockNavBar user={this.state.user} onLoginSuccess={this.onLoginSuccess} onLoginFailure={this.onLoginFailure} onLogout={this.onLogout} />
           <Suspense fallback={<div className="container"><LoadingSpinner /></div>}>
               <Switch>
-                  <Route exact path="/" render={() => <PullRequests user={this.state.user} userPermissions={this.state.userPermissions} />} />
+                  <Route exact path="/" render={() => <Dashboard user={this.state.user} userPermissions={this.state.userPermissions} />} />
                   <Route path="/nightlies" component={Nightlies}/>
               </Switch>
           </Suspense>

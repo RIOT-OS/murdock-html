@@ -30,11 +30,11 @@ test('murdock main page', async () => {
         <Murdock />
     );
     await waitFor(() => screen.getByText("Loading..."));
-    expect(screen.getByText("Pull Requests")).toBeDefined();
+    expect(screen.getByText("Dashboard")).toBeDefined();
     expect(screen.getByText((content, element) => {
         return (
             element.className === "nav-link active" &&
-            content === "Pull Requests"
+            content === "Dashboard"
         );
     })).toBeDefined();
 
@@ -42,6 +42,13 @@ test('murdock main page', async () => {
         return (
             element.className === "nav-link" &&
             content === "Nightlies"
+        );
+    })).toBeDefined();
+
+    expect(screen.getByText((content, element) => {
+        return (
+            element.className === "nav-link" &&
+            content === "API"
         );
     })).toBeDefined();
 });
