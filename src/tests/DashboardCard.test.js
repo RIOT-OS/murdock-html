@@ -45,7 +45,7 @@ test('pull request success card title', async () => {
             element.href === "http://localhost/test" &&
             element.target === "_blank" &&
             element.rel === "noreferrer noopener" &&
-            content === "test"
+            content === "PR: test"
         )
       })).toBeDefined();
 })
@@ -65,7 +65,7 @@ test('pull request errored card title', async () => {
             element.href === "http://localhost/test" &&
             element.target === "_blank" &&
             element.rel === "noreferrer noopener" &&
-            content === "test"
+            content === "PR: test"
         )
       })).toBeDefined();
 })
@@ -73,7 +73,7 @@ test('pull request errored card title', async () => {
 test('pull request building card title', async () => {
     const job = { prinfo: { title: "test" } };
     render(<DashboardCardTitle jobType="building" job={job} />);
-    expect(screen.getByText("test")).toBeDefined();
+    expect(screen.getByText("PR: test")).toBeDefined();
 
     expect(screen.queryByText((content, element) => {
         return element.className === "link-light link-underline-hover" && element.href
@@ -83,7 +83,7 @@ test('pull request building card title', async () => {
 test('pull request queued card title', async () => {
     const job = { prinfo: { title: "test" } };
     render(<DashboardCardTitle title="test" jobType="queued" job={job} />);
-    expect(screen.getByText("test")).toBeDefined();
+    expect(screen.getByText("PR: test")).toBeDefined();
     expect(screen.queryByText((content, element) => {
         return element.className === "link-light link-underline-hover" && element.href
       })).toBeNull();

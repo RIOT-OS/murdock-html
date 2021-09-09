@@ -32,9 +32,9 @@ import { CommitCol, DateCol, LinkCol, RuntimeCol, UserCol } from './components';
 export const DashboardCardTitle = (props) => {
 
     const removeJob = (type) => {
-        const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.branch})`
+        const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.ref})`
         axios.delete(
-            `${murdockHttpBaseUrl}/jobs/${type}/${props.job.commit.sha}`,
+            `${murdockHttpBaseUrl}/jobs/${type}/${props.job.uid}`,
             {
                 headers: {
                     "Authorization": props.user.token,
@@ -53,19 +53,19 @@ export const DashboardCardTitle = (props) => {
     }
 
     const cancel = () => {
-        const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.branch})`
+        const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.ref})`
         console.log(`Canceling queued job ${props.job.commit.sha} ${context}`)
         removeJob("queued");
     }
 
     const abort = () => {
-        const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.branch})`
+        const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.ref})`
         console.log(`Stopping building job ${props.job.commit.sha} ${context}`)
         removeJob("building");
     }
 
     const restart = () => {
-        const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.branch})`
+        const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.ref})`
         console.log(`Restarting job ${props.job.commit.sha} ${context}`)
         axios.post(
             `${murdockHttpBaseUrl}/jobs/finished/${props.job.uid}`, {},
@@ -83,6 +83,19 @@ export const DashboardCardTitle = (props) => {
             console.log(error);
         });
     }
+
+    const refRepr = (ref) => {
+        if (ref) {
+            const refElem = ref.split("/");
+            let refType = "Branch";
+            if (refElem[1] === "tags") {
+                refType = "Tag";
+            }
+            return `${refType}: ${refElem[2]}`
+        }
+
+        return "";
+    };
 
     const cancelAction = (props.permissions === "push" && props.jobType === "queued") ? (
         <button className={`btn badge bg-${cardColor[props.jobType]} text-danger fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cancel" onClick={cancel}>
@@ -102,7 +115,7 @@ export const DashboardCardTitle = (props) => {
         </button>
     ) : null;
 
-    const title = (props.job.prinfo) ? props.job.prinfo.title : props.job.branch
+    const title = (props.job.prinfo) ? `PR: ${props.job.prinfo.title}` : refRepr(props.job.ref)
 
     return (
         <div className="row align-items-center">
@@ -129,7 +142,7 @@ export const DashboardCardInfo = (props) => {
                 (props.job.prinfo) ? (
                     <LinkCol title={`PR #${props.job.prinfo.number}`} url={props.job.prinfo.url} color={linkColor[props.jobType]} />
                 ): (
-                    <LinkCol title={`${props.job.branch}`} url={`https://github.com/${process.env.REACT_APP_GITHUB_REPO}/tree/${props.job.branch}`} color={linkColor[props.jobType]} />
+                    <LinkCol title={`${props.job.ref.split("/")[2]}`} url={`https://github.com/${process.env.REACT_APP_GITHUB_REPO}/tree/${props.job.ref.split("/")[2]}`} color={linkColor[props.jobType]} />
                 )
             }
             <CommitCol color={linkColor[props.jobType]} commit={props.job.commit.sha} />

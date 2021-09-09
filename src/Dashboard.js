@@ -79,7 +79,7 @@ class Dashboard extends Component {
             if (this.state.jobsBuilding.length) {
                 let jobs = this.state.jobsBuilding.slice();
                 for (let idx = 0; idx < jobs.length; idx++) {
-                    if (jobs[idx].commit.sha === msg.commit) {
+                    if (jobs[idx].uid === msg.uid) {
                         jobs[idx].status = msg.status;
                     }
                 }

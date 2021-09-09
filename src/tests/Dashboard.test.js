@@ -165,7 +165,7 @@ test('fetch and display pull requests', async () => {
     })).toBeDefined();
 
     // send pr_status command via websocket
-    await waitFor(() => wsServer.send('{"cmd" : "status", "commit" : "5ef4c0a778ab7d4f625d63fdafe5e8347bfe479d", "status" : {"status": "working"}}'));
+    await waitFor(() => wsServer.send('{"cmd" : "status", "uid" : "12345", "status" : {"status": "working"}}'));
     expect(screen.getByText("working")).toBeDefined();
 
     // smoke test to trigger the websocket client on close callback function
