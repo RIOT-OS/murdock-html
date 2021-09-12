@@ -74,9 +74,9 @@ export const CommitCol = (props) => {
 
 export const DateCol = (props) => {
     return (
-        <div className="col col-md-4">
+        <div className="col col-md-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${moment(props.date).fromNow()}`}>
             <i className="bi-calendar2 me-1"></i>
-            {`${props.date.toLocaleString()} (${moment(props.date).fromNow()})`}
+            {`${props.date.toLocaleString()}`}
         </div>
     );
 };

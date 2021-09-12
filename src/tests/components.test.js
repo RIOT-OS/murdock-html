@@ -67,7 +67,7 @@ test('commit column', async () => {
 test('date column', async () => {
     const date = new Date(123456000);
     render(<DateCol date={date} />);
-    expect(screen.getByText(`${date.toLocaleString()} (${moment(date).fromNow()})`)).toBeDefined();
+    expect(screen.getByText(`${date.toLocaleString()}`)).toBeDefined();
 })
 
 test('runtime column', async () => {

@@ -86,6 +86,17 @@ class Dashboard extends Component {
                 this.setState({jobsBuilding: jobs});
             }
         }
+        else if (msg.cmd === "output" && this.state.isFetched) {
+            if (this.state.jobsBuilding.length) {
+                let jobs = this.state.jobsBuilding.slice();
+                for (let idx = 0; idx < jobs.length; idx++) {
+                    if (jobs[idx].uid === msg.uid) {
+                        jobs[idx].output = msg.output;
+                    }
+                }
+                this.setState({jobsBuilding: jobs});
+            }
+        }
     }
 
     handleWsOpen() {

@@ -261,7 +261,7 @@ test('pull request failed jobs null', async () => {
     for (let idx = 0; idx < jobTypes.length; ++idx ) {
         render(<DashboardCardFailedJobs jobType={jobTypes[idx]} job={job} />);
         expect(screen.queryByText((content, element) => {
-            return content === "Failed jobs:";
+            return content === "Failed jobs";
         })).toBeNull();
         expect(screen.queryByText((content, element) => {
             return element.className === "row";
@@ -276,7 +276,7 @@ test('pull request failed jobs empty', async () => {
     for (let idx = 0; idx < jobTypes.length; ++idx ) {
         render(<DashboardCardFailedJobs jobType={jobTypes[idx]} job={job} />);
         expect(screen.queryByText((content, element) => {
-            return content === "Failed jobs:";
+            return content === "Failed jobs";
         })).toBeNull();
         expect(screen.queryByText((content, element) => {
             return element.className === "row";
@@ -297,7 +297,7 @@ test('pull request failed jobs no href', async () => {
     }
     for (let idx = 0; idx < jobTypes.length; ++idx ) {
         render(<DashboardCardFailedJobs jobType={jobTypes[idx]} job={job} />);
-        expect(screen.getByText("Failed jobs:")).toBeDefined();
+        expect(screen.getByText("Failed jobs (2)")).toBeDefined();
         expect(screen.getByText((content, element) => {
             return (
                 element.className === "d-flex flex-wrap" &&
@@ -330,7 +330,7 @@ test('pull request failed jobs with href', async () => {
     }
     for (let idx = 0; idx < jobTypes.length; ++idx ) {
         render(<DashboardCardFailedJobs jobType={jobTypes[idx]} job={job} />);
-        expect(screen.getByText("Failed jobs:")).toBeDefined();
+        expect(screen.getByText("Failed jobs (2)")).toBeDefined();
         expect(screen.getByText((content, element) => {
             return (
                 element.className === "d-flex flex-wrap" &&

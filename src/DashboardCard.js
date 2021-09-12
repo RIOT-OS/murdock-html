@@ -97,23 +97,23 @@ export const DashboardCardTitle = (props) => {
         return "";
     };
 
-    const cancelAction = (props.permissions === "push" && props.jobType === "queued") ? (
+    const cancelAction = (props.permissions === "push" && props.jobType === "queued") && (
         <button className={`btn badge bg-${cardColor[props.jobType]} text-danger fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cancel" onClick={cancel}>
             <i className="bi-x-circle"></i>
         </button>
-    ) : null;
+    );
 
-    const stopAction = (props.permissions === "push" && props.jobType === "building") ? (
+    const stopAction = (props.permissions === "push" && props.jobType === "building") && (
         <button className={`btn badge bg-${cardColor[props.jobType]} text-danger fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Abort" onClick={abort}>
             <i className="bi-x-circle"></i>
         </button>
-    ) : null;
+    );
 
-    const restartAction = (props.permissions === "push" && ["passed", "errored"].includes(props.jobType)) ? (
+    const restartAction = (props.permissions === "push" && ["passed", "errored"].includes(props.jobType)) && (
         <button className={`btn badge bg-${cardColor[props.jobType]} text-${textColor[props.jobType]} fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Restart" onClick={restart}>
             <i className="bi-arrow-clockwise"></i>
         </button>
-    ) : null;
+    );
 
     const title = (props.job.prinfo) ? `PR: ${props.job.prinfo.title}` : refRepr(props.job.ref)
 
@@ -147,7 +147,14 @@ export const DashboardCardInfo = (props) => {
             }
             <CommitCol color={linkColor[props.jobType]} commit={props.job.commit.sha} />
             <DateCol date={prDate} />
-            {(props.job.runtime) ? <RuntimeCol runtime={moment.duration(props.job.runtime * -1000).humanize()} /> : null}
+            {(props.job.runtime) ? <RuntimeCol runtime={moment.duration(props.job.runtime * -1000).humanize()} /> : (<div className="col-md-2"></div>)}
+            {(props.job.output) && (
+                <div className="col col-md-1 text-end" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Output">
+                <button className="btn p-0" type="button" data-bs-toggle="collapse" data-bs-target={`#output${props.job.uid}`} aria-expanded="false" aria-controls={`output${props.job.uid}`}>
+                    <i className="bi-terminal-fill"></i>
+                </button>
+                </div>
+            )}
         </div>
     );
 }
@@ -173,7 +180,7 @@ export const DashboardCardStatus = (props) => {
         progressPercent = Math.round((jobsDone * 100) / props.status.total);
         buildStatus = (
             <>
-            <div className="col col-md-4">
+            <div className="col col-md-3">
                 <i className="bi-bar-chart-line"></i>
                 <span className="m-1">
                     {`fail: ${props.status.failed} pass: ${props.status.passed} done: ${jobsDone}/${props.status.total}`}
@@ -216,12 +223,23 @@ export const DashboardCardStatus = (props) => {
     );
 }
 
+export const DashboardCardOutput = (props) => {
+    const collapseClass = (props.jobType === "building") ? "collapse show" : "collapse"
+    return (
+        (props.job.output) ? (
+            <div className={`${collapseClass} bg-dark p-2 overflow-auto`} style={{ maxHeight: "400px" }} id={`output${props.job.uid}`}>
+                <pre className="text-white">{props.job.output}</pre>
+            </div>
+        ) : null
+    );
+}
+
 export const DashboardCardFailedJobs = (props) => {
     if (!["building", "errored"].includes(props.jobType) || !props.job.status) {
         return null;
     }
 
-    const failed_jobs = (props.job.status.failed_jobs && props.job.status.failed_jobs.length) ? (
+    const failed_jobs = (props.job.status.failed_jobs && props.job.status.failed_jobs.length) && (
         props.job.status.failed_jobs.map((jobs, index) =>
             <div key={`pr-${props.job.uid}-${jobs.name}-${index}`} className="col-md-3 px-2">
             {(jobs.href) ? (
@@ -233,18 +251,18 @@ export const DashboardCardFailedJobs = (props) => {
             )}
             </div>
         )
-    ) : null;
+    );
 
     return (
         <>
-        {(failed_jobs) ? (
+        {(failed_jobs) && (
             <div className="row">
-                <h6 className='my-2'><strong>Failed jobs:</strong></h6>
+                <h6 className='my-2'><strong>Failed jobs ({props.job.status.failed_jobs.length})</strong></h6>
                 <div className="d-flex flex-wrap">
                     {failed_jobs}
                 </div>
             </div>
-        ) : null}
+        )}
         </>
     );
 }
@@ -266,7 +284,8 @@ export const DashboardCard = (props) => {
             </div>
             <div className="card-body">
                 <DashboardCardInfo jobType={jobType} job={props.job} />
-                <DashboardCardStatus jobType={jobType} status={props.job.status} />
+                <DashboardCardStatus jobType={jobType} job={props.job} status={props.job.status} />
+                <DashboardCardOutput jobType={jobType} job={props.job} />
                 <DashboardCardFailedJobs jobType={jobType} job={props.job} />
             </div>
         </div>
