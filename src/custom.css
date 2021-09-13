@@ -32,4 +32,6 @@
 }
 pre {
   display: inline;
+  font-size: 12px;
+  font-family: "Lucida Console", Courier, monospace;
 }

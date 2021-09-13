@@ -21,8 +21,10 @@
  * Author: Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
+import { useEffect } from 'react';
 import moment from 'moment';
 import axios from 'axios';
+import $ from 'jquery';
 
 import { 
     cardColor, cardIcon, linkColor, textColor, murdockHttpBaseUrl
@@ -224,11 +226,50 @@ export const DashboardCardStatus = (props) => {
 }
 
 export const DashboardCardOutput = (props) => {
-    const collapseClass = (props.jobType === "building") ? "collapse show" : "collapse"
+    const collapseClass = (props.jobType === "building") ? "collapse show" : "collapse";
+    const outputDivScrollableID = `outputScrollable${props.job.uid}`;
+    const scrollBottomButtonID = `scrollBottomButton${props.job.uid}`;
+    const scrollTopButtonID = `scrollTopButton${props.job.uid}`;
+
+    const scrollToBottom = () => {
+        const scrollableDiv = document.getElementById(outputDivScrollableID);
+        $(`#${outputDivScrollableID}`).animate({
+            scrollTop: scrollableDiv.scrollHeight - scrollableDiv.clientHeight
+        }, 250);
+    }
+
+    const scrollToTop = () => {
+        $(`#${outputDivScrollableID}`).animate({scrollTop: 0}, 250);
+    }
+
+    useEffect(() => {
+        const scrollableDiv = document.getElementById(outputDivScrollableID);
+        $(`#${outputDivScrollableID}`).on("scroll", () => {
+            if (scrollableDiv.scrollTop === 0) {
+                $(`#${scrollTopButtonID}`).addClass("invisible")
+            }
+            else if (scrollableDiv.scrollTop === scrollableDiv.scrollHeight - scrollableDiv.clientHeight) {
+                $(`#${scrollBottomButtonID}`).addClass("invisible")
+            }
+            else {
+                $(`#${scrollTopButtonID}`).removeClass("invisible")
+                $(`#${scrollBottomButtonID}`).removeClass("invisible")
+            }
+        });
+    });
+
     return (
         (props.job.output) ? (
-            <div className={`${collapseClass} bg-dark p-2 overflow-auto`} style={{ maxHeight: "400px" }} id={`output${props.job.uid}`}>
-                <pre className="text-white">{props.job.output}</pre>
+            <div className={`${collapseClass} position-relative`} style={{ maxHeight: "400px" }} id={`output${props.job.uid}`}>
+                <div className="bg-dark p-2 overflow-auto" style={{ maxHeight: "400px" }} id={outputDivScrollableID}>
+                    <pre className="text-white">{props.job.output}</pre>
+                </div>
+                <button className="btn btn-sm position-absolute bottom-0 end-0 m-2 p-0" id={scrollBottomButtonID} data-bs-toggle="tooltip" data-bs-placement="top" title="Go to bottom" onClick={scrollToBottom}>
+                    <i className="bi-arrow-down-square text-white"></i>
+                </button>
+                <button className="btn btn-sm position-absolute top-0 end-0 m-2 p-0 invisible" id={scrollTopButtonID} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Go to top" onClick={scrollToTop}>
+                    <i className="bi-arrow-up-square text-white"></i>
+                </button>
             </div>
         ) : null
     );
