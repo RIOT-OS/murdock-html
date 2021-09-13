@@ -31,27 +31,27 @@ export const cardColor = {
     "errored": "danger",
     "passed": "success",
     "queued": "info",
-    "building": "warning",
+    "running": "warning",
 };
 
 export const cardIcon = {
     "errored": (<i className="bi-x-circle-fill me-2"></i>),
     "passed": (<i className="bi-check-circle-fill me-2"></i>),
     "queued": (<i className="bi-inbox me-2"></i>),
-    "building": (<span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>),
+    "running": (<span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>),
 };
 
 export const linkColor = {
     "errored": "danger",
     "passed": "success",
     "queued": "primary",
-    "building": "primary",
+    "running": "primary",
 };
 
 export const textColor = {
     "errored": "light",
     "passed": "light",
     "queued": "dark",
-    "building": "dark",
+    "running": "dark",
 };
 

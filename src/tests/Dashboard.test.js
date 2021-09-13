@@ -79,7 +79,7 @@ const server = setupServer(
         ]
         return res(ctx.json(
             {
-                "building": [
+                "running": [
                     {
                         "uid": "12345",
                         "commit": {

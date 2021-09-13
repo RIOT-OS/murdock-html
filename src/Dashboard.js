@@ -36,7 +36,7 @@ class Dashboard extends Component {
             alerts: [],
             isFetched: false,
             jobsQueued: [],
-            jobsBuilding: [],
+            jobsRunning: [],
             jobsFinished: [],
             jobsFinishedDisplayedLimit: itemsDisplayedStep,
         };
@@ -53,12 +53,12 @@ class Dashboard extends Component {
             .then(res => {
                 const jobs = res.data;
                 const queued = (jobs.queued) ? jobs.queued : [];
-                const building = (jobs.building) ? jobs.building : [];
+                const running = (jobs.running) ? jobs.running : [];
                 const finished = (jobs.finished) ? jobs.finished : [];
                 const newState = { 
                     isFetched : true,
                     jobsQueued: queued,
-                    jobsBuilding: building,
+                    jobsRunning: running,
                     jobsFinished: finished,
                     jobsFinishedDisplayedLimit: (limit !== this.state.jobsFinishedDisplayedLimit) ? limit : this.state.jobsFinishedDisplayedLimit
                 }
@@ -76,25 +76,25 @@ class Dashboard extends Component {
             this.fetchJobs(this.state.jobsFinishedDisplayedLimit);
         }
         else if (msg.cmd === "status" && this.state.isFetched) {
-            if (this.state.jobsBuilding.length) {
-                let jobs = this.state.jobsBuilding.slice();
+            if (this.state.jobsRunning.length) {
+                let jobs = this.state.jobsRunning.slice();
                 for (let idx = 0; idx < jobs.length; idx++) {
                     if (jobs[idx].uid === msg.uid) {
                         jobs[idx].status = msg.status;
                     }
                 }
-                this.setState({jobsBuilding: jobs});
+                this.setState({jobsRunning: jobs});
             }
         }
         else if (msg.cmd === "output" && this.state.isFetched) {
-            if (this.state.jobsBuilding.length) {
-                let jobs = this.state.jobsBuilding.slice();
+            if (this.state.jobsRunning.length) {
+                let jobs = this.state.jobsRunning.slice();
                 for (let idx = 0; idx < jobs.length; idx++) {
                     if (jobs[idx].uid === msg.uid) {
                         jobs[idx].output = msg.output;
                     }
                 }
-                this.setState({jobsBuilding: jobs});
+                this.setState({jobsRunning: jobs});
             }
         }
     }
@@ -146,7 +146,7 @@ class Dashboard extends Component {
                     {(this.state.isFetched) ? (
                         <>
                         {this.state.jobsQueued.map(job => <DashboardCard key={job.uid} job_type="queued" job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
-                        {this.state.jobsBuilding.map(job => <DashboardCard key={job.uid} job_type="building" job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
+                        {this.state.jobsRunning.map(job => <DashboardCard key={job.uid} job_type="running" job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
                         {this.state.jobsFinished.map(job => <DashboardCard key={job.uid} job_type="finished" job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
                         </>
                     ) : <LoadingSpinner />

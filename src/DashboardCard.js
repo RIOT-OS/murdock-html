@@ -62,8 +62,8 @@ export const DashboardCardTitle = (props) => {
 
     const abort = () => {
         const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.ref})`
-        console.log(`Stopping building job ${props.job.commit.sha} ${context}`)
-        removeJob("building");
+        console.log(`Stopping running job ${props.job.commit.sha} ${context}`)
+        removeJob("running");
     }
 
     const restart = () => {
@@ -105,7 +105,7 @@ export const DashboardCardTitle = (props) => {
         </button>
     );
 
-    const stopAction = (props.permissions === "push" && props.jobType === "building") && (
+    const stopAction = (props.permissions === "push" && props.jobType === "running") && (
         <button className={`btn badge bg-${cardColor[props.jobType]} text-danger fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Abort" onClick={abort}>
             <i className="bi-x-circle"></i>
         </button>
@@ -150,7 +150,7 @@ export const DashboardCardInfo = (props) => {
             <CommitCol color={linkColor[props.jobType]} commit={props.job.commit.sha} />
             <DateCol date={prDate} />
             {(props.job.runtime) ? <RuntimeCol runtime={moment.duration(props.job.runtime * -1000).humanize()} /> : (<div className="col-md-2"></div>)}
-            {((props.jobType === "building")) && (
+            {((props.jobType === "running")) && (
                 <div className="col col-md-1 text-end" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Output">
                 <button className="btn p-0" type="button" data-bs-toggle="collapse" data-bs-target={`#output${props.job.uid}`} aria-expanded="false" aria-controls={`output${props.job.uid}`}>
                     <i className="bi-terminal-fill"></i>
@@ -164,7 +164,7 @@ export const DashboardCardInfo = (props) => {
 export const DashboardCardStatus = (props) => {
     if ((!props.status) || 
         (props.jobType === "errored" && ((!props.status.status) || (props.status.status && props.status.status !== "canceled"))) ||
-        (!["errored", "building"].includes(props.jobType))) {
+        (!["errored", "running"].includes(props.jobType))) {
         return null;
     }
 
@@ -275,7 +275,7 @@ export const DashboardCardOutput = (props) => {
 }
 
 export const DashboardCardFailedJobs = (props) => {
-    if (!["building", "errored"].includes(props.jobType) || !props.job.status) {
+    if (!["running", "errored"].includes(props.jobType) || !props.job.status) {
         return null;
     }
 
@@ -325,7 +325,7 @@ export const DashboardCard = (props) => {
             <div className="card-body">
                 <DashboardCardInfo jobType={jobType} job={props.job} />
                 <DashboardCardStatus jobType={jobType} job={props.job} status={props.job.status} />
-                {(jobType === "building") && <DashboardCardOutput jobType={jobType} job={props.job} />}
+                {(jobType === "running") && <DashboardCardOutput jobType={jobType} job={props.job} />}
                 <DashboardCardFailedJobs jobType={jobType} job={props.job} />
             </div>
         </div>
