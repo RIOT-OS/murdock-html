@@ -150,7 +150,7 @@ export const DashboardCardInfo = (props) => {
             <CommitCol color={linkColor[props.jobType]} commit={props.job.commit.sha} />
             <DateCol date={prDate} />
             {(props.job.runtime) ? <RuntimeCol runtime={moment.duration(props.job.runtime * -1000).humanize()} /> : (<div className="col-md-2"></div>)}
-            {(props.job.output) && (
+            {((props.jobType === "building")) && (
                 <div className="col col-md-1 text-end" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Output">
                 <button className="btn p-0" type="button" data-bs-toggle="collapse" data-bs-target={`#output${props.job.uid}`} aria-expanded="false" aria-controls={`output${props.job.uid}`}>
                     <i className="bi-terminal-fill"></i>
@@ -226,7 +226,6 @@ export const DashboardCardStatus = (props) => {
 }
 
 export const DashboardCardOutput = (props) => {
-    const collapseClass = (props.jobType === "building") ? "collapse show" : "collapse";
     const outputDivScrollableID = `outputScrollable${props.job.uid}`;
     const scrollBottomButtonID = `scrollBottomButton${props.job.uid}`;
     const scrollTopButtonID = `scrollTopButton${props.job.uid}`;
@@ -260,7 +259,7 @@ export const DashboardCardOutput = (props) => {
 
     return (
         (props.job.output) ? (
-            <div className={`${collapseClass} position-relative`} style={{ maxHeight: "400px" }} id={`output${props.job.uid}`}>
+            <div className="collapse show position-relative" style={{ maxHeight: "400px" }} id={`output${props.job.uid}`}>
                 <div className="bg-dark p-2 overflow-auto" style={{ maxHeight: "400px" }} id={outputDivScrollableID}>
                     <pre className="text-white">{props.job.output}</pre>
                 </div>
@@ -326,7 +325,7 @@ export const DashboardCard = (props) => {
             <div className="card-body">
                 <DashboardCardInfo jobType={jobType} job={props.job} />
                 <DashboardCardStatus jobType={jobType} job={props.job} status={props.job.status} />
-                <DashboardCardOutput jobType={jobType} job={props.job} />
+                {(jobType === "building") && <DashboardCardOutput jobType={jobType} job={props.job} />}
                 <DashboardCardFailedJobs jobType={jobType} job={props.job} />
             </div>
         </div>
