@@ -21,7 +21,8 @@
  * Author: Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Collapse } from 'react-collapse';
 import moment from 'moment';
 import axios from 'axios';
 import $ from 'jquery';
@@ -150,10 +151,10 @@ export const DashboardCardInfo = (props) => {
             <CommitCol color={linkColor[props.jobType]} commit={props.job.commit.sha} />
             <DateCol date={prDate} />
             {(props.job.runtime) ? <RuntimeCol runtime={moment.duration(props.job.runtime * -1000).humanize()} /> : (<div className="col-md-2"></div>)}
-            {((props.jobType === "running")) && (
-                <div className="col col-md-1 text-end" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Output">
-                <button className="btn p-0" type="button" data-bs-toggle="collapse" data-bs-target={`#output${props.job.uid}`} aria-expanded="false" aria-controls={`output${props.job.uid}`}>
-                    <i className="bi-terminal-fill"></i>
+            {((props.job.output || props.job.output_text_url)) && (
+                <div className="col col-md-1 text-end" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${(props.outputVisible) ? "Hide" : "Show"} output`}>
+                <button className={"btn p-0"} type="button" onClick={props.toggleOutput}>
+                    <i className={`bi-terminal-fill ${(props.outputVisible) && "text-muted"}`}></i>
                 </button>
                 </div>
             )}
@@ -226,6 +227,7 @@ export const DashboardCardStatus = (props) => {
 }
 
 export const DashboardCardOutput = (props) => {
+    const [output, setOutput] = useState(null);
     const outputDivScrollableID = `outputScrollable${props.job.uid}`;
     const scrollBottomButtonID = `scrollBottomButton${props.job.uid}`;
     const scrollTopButtonID = `scrollTopButton${props.job.uid}`;
@@ -235,11 +237,11 @@ export const DashboardCardOutput = (props) => {
         $(`#${outputDivScrollableID}`).animate({
             scrollTop: scrollableDiv.scrollHeight - scrollableDiv.clientHeight
         }, 250);
-    }
+    };
 
     const scrollToTop = () => {
         $(`#${outputDivScrollableID}`).animate({scrollTop: 0}, 250);
-    }
+    };
 
     useEffect(() => {
         const scrollableDiv = document.getElementById(outputDivScrollableID);
@@ -255,13 +257,32 @@ export const DashboardCardOutput = (props) => {
                 $(`#${scrollBottomButtonID}`).removeClass("invisible")
             }
         });
-    });
+
+        if (props.outputVisible) {
+            if (!output && props.job.output_text_url) {
+                axios.get(props.job.output_text_url)
+                .then(res => {
+                    setOutput(res.data);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+            } else if (props.job.output && props.jobType === "running") {
+                setOutput(props.job.output);
+            }
+        }
+    }, [
+        outputDivScrollableID, props.job.output, props.job.output_text_url,
+        props.jobType, props.outputVisible, scrollBottomButtonID,
+        scrollTopButtonID, output
+    ]);
 
     return (
-        (props.job.output) ? (
-            <div className="collapse show position-relative" style={{ maxHeight: "400px" }} id={`output${props.job.uid}`}>
+        (output) ? (
+            <Collapse isOpened={props.outputVisible}>
+            <div className="position-relative" style={{ maxHeight: "400px" }} id={`output${props.job.uid}`}>
                 <div className="bg-dark p-2 overflow-auto" style={{ maxHeight: "400px" }} id={outputDivScrollableID}>
-                    <pre className="text-white">{props.job.output}</pre>
+                    <pre className="text-white">{output}</pre>
                 </div>
                 <button className="btn btn-sm position-absolute bottom-0 end-0 m-2 p-0" id={scrollBottomButtonID} data-bs-toggle="tooltip" data-bs-placement="top" title="Go to bottom" onClick={scrollToBottom}>
                     <i className="bi-arrow-down-square text-white"></i>
@@ -270,6 +291,7 @@ export const DashboardCardOutput = (props) => {
                     <i className="bi-arrow-up-square text-white"></i>
                 </button>
             </div>
+            </Collapse>
         ) : null
     );
 }
@@ -309,6 +331,11 @@ export const DashboardCardFailedJobs = (props) => {
 
 export const DashboardCard = (props) => {
     let jobType = (props.job_type === "finished") ? props.job.result: props.job_type;
+    const [outputVisible, setOutputVisible] = useState((jobType === "running"))
+
+    const toggleOutput = () => {
+        setOutputVisible(!outputVisible);
+    };
 
     return (
         <div>
@@ -323,9 +350,9 @@ export const DashboardCard = (props) => {
                 />
             </div>
             <div className="card-body">
-                <DashboardCardInfo jobType={jobType} job={props.job} />
+                <DashboardCardInfo jobType={jobType} job={props.job} outputVisible={outputVisible} toggleOutput={toggleOutput} />
                 <DashboardCardStatus jobType={jobType} job={props.job} status={props.job.status} />
-                {(jobType === "running") && <DashboardCardOutput jobType={jobType} job={props.job} />}
+                <DashboardCardOutput jobType={jobType} outputVisible={outputVisible} job={props.job} />
                 <DashboardCardFailedJobs jobType={jobType} job={props.job} />
             </div>
         </div>

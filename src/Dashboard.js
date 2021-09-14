@@ -91,7 +91,7 @@ class Dashboard extends Component {
                 let jobs = this.state.jobsRunning.slice();
                 for (let idx = 0; idx < jobs.length; idx++) {
                     if (jobs[idx].uid === msg.uid) {
-                        jobs[idx].output = msg.output;
+                        jobs[idx].output += msg.line;
                     }
                 }
                 this.setState({jobsRunning: jobs});

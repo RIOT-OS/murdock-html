@@ -35,3 +35,6 @@ pre {
   font-size: 12px;
   font-family: "Lucida Console", Courier, monospace;
 }
+.ReactCollapse--collapse {
+  transition: height 250ms;
+}
