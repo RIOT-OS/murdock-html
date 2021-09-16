@@ -112,7 +112,7 @@ class Dashboard extends Component {
     }
 
     componentDidMount() {
-        document.title = "Murdock - Pull Requests";
+        document.title = "Murdock - Dashboard";
         if (!this.state.isFetched) {
             this.fetchJobs(this.state.jobsFinishedDisplayedLimit);
         }
