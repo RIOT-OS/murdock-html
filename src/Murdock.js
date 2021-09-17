@@ -46,7 +46,7 @@ const MurdockNavBar = (props) => {
     const location = useLocation();
 
     return (
-        <div>
+        <>
           <nav className="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
             <div className="container-fluid">
               <a className="navbar-brand" href={`https://github.com/${process.env.REACT_APP_GITHUB_REPO}`} target="_blank" rel="noopener noreferrer"><i className="bi-github me-1"></i>{process.env.REACT_APP_GITHUB_REPO}</a>
@@ -71,7 +71,7 @@ const MurdockNavBar = (props) => {
               </div>
             </div>
           </nav>
-        </div>
+        </>
     );
 }
 
