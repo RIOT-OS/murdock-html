@@ -39,6 +39,10 @@ class Dashboard extends Component {
             jobsRunning: [],
             jobsFinished: [],
             jobsFinishedDisplayedLimit: itemsDisplayedStep,
+            jobType: "pr",
+            prNumber: "",
+            commitSha: "",
+            commitAuthor: "",
         };
         this.fetchJobs = this.fetchJobs.bind(this);
         this.handleWsData = this.handleWsData.bind(this);
@@ -46,10 +50,37 @@ class Dashboard extends Component {
         this.handleWsClose = this.handleWsClose.bind(this);
         this.displayMore = this.displayMore.bind(this);
         this.notify = this.notify.bind(this);
+        this.search = this.search.bind(this);
+        this.isPRClicked = this.isPRClicked.bind(this);
+        this.isBranchClicked = this.isBranchClicked.bind(this);
+        this.isTagClicked = this.isTagClicked.bind(this);
+        this.prNumberChanged = this.prNumberChanged.bind(this);
+        this.commitShaChanged = this.commitShaChanged.bind(this);
+        this.commitAuthorChanged = this.commitAuthorChanged.bind(this);
+        this.keyUp = this.keyUp.bind(this);
     }
 
-    fetchJobs(limit) {
-        axios.get(`${murdockHttpBaseUrl}/jobs?limit=${limit}`)
+    fetchJobs(jobType, limit) {
+        let queryString = `limit=${limit}`;
+        if (jobType === "pr") {
+            queryString = `${queryString}&is_pr=true`
+        }
+        if (jobType === "branch") {
+            queryString = `${queryString}&is_branch=true`
+        }
+        if (jobType === "tag") {
+            queryString = `${queryString}&is_tag=true`
+        }
+        if (this.state.prNumber) {
+            queryString = `${queryString}&prnum=${this.state.prNumber}`
+        }
+        if (this.state.commitSha) {
+            queryString = `${queryString}&sha=${this.state.commitSha}`
+        }
+        if (this.state.commitAuthor) {
+            queryString = `${queryString}&author=${this.state.commitAuthor}`
+        }
+        axios.get(`${murdockHttpBaseUrl}/jobs?${queryString}`)
             .then(res => {
                 const jobs = res.data;
                 const queued = (jobs.queued) ? jobs.queued : [];
@@ -60,7 +91,8 @@ class Dashboard extends Component {
                     jobsQueued: queued,
                     jobsRunning: running,
                     jobsFinished: finished,
-                    jobsFinishedDisplayedLimit: (limit !== this.state.jobsFinishedDisplayedLimit) ? limit : this.state.jobsFinishedDisplayedLimit
+                    jobsFinishedDisplayedLimit: limit,
+                    jobType: jobType,
                 }
                 this.setState(newState);
             })
@@ -73,7 +105,7 @@ class Dashboard extends Component {
     handleWsData(data) {
         const msg = JSON.parse(data);
         if (msg.cmd === "reload") {
-            this.fetchJobs(this.state.jobsFinishedDisplayedLimit);
+            this.fetchJobs(this.state.jobType, this.state.jobsFinishedDisplayedLimit);
         }
         else if (msg.cmd === "status" && this.state.isFetched) {
             if (this.state.jobsRunning.length) {
@@ -108,13 +140,13 @@ class Dashboard extends Component {
     }
 
     displayMore() {
-        this.fetchJobs(this.state.jobsFinished.length + itemsDisplayedStep);
+        this.fetchJobs(this.state.jobType, this.state.jobsFinished.length + itemsDisplayedStep);
     }
 
     componentDidMount() {
         document.title = "Murdock - Dashboard";
         if (!this.state.isFetched) {
-            this.fetchJobs(this.state.jobsFinishedDisplayedLimit);
+            this.fetchJobs(this.state.jobType, this.state.jobsFinishedDisplayedLimit);
         }
     }
 
@@ -126,6 +158,44 @@ class Dashboard extends Component {
             const alertsList = this.state.alerts.filter(item => item.uid !== uid);
             this.setState({alerts: alertsList});
         }, 6000);
+    }
+
+    isPRClicked() {
+        this.setState({isFetched: false});
+        this.fetchJobs("pr", this.state.jobsFinishedDisplayedLimit);
+    }
+
+    isBranchClicked() {
+        this.setState({isFetched: false});
+        this.fetchJobs("branch", this.state.jobsFinishedDisplayedLimit);
+    }
+
+    isTagClicked() {
+        this.setState({isFetched: false});
+        this.fetchJobs("tag", this.state.jobsFinishedDisplayedLimit);
+    }
+
+    prNumberChanged(event) {
+        this.setState({prNumber: event.target.value});
+    }
+
+    commitShaChanged(event) {
+        this.setState({commitSha: event.target.value});
+    }
+
+    commitAuthorChanged(event) {
+        this.setState({commitAuthor: event.target.value});
+    }
+
+    keyUp(event) {
+        if (event.key === 'Enter') {
+            this.search();
+        }
+    }
+
+    search() {
+        this.setState({isFetched: false});
+        this.fetchJobs(this.state.jobType, this.state.jobsFinishedDisplayedLimit);
     }
 
     render() {
@@ -145,6 +215,28 @@ class Dashboard extends Component {
                 <div className="container">
                     {(this.state.isFetched) ? (
                         <>
+                        <div className="btn-toolbar justify-content-center m-1" role="toolbar">
+                            <div className="btn-group me-1" role="group">
+                                <input type="radio" name="jobTypeRadio" className="btn-check" id="checkPRs" onClick={this.isPRClicked} defaultChecked={this.state.jobType === "pr"} />
+                                <label className="btn btn-outline-primary" htmlFor="checkPRs">PRs</label>
+                                <input type="radio" name="jobTypeRadio" className="btn-check" id="checkBranches" onClick={this.isBranchClicked} defaultChecked={this.state.jobType === "branch"} />
+                                <label className="btn btn-outline-primary" htmlFor="checkBranches">Branches</label>
+                                <input type="radio" name="jobTypeRadio" className="btn-check" id="checkTags" onClick={this.isTagClicked} defaultChecked={this.state.jobType === "tag"} />
+                                <label className="btn btn-outline-primary" htmlFor="checkTags">Tags</label>
+                            </div>
+                            <div className="input-group me-1">
+                                <div className="input-group-text" id="inputSearchPR">PR #</div>
+                                <input type="text" className="form-control" placeholder="PR number" aria-label="PR number" aria-describedby="inputSearchPR" value={this.state.prNumber} onChange={this.prNumberChanged} onKeyUp={this.keyUp} />
+                            </div>
+                            <div className="input-group me-1">
+                                <div className="input-group-text" id="inputSearchCommit"><i className="bi-tag"></i></div>
+                                <input type="text" className="form-control" placeholder="Commit SHA" aria-label="Commit SHA" aria-describedby="inputSearchCommit" value={this.state.commitSha} onChange={this.commitShaChanged} onKeyUp={this.keyUp} />
+                            </div>
+                            <div className="input-group me-1">
+                                <div className="input-group-text" id="inputSearchAuthor"><i className="bi-person"></i></div>
+                                <input type="text" className="form-control" placeholder="Commit author" aria-label="Commit author" aria-describedby="inputSearchAuthor" value={this.state.commitAuthor} onChange={this.commitAuthorChanged} onKeyUp={this.keyUp} />
+                            </div>
+                        </div>
                         {this.state.jobsQueued.map(job => <DashboardCard key={job.uid} job_type="queued" job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
                         {this.state.jobsRunning.map(job => <DashboardCard key={job.uid} job_type="running" job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
                         {this.state.jobsFinished.map(job => <DashboardCard key={job.uid} job_type="finished" job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
