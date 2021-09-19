@@ -338,7 +338,6 @@ export const DashboardCard = (props) => {
     };
 
     return (
-        <div>
         <div className={`card m-2 border-${cardColor[jobType]}`}>
             <div className={`card-header text-${textColor[jobType]} bg-${cardColor[jobType]}`}>
                 <DashboardCardTitle
@@ -355,7 +354,6 @@ export const DashboardCard = (props) => {
                 <DashboardCardOutput jobType={jobType} outputVisible={outputVisible} job={props.job} />
                 <DashboardCardFailedJobs jobType={jobType} job={props.job} />
             </div>
-        </div>
         </div>
     );
 };

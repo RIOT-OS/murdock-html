@@ -47,7 +47,7 @@ const MurdockNavBar = (props) => {
 
     return (
         <>
-          <nav className="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
+          <nav className="navbar navbar-expand-lg sticky-top shadow navbar-dark bg-dark">
             <div className="container-fluid">
               <a className="navbar-brand" href={`https://github.com/${process.env.REACT_APP_GITHUB_REPO}`} target="_blank" rel="noopener noreferrer"><i className="bi-github me-1"></i>{process.env.REACT_APP_GITHUB_REPO}</a>
               <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">

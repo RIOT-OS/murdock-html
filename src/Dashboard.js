@@ -130,7 +130,7 @@ class Dashboard extends Component {
 
     render() {
         return (
-            <div>
+            <>
                 <div className="position-fixed bottom-0 end-0 p-3" style={{zIndex:11}}>
                     {
                         this.state.alerts.map(item => (
@@ -159,7 +159,7 @@ class Dashboard extends Component {
                     onMessage={this.handleWsData}
                     onClose={this.handleWsClose}
                 />
-            </div>
+            </>
         );
     }
 }
