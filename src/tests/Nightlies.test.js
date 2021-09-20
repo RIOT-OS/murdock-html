@@ -21,7 +21,6 @@
  * Author: Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
-import moment from 'moment';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { fireEvent, render, screen, waitFor} from '@testing-library/react';

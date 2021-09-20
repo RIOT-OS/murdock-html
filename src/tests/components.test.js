@@ -21,7 +21,6 @@
  * Author: Alexandre Abadie <alexandre.abadie@inria.fr>
  */
 
-import moment from 'moment'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { CommitCol, DateCol, LinkCol, LoadingSpinner, RuntimeCol, ShowMore, UserCol } from '../components'
 
