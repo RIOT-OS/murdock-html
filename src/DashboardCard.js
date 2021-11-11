@@ -315,13 +315,57 @@ export const DashboardCardFailedJobs = (props) => {
         )
     );
 
+    const failed_builds = (props.job.status.failed_builds && props.job.status.failed_builds.length) && (
+        props.job.status.failed_builds.map((jobs, index) =>
+            <div key={`pr-${props.job.uid}-${jobs.name}-${index}`} className="col-md-3 px-2">
+            {(jobs.href) ? (
+                <a className="text-danger link-underline-hover" href={`${jobs.href}`}>
+                    {jobs.name}
+                </a>
+            ) : (
+                jobs.name
+            )}
+            </div>
+        )
+    );
+
+    const failed_tests = (props.job.status.failed_tests && props.job.status.failed_tests.length) && (
+        props.job.status.failed_tests.map((jobs, index) =>
+            <div key={`pr-${props.job.uid}-${jobs.name}-${index}`} className="col-md-3 px-2">
+            {(jobs.href) ? (
+                <a className="text-danger link-underline-hover" href={`${jobs.href}`}>
+                    {jobs.name}
+                </a>
+            ) : (
+                jobs.name
+            )}
+            </div>
+        )
+    );
+
     return (
         <>
         {(failed_jobs) && (
             <div className="row">
-                <h6 className='my-2'><strong>Failed jobs ({props.job.status.failed_jobs.length})</strong></h6>
+                <h6 className='my-2'><strong>Job failures ({props.job.status.failed_jobs.length})</strong></h6>
                 <div className="d-flex flex-wrap">
                     {failed_jobs}
+                </div>
+            </div>
+        )}
+        {(failed_builds) && (
+            <div className="row">
+                <h6 className='my-2'><strong>Build failures ({props.job.status.failed_builds.length})</strong></h6>
+                <div className="d-flex flex-wrap">
+                    {failed_builds}
+                </div>
+            </div>
+        )}
+        {(failed_tests) && (
+            <div className="row">
+                <h6 className='my-2'><strong>Test failures ({props.job.status.failed_tests.length})</strong></h6>
+                <div className="d-flex flex-wrap">
+                    {failed_tests}
                 </div>
             </div>
         )}
