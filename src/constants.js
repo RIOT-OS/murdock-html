@@ -32,6 +32,7 @@ export const cardColor = {
     "passed": "success",
     "queued": "info",
     "running": "warning",
+    "stopped": "secondary",
 };
 
 export const cardIcon = {
@@ -39,6 +40,7 @@ export const cardIcon = {
     "passed": (<i className="bi-check-circle-fill me-2"></i>),
     "queued": (<i className="bi-inbox me-2"></i>),
     "running": (<span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>),
+    "stopped": (<i className="bi-dash-circle-fill me-2"></i>),
 };
 
 export const linkColor = {
@@ -46,6 +48,7 @@ export const linkColor = {
     "passed": "success",
     "queued": "primary",
     "running": "primary",
+    "stopped": "secondary",
 };
 
 export const textColor = {
@@ -53,5 +56,6 @@ export const textColor = {
     "passed": "light",
     "queued": "dark",
     "running": "dark",
+    "stopped": "light",
 };
 

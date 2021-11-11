@@ -112,7 +112,7 @@ export const DashboardCardTitle = (props) => {
         </button>
     );
 
-    const restartAction = (props.permissions === "push" && ["passed", "errored"].includes(props.jobType)) && (
+    const restartAction = (props.permissions === "push" && ["passed", "errored", "stopped"].includes(props.jobType)) && (
         <button className={`btn badge bg-${cardColor[props.jobType]} text-${textColor[props.jobType]} fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Restart" onClick={restart}>
             <i className="bi-arrow-clockwise"></i>
         </button>
@@ -165,7 +165,7 @@ export const DashboardCardInfo = (props) => {
 export const DashboardCardStatus = (props) => {
     if ((!props.status) || 
         (props.jobType === "errored" && ((!props.status.status) || (props.status.status && props.status.status !== "canceled"))) ||
-        (!["errored", "running"].includes(props.jobType))) {
+        (!["errored", "running", "stopped"].includes(props.jobType))) {
         return null;
     }
 
@@ -297,7 +297,7 @@ export const DashboardCardOutput = (props) => {
 }
 
 export const DashboardCardFailedJobs = (props) => {
-    if (!["running", "errored"].includes(props.jobType) || !props.job.status) {
+    if (!["running", "errored", "stopped"].includes(props.jobType) || !props.job.status) {
         return null;
     }
 
