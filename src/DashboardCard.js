@@ -189,10 +189,12 @@ export const DashboardCardStatus = (props) => {
                     {`fail: ${props.status.failed} pass: ${props.status.passed} done: ${jobsDone}/${props.status.total}`}
                 </span>
             </div>
-            <div className="col col-md-2">
-                <i className="bi-clock"></i>
-                <span className="m-1">{moment.duration(props.status.eta, "seconds").humanize(true)}</span>
-            </div>
+            {(props.jobType === "running") && (
+                <div className="col col-md-2">
+                    <i className="bi-clock"></i>
+                    <span className="m-1">{moment.duration(props.status.eta, "seconds").humanize(true)}</span>
+                </div>
+            )}
             </>
         );
     }
