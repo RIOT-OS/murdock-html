@@ -89,14 +89,8 @@ export const DashboardCardTitle = (props) => {
 
     const refRepr = (ref) => {
         if (ref) {
-            const refElem = ref.split("/");
-            let refType = "Branch";
-            if (refElem[1] === "tags") {
-                refType = "Tag";
-            }
-            return `${refType}: ${refElem[2]}`
+            return `${ref.split("/").slice(2).join("/")}`
         }
-
         return "";
     };
 
@@ -118,7 +112,7 @@ export const DashboardCardTitle = (props) => {
         </button>
     );
 
-    const title = (props.job.prinfo) ? `PR: ${props.job.prinfo.title}` : refRepr(props.job.ref)
+    const title = (props.job.prinfo) ? `${props.job.prinfo.title}` : refRepr(props.job.ref)
 
     return (
         <div className="row align-items-center">
