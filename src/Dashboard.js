@@ -329,7 +329,7 @@ class Dashboard extends Component {
                         </>
                     ) : <LoadingSpinner />
                     }
-                    {(this.state.jobsFinished.length && this.state.jobsFinished.length === this.queryParams.jobsFinishedDisplayedLimit) ? <ShowMore onclick={this.displayMore} /> : null}
+                    {(this.state.isFetched && this.state.jobsFinished.length && this.state.jobsFinished.length === this.queryParams.jobsFinishedDisplayedLimit) ? <ShowMore onclick={this.displayMore} /> : null}
                 </div>
                 <Websocket
                     url={murdockWsUrl}
