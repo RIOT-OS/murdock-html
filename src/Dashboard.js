@@ -112,7 +112,7 @@ class Dashboard extends Component {
                     jobsRunning: running,
                     jobsFinished: finished,
                     queryParams: this.queryParams,
-                }
+                };
                 this.setState(newState);
             })
             .catch(error => {
@@ -323,9 +323,9 @@ class Dashboard extends Component {
                                 <input type="text" className="form-control" placeholder="Commit author" aria-label="Commit author" aria-describedby="inputSearchAuthor" value={this.queryParams.commitAuthor} onChange={this.commitAuthorChanged} onKeyUp={this.keyUp} />
                             </div>
                         </div>
-                        {this.state.jobsQueued.map(job => <DashboardCard key={job.uid} job_type="queued" job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
-                        {this.state.jobsRunning.map(job => <DashboardCard key={job.uid} job_type="running" job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
-                        {this.state.jobsFinished.map(job => <DashboardCard key={job.uid} job_type="finished" job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
+                        {this.state.jobsQueued.map(job => <DashboardCard key={job.uid} job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
+                        {this.state.jobsRunning.map(job => <DashboardCard key={job.uid} job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
+                        {this.state.jobsFinished.map(job => <DashboardCard key={job.uid} job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
                         </>
                     ) : <LoadingSpinner />
                     }

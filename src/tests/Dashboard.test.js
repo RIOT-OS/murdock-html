@@ -36,7 +36,7 @@ const server = setupServer(
             {
                 "uid": "123",
                 "output_url": "https://ci.riot-os.org/RIOT-OS/RIOT/16620/951822c41b34cf62ed29ab58ed1e34cbbcd3894b/output.html",
-                "result": "passed",
+                "state": "passed",
                 "runtime": 2392.292683839798,
                 "status": {},
                 "commit": {
@@ -54,7 +54,7 @@ const server = setupServer(
             {
                 "uid": "1234",
                 "output_url": "https://ci.riot-os.org/RIOT-OS/RIOT/15030/1dc94b981680ab30351df64b3f5a2c1e6e8cc9b0/output.html",
-                "result": "errored",
+                "state": "errored",
                 "runtime": 2488.577573299408,
                 "status": {
                     "failed_jobs": [
@@ -92,6 +92,7 @@ const server = setupServer(
                             "number": "16621",
                             "url": "https://github.com/RIOT-OS/RIOT/pull/16621",
                         },
+                        "state": "running",
                         "since": 1625648720.3770814
                     }
                 ],
@@ -108,6 +109,7 @@ const server = setupServer(
                             "number": "16622",
                             "url": "https://github.com/RIOT-OS/RIOT/pull/16622",
                         },
+                        "state": "queued",
                         "since": 1625646859.5628495
                     }
                 ],

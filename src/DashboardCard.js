@@ -370,18 +370,17 @@ export const DashboardCardFailedJobs = (props) => {
 }
 
 export const DashboardCard = (props) => {
-    let jobType = (props.job_type === "finished") ? props.job.result: props.job_type;
-    const [outputVisible, setOutputVisible] = useState((jobType === "running"))
+    const [outputVisible, setOutputVisible] = useState((props.job.state === "running"))
 
     const toggleOutput = () => {
         setOutputVisible(!outputVisible);
     };
 
     return (
-        <div className={`card m-2 border-${cardColor[jobType]}`}>
-            <div className={`card-header text-${textColor[jobType]} bg-${cardColor[jobType]}`}>
+        <div className={`card m-2 border-${cardColor[props.job.state]}`}>
+            <div className={`card-header text-${textColor[props.job.state]} bg-${cardColor[props.job.state]}`}>
                 <DashboardCardTitle
-                    jobType={jobType}
+                    jobType={props.job.state}
                     job={props.job}
                     user={props.user}
                     permissions={props.permissions}
@@ -389,10 +388,10 @@ export const DashboardCard = (props) => {
                 />
             </div>
             <div className="card-body">
-                <DashboardCardInfo jobType={jobType} job={props.job} outputVisible={outputVisible} toggleOutput={toggleOutput} />
-                <DashboardCardStatus jobType={jobType} job={props.job} status={props.job.status} />
-                <DashboardCardOutput jobType={jobType} outputVisible={outputVisible} job={props.job} />
-                <DashboardCardFailedJobs jobType={jobType} job={props.job} />
+                <DashboardCardInfo jobType={props.job.state} job={props.job} outputVisible={outputVisible} toggleOutput={toggleOutput} />
+                <DashboardCardStatus jobType={props.job.state} job={props.job} status={props.job.status} />
+                <DashboardCardOutput jobType={props.job.state} outputVisible={outputVisible} job={props.job} />
+                <DashboardCardFailedJobs jobType={props.job.state} job={props.job} />
             </div>
         </div>
     );
