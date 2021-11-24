@@ -43,6 +43,14 @@ export const cardIcon = {
     "stopped": (<i className="bi-dash-circle-fill me-2"></i>),
 };
 
+export const jobColor = {
+    "errored": "danger",
+    "passed": "success",
+    "queued": "dark",
+    "running": "dark",
+    "stopped": "secondary",
+};
+
 export const linkColor = {
     "errored": "danger",
     "passed": "success",
@@ -59,3 +67,10 @@ export const textColor = {
     "stopped": "light",
 };
 
+export const stateBadge = {
+    "errored": (<span className="badge text-light bg-danger">Failed</span>),
+    "passed": (<span className="badge text-light bg-success">Success</span>),
+    "queued": (<span className="badge text-dark bg-info">Queued</span>),
+    "running": (<span className="badge text-dark bg-warning">Running</span>),
+    "stopped": (<span className="badge text-light bg-secondary">Stopped</span>),
+};

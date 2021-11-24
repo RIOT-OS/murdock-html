@@ -39,8 +39,10 @@ import {
 } from './userStorage';
 import { LoadingSpinner } from './components';
 
-const Dashboard = lazy(() => import('./Dashboard'));
+const JobList = lazy(() => import('./JobList'));
+const JobDetails = lazy(() => import('./JobDetails'));
 const Nightlies = lazy(() => import('./Nightlies'));
+
 
 const MurdockNavBar = (props) => {
     const location = useLocation();
@@ -144,8 +146,9 @@ class Murdock extends Component {
           <MurdockNavBar user={this.state.user} onLoginSuccess={this.onLoginSuccess} onLoginFailure={this.onLoginFailure} onLogout={this.onLogout} />
           <Suspense fallback={<div className="container"><LoadingSpinner /></div>}>
               <Switch>
-                  <Route exact path="/" render={() => <Dashboard user={this.state.user} userPermissions={this.state.userPermissions} />} />
-                  <Route path="/nightlies" component={Nightlies}/>
+                  <Route exact path="/" render={() => <JobList user={this.state.user} userPermissions={this.state.userPermissions} />} />
+                  <Route exact path="/details/:uid" render={() => <JobDetails user={this.state.user} userPermissions={this.state.userPermissions} />} />
+                  <Route path="/nightlies" element={<Nightlies />} />
               </Switch>
           </Suspense>
       </Router>

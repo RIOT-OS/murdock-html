@@ -88,3 +88,39 @@ export const RuntimeCol = (props) => {
         </div>
     );
 };
+
+export const GithubCol = (props) => {
+    return (
+        <div className="col col-md-2">
+            <i className="bi-github me-1"></i>
+            <a className={`link-underline-hover text-${props.color}`} href={props.url} target="_blank" rel="noreferrer noopener">{props.title}</a>
+        </div>
+    );
+};
+
+export const CommitWithAuthorCol = (props) => {
+    return (
+        <div className="col col-md-4">
+            <i className="bi-tag me-1"></i>
+            <a className={`link-underline-hover text-${props.color} me-1`} href={`https://github.com/${process.env.REACT_APP_GITHUB_REPO}/commit/${props.commit}`} target="_blank" rel="noreferrer noopener">{props.commit.substring(0, 7)}</a>
+            (<i className="bi-person me-1"></i>{props.author})
+        </div>
+    );
+};
+
+export const DateElem = (props) => {
+    return (
+        <div data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${moment(props.date).fromNow()}`}>
+            <i className="bi-calendar2 me-1"></i>
+            {`${props.date.toLocaleString()} (${moment(props.date).fromNow()})`}
+        </div>
+    );
+};
+
+export const DateCompleteCol = (props) => {
+    return (
+        <div className="col col-md-4" >
+            <DateElem date={props.date} />
+        </div>
+    );
+};
