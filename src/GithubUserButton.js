@@ -13,6 +13,7 @@ const GithubUserButton = (props) => {
             autoCleanUri={true}
             onLoginSuccess={props.onLoginSuccess}
             onLoginFailure={props.onLoginFailure}
+            scope={"read:user"}
         >
         <i className="bi-github me-1"></i>Login with GitHub
         </SocialLogin>
