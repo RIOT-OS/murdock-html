@@ -24,8 +24,6 @@
 import axios from 'axios';
 import moment from 'moment';
 
-import { useHistory } from "react-router-dom";
-
 import {
     stateBadge, murdockHttpBaseUrl
 } from './constants';
@@ -33,7 +31,6 @@ import { DateElem } from './components';
 
 
 export const JobItem = (props) => {
-    let history = useHistory();
     const jobDate = new Date(props.job.since * 1000);
 
     const removeJob = (type) => {
@@ -140,7 +137,7 @@ export const JobItem = (props) => {
     return (
         <tr>
             <td style={{width: "5%"}}>
-            <button className="btn link-underline-hover p-0 m-0 text-primary" onClick={() =>{history.push(`/details/${props.job.uid}`)}}>{`${props.job.uid.substring(0, 7)}`}</button>
+            <a className="link-underline-hover p-0 m-0 text-primary" href={`/details/${props.job.uid}`}>{`${props.job.uid.substring(0, 7)}`}</a>
             </td>
             <td style={{width: "40%"}}>{title}</td>
             <td style={{width: "30%"}} className="text-center">
@@ -159,7 +156,12 @@ export const JobItem = (props) => {
                             </div>
                         </div>
                     ) : (
-                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <>
+                        <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                        {(props.job.status && props.job.status.status) ? (
+                        <span className="fst-italic">{`${props.job.status.status}...`}</span>
+                        ) :null}
+                        </>
                     )
                 )}
                 {["passed", "errored", "stopped"].includes(props.job.state) && `${moment.duration(props.job.runtime * -1000).humanize()}`}
@@ -172,9 +174,9 @@ export const JobItem = (props) => {
                     </button>
                     <ul className="dropdown-menu dropdown-menu-end p-0" style={{minWidth: "20px"}} aria-labelledby="dropdownMenuActions">
                         <li>
-                        <button className="dropdown-item btn-sm text-end" onClick={() =>{history.push(`/details/${props.job.uid}`)}}>
+                        <a className="dropdown-item btn-sm text-end" href={`/details/${props.job.uid}`}>
                             <i className="bi-eye me-1"></i><span>Details</span>
-                        </button>
+                        </a>
                         </li>
                         {(props.job.output_url) && (
                         <li>
