@@ -464,14 +464,16 @@ const JobDetails = (props) => {
                         {<JobFailures job={job} status={jobStatus} />}
                     </div>
                 </div>
+                {(job.state !== "queued") &&
                 <div className="m-2">
-                <ul class="nav nav-tabs">
-                    <li class="nav-item">
-                        <button class="brn nav-link active" aria-current="page">Output</button>
-                    </li>
-                </ul>
-                {<JobOutput job={job} output={jobOutput} />}
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <button class="brn nav-link active" aria-current="page">Output</button>
+                        </li>
+                    </ul>
+                    {<JobOutput job={job} output={jobOutput} />}
                 </div>
+                }
                 <Websocket
                     url={murdockWsUrl}
                     onOpen={handleWsOpen}
