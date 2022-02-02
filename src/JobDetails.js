@@ -378,7 +378,6 @@ const JobDetails = (props) => {
     const handleWsData = (data) => {
         const msg = JSON.parse(data);
         if (msg.cmd === "reload") {
-            setFetched(false);
             fetchJob();
         }
         else if (msg.cmd === "status" && job) {
