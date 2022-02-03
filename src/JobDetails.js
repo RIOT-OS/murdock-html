@@ -152,10 +152,6 @@ const JobStatus = (props) => {
 }
 
 const JobFailures = (props) => {
-    if (!["running", "errored", "stopped"].includes(props.job.state)) {
-        return null;
-    }
-
     const jobStatus = (props.status) ? props.status : props.job.status;
     if (!jobStatus) {
         return null;
@@ -298,7 +294,209 @@ const JobOutput = (props) => {
             </div>
         ) : null
     );
-}
+};
+
+const RowElement = (props) => {
+    return (
+        <div className="card my-1">
+            <div className="card-body p-2">
+                <div className="row justify-content-between">
+                    <div className="col col-md-4">
+                        <span className={`text-${cardColor[props.failures ? "errored" : "passed"]}`}>{cardIcon[props.failures ? "errored" : "passed"]}</span>
+                        {props.name}
+                    </div>
+                    <div className="col col-md-2 text-end">
+                        {(props.failures > 0) && <span className="badge rounded-pill bg-danger me-1">{`${props.failures} failed`}</span>}
+                        {(props.success > 0) && <span className="badge rounded-pill bg-success">{`${props.success} success`}</span>}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const JobBuildFailure = (props) => {
+    return (
+        <div className="card m-1">
+            <a className="btn" type="button" href={`${process.env.REACT_APP_MURDOCK_HTTP_BASE_URL}/results/${props.uid}/output/compile/${props.build.application}/${props.build.board}:${props.build.toolchain}.txt`} target="_blank" rel="noreferrer noopener">
+                <div className="row">
+                <div className="col col-md-5 text-start">
+                    <i className="bi-x-circle-fill text-danger me-1"></i>{props.build.application}
+                </div>
+                <div className="col col-md-2 text-start">
+                    <i className="bi-cpu pull-left me-1"></i>{props.build.board}:{props.build.toolchain}
+                </div>
+                <div className="col col-md-4 text-start">
+                    <i className="bi-wrench me-1"></i>{props.build.worker}
+                </div>
+                <div className="col col-md-1 text-start pe-2">
+                    <i className="bi-clock me-1"></i>{props.build.runtime.toFixed(2)}s
+                </div>
+                </div>
+            </a>
+        </div>
+    );
+};
+
+const JobBuilds = (props) => {
+    const [filter, setFilter] = useState("");
+    const [failuresFilter, setFailuresFilter] = useState("");
+
+    return (
+        <>
+        {(props.buildFailures) && (
+        <div className="card border-danger m-1">
+            <div className="card-header text-light bg-danger">
+                <div className="row align-items-center">
+                    <div className="col-md-8">
+                        Failed builds ({props.buildFailures.length})
+                    </div>
+                    <div className="col-md-4">
+                        <input id="build_failures_filter pull-right" className="form-control" type="text" placeholder="Filter failed builds" onChange={(event) => {setFailuresFilter(event.target.value)}} />
+                    </div>
+                </div>
+            </div>
+            <div className="card-body p-1">
+                {props.buildFailures
+                    .filter(build => (build.application.includes(failuresFilter) || build.board.includes(failuresFilter)))
+                    .map(build => <JobBuildFailure uid={props.uid} build={build} />)}
+            </div>
+        </div>)}
+        <div className="card m-1">
+            <div className="card-header">
+                <div className="row align-items-center">
+                    <div className="col-md-8">Builds{(props.stats.total_builds) ? ` (${props.stats.total_builds})` : ""}</div>
+                    <div className="col-md-4">
+                        <input className="form-control pull-right" type="text" placeholder="Filter builds" onChange={(event) => {setFilter(event.target.value)}} />
+                    </div>
+                </div>
+            </div>
+            <div className="card-body">
+                {props.builds
+                    .filter(build => build.application.includes(filter))
+                    .map(build => <RowElement key={build.application} name={build.application} success={build.build_success} failures={build.build_failures} />)}
+            </div>
+        </div>
+        </>
+    );
+};
+
+const JobTestFailure = (props) => {
+    return (
+        <div className="card m-1">
+            <a className="btn" type="button" href={`${process.env.REACT_APP_MURDOCK_HTTP_BASE_URL}/results/${props.uid}/output/run_test/${props.test.application}/${props.test.board}:${props.test.toolchain}.txt`} target="_blank" rel="noreferrer noopener">
+                <div className="row">
+                <div className="col col-md-5 text-start">
+                    <i className="bi-x-circle-fill text-danger me-1"></i>{props.test.application}
+                </div>
+                <div className="col col-md-2 text-start">
+                    <i className="bi-cpu pull-left me-1"></i>{props.test.board}:{props.test.toolchain}
+                </div>
+                <div className="col col-md-4 text-start">
+                    <i className="bi-wrench me-1"></i>{props.test.worker}
+                </div>
+                <div className="col col-md-1 text-start pe-2">
+                    <i className="bi-clock me-1"></i>{props.test.runtime.toFixed(2)}s
+                </div>
+                </div>
+            </a>
+        </div>
+    );
+};
+
+const JobTests = (props) => {
+    const [filter, setFilter] = useState("");
+    const [failuresFilter, setFailuresFilter] = useState("");
+
+    return (
+        <>
+        {(props.testFailures) && (
+        <div className="card border-danger m-1">
+            <div className="card-header text-light bg-danger">
+                <div className="row align-items-center">
+                    <div className="col-md-8">
+                        Failed tests ({props.testFailures.length})
+                    </div>
+                    <div className="col-md-4">
+                        <input id="build_failures_filter pull-right" className="form-control" type="text" placeholder="Filter failed tests" onChange={(event) => {setFailuresFilter(event.target.value)}} />
+                    </div>
+                </div>
+            </div>
+            <div className="card-body p-1">
+                {props.testFailures
+                    .filter(test => (test.application.includes(failuresFilter) || test.board.includes(failuresFilter)))
+                    .map(test => <JobTestFailure uid={props.uid} test={test} />)}
+            </div>
+        </div>)}
+        <div className="card m-1">
+            <div className="card-header">
+                <div className="row align-items-center">
+                    <div className="col-md-8">Tests{(props.stats.total_tests) ? ` (${props.stats.total_tests})` : ""}</div>
+                    <div className="col-md-4">
+                        <input className="form-control pull-right" type="text" placeholder="Filter tests" onChange={(event) => {setFilter(event.target.value)}} />
+                    </div>
+                </div>
+            </div>
+            <div className="card-body">
+                {props.tests
+                    .filter(test => test.application.includes(filter))
+                    .map(test => <RowElement key={test.application} name={test.application} success={test.test_success} failures={test.test_failures} />)}
+            </div>
+        </div>
+        </>
+    );
+};
+
+const Worker = (props) => {
+    return (
+        <tr>
+            <th scope="row">{props.worker.name}</th>
+            <td>{props.worker.runtime_avg.toFixed(2)}</td>
+            <td>{props.worker.total_cpu_time.toFixed(2)}</td>
+            <td>{props.worker.jobs_count}</td>
+        </tr>
+    );
+};
+
+const JobStats = (props) => {
+    if (!props.stats.total_jobs) {
+        return null;
+    }
+
+    return (
+        <>
+            <div className="card m-1">
+                <div className="card-header">Global stats</div>
+                <div className="card-body">
+                    <ul className="list-group">
+                        <li className="list-group-item">Total jobs: {props.stats.total_jobs}</li>
+                        <li className="list-group-item">Total builds: {props.stats.total_builds}</li>
+                        {(props.stats.total_tests > 0) && <li className="list-group-item">Total tests: {props.stats.total_tests}</li>}
+                        <li className="list-group-item">Total CPU time: {props.stats.total_time}</li>
+                    </ul>
+                </div>
+            </div>
+            <div className="card m-1">
+                <div className="card-header">Workers stats</div>
+                <div className="card-body">
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Worker</th>
+                                <th scope="col">Average time (s)</th>
+                                <th scope="col">Total CPU time (s)</th>
+                                <th scope="col">Total jobs</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {props.stats.workers.map(worker => <Worker key={worker.name} worker={worker} />)}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </>
+    );
+};
 
 const JobInfo = (props) => {
     const prDate = new Date(props.job.since * 1000);
@@ -354,25 +552,89 @@ const JobDetails = (props) => {
     const [ job, setJob ] = useState(null);
     const [ jobStatus, setJobStatus ] = useState(null);
     const [ jobOutput, setJobOutput ] = useState(null);
+    const [ activePanel, setActivePanel ] = useState("output");
+    const [ stats, setStats ] = useState(null);
+    const [ builds, setBuilds ] = useState(null);
+    const [ buildFailures, setBuildFailures ] = useState(null);
+    const [ tests, setTests ] = useState(null);
+    const [ testFailures, setTestFailures ] = useState(null);
     const [ alerts, setAlerts ] = useState([]);
 
     let { uid } = useParams();
 
     const fetchJob = () => {
         axios.get(`${murdockHttpBaseUrl}/job/${uid}`)
-            .then(res => {
-                setJob(res.data);
-                setFetched(true);
-                setJobStatus(res.data.status);
-                setJobOutput(res.data.output);
-            })
-            .catch(error => {
-                console.log(error);
-                setJob(null);
-                setJobStatus(null);
-                setJobOutput("");
-                setFetched(true);
-            });
+        .then(res => {
+            setJob(res.data);
+            setFetched(true);
+            setJobStatus(res.data.status);
+            setJobOutput(res.data.output);
+        })
+        .catch(error => {
+            console.log(error);
+            setJob(null);
+            setJobStatus(null);
+            setJobOutput("");
+            setFetched(true);
+        });
+    };
+
+    const fetchBuilds = () => {
+        setBuilds([]);
+        axios.get(`${murdockHttpBaseUrl}/results/${uid}/builds.json`)
+        .then(res => {
+            setBuilds(res.data);
+            if (res.data.length > 0) {
+                setActivePanel("builds");
+            }
+        })
+        .catch(error => {
+            console.log("No build results found");
+        });
+    };
+
+    const fetchBuildFailures = () => {
+        setBuildFailures([]);
+        axios.get(`${murdockHttpBaseUrl}/results/${uid}/build_failures.json`)
+        .then(res => {
+            setBuildFailures(res.data);
+        })
+        .catch(error => {
+            console.log("No build failures found");
+        });
+    };
+
+    const fetchTests = () => {
+        setTests([]);
+        axios.get(`${murdockHttpBaseUrl}/results/${uid}/tests.json`)
+        .then(res => {
+            setTests(res.data);
+        })
+        .catch(error => {
+            console.log("No test results found");
+        });
+    };
+
+    const fetchTestFailures = () => {
+        setTestFailures([]);
+        axios.get(`${murdockHttpBaseUrl}/results/${uid}/test_failures.json`)
+        .then(res => {
+            setTestFailures(res.data);
+        })
+        .catch(error => {
+            console.log("No test failures found");
+        });
+    };
+
+    const fetchStats = () => {
+        setStats({});
+        axios.get(`${murdockHttpBaseUrl}/results/${uid}/stats.json`)
+        .then(res => {
+            setStats(res.data);
+        })
+        .catch(error => {
+            console.log("No job statitics found");
+        });
     };
 
     const handleWsData = (data) => {
@@ -431,6 +693,28 @@ const JobDetails = (props) => {
             return;
         }
 
+        if (["errored", "passed"].includes(job.state)) {
+           if (!builds) {
+                fetchBuilds();
+            }
+
+            if (!buildFailures) {
+                fetchBuildFailures();
+            }
+
+            if (!tests) {
+                fetchTests();
+            }
+
+            if (!testFailures) {
+                fetchTestFailures();
+            }
+
+            if (!stats) {
+                fetchStats();
+            }
+        }
+
         const jobInfo = (job.prinfo) ? `PR #${job.prinfo.number}` : refRepr(job.ref)
         document.title = `Murdock - ${jobInfo} - ${job.commit.sha.slice(0, 7)}`;
     });
@@ -461,17 +745,43 @@ const JobDetails = (props) => {
                     <div className="card-body">
                         <JobInfo job={job} />
                         {jobStatus && <JobStatus job={job} status={jobStatus} />}
-                        {<JobFailures job={job} status={jobStatus} />}
+                        {(job.state === "running") && <JobFailures job={job} status={jobStatus} />}
                     </div>
                 </div>
                 {(job.state !== "queued") &&
                 <div className="m-2">
-                    <ul class="nav nav-tabs">
-                        <li class="nav-item">
-                            <button class="brn nav-link active" aria-current="page">Output</button>
+                    <ul className="nav nav-tabs">
+                        {(builds && builds.length > 0) && (
+                        <li className="nav-item">
+                            <button className={`btn nav-link ${(activePanel === "builds") ? "active" : ""}`} aria-current="page" onClick={() => setActivePanel("builds")}>
+                                <i className={`bi-${buildFailures && buildFailures.length > 0 ? "x text-danger": "check text-success"} me-1`}></i>Builds
+                            </button>
                         </li>
+                        )}
+                        {(tests && tests.length > 0) && (
+                        <li className="nav-item">
+                            <button className={`btn nav-link ${(activePanel === "tests") ? "active" : ""}`} aria-current="page" onClick={() => setActivePanel("tests")}>
+                            <i className={`bi-${testFailures && testFailures.length > 0 ? "x text-danger": "check text-success"} me-1`}></i>Tests
+                            </button>
+                        </li>
+                        )}
+                        <li className="nav-item">
+                            <button className={`btn nav-link ${(activePanel === "output") ? "active" : ""}`} aria-current="page" onClick={() => {setActivePanel("output")}}>
+                                <i className="bi-file-text-fill text-dark me-1"></i>Output
+                            </button>
+                        </li>
+                        {(stats && stats.total_jobs) && (
+                        <li className="nav-item">
+                            <button className={`btn nav-link ${(activePanel === "stats") ? "active" : ""}`} aria-current="page" onClick={() => setActivePanel("stats")}>
+                                <i className={`bi-bar-chart-line text-dark me-1`}></i>Stats
+                            </button>
+                        </li>
+                        )}
                     </ul>
-                    {<JobOutput job={job} output={jobOutput} />}
+                    {(activePanel === "output") && <JobOutput job={job} output={jobOutput} />}
+                    {(activePanel === "builds" && builds && builds.length) && <JobBuilds uid={uid} builds={builds} buildFailures={buildFailures} stats={stats} />}
+                    {(activePanel === "tests" && tests && tests.length) && <JobTests tests={tests} testFailures={testFailures} stats={stats} />}
+                    {(activePanel === "stats" && stats && stats.total_jobs) && <JobStats stats={stats} />}
                 </div>
                 }
                 <Websocket
