@@ -745,7 +745,7 @@ const JobDetails = (props) => {
                     <div className="card-body">
                         <JobInfo job={job} />
                         {jobStatus && <JobStatus job={job} status={jobStatus} />}
-                        {(job.state === "running") && <JobFailures job={job} status={jobStatus} />}
+                        {["running", "stopped"].includes(job.state) && <JobFailures job={job} status={jobStatus} />}
                     </div>
                 </div>
                 {(job.state !== "queued") &&
