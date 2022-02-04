@@ -38,16 +38,17 @@ const ApplicationResults = (props) => {
 
     return (
         <div className="container">
+            <a className="btn btn-outline-primary m-1" type="button" href={`/details/${uid}`}>
+            <   i className="bi-chevron-left me-1"></i>Back to job results
+            </a>
             <div className="card m-1">
-                <a className="btn p-0" type="button" href={`/details/${uid}`}>
                     <div className="card-body bg-light">
                         <div className="row align-items-center">
                             <div className="col-md-4 text-start">
-                                <i className="bi-info-circle me-1"></i>{`${appPath} ${props.type}`}
+                                Application: <strong>{`${appPath}`}</strong>
                             </div>
                         </div>
                     </div>
-                </a>
             </div>
             {(applicationData && applicationData.failures && applicationData.failures.length > 0) && (
             <div className="card border-danger m-1">
