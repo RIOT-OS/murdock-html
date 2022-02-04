@@ -178,13 +178,6 @@ export const JobItem = (props) => {
                             <i className="bi-eye me-1"></i><span>Details</span>
                         </a>
                         </li>
-                        {(props.job.output_url) && (
-                        <li>
-                            <a className="dropdown-item btn-sm text-end" type="button" href={props.job.output_url} target="_blank" rel="noreferrer noopener">
-                                <i className="bi-file-text-fill me-1"></i><span>Results</span>
-                            </a>
-                        </li>
-                        )}
                         {cancelAction}
                         {stopAction}
                         {restartAction}

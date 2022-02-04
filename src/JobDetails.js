@@ -3,12 +3,13 @@ import moment from 'moment';
 import $ from 'jquery';
 
 import Websocket from 'react-websocket';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 
 import { murdockHttpBaseUrl, murdockWsUrl, cardColor, cardIcon, linkColor, textColor } from './constants';
 import { LoadingSpinner } from './components';
 import { CommitWithAuthorCol, DateCompleteCol, GithubCol, RuntimeCol } from './components';
+import { Result } from './Result';
 
 const jobOutputMaxHeight = "500px";
 
@@ -71,8 +72,7 @@ const JobTitle = (props) => {
     return (
         <div className="row align-items-center">
             <div className="col-md-10">
-                {cardIcon[props.job.state]}
-                {(props.job.output_url) ? <a className="link-light link-underline-hover" href={props.job.output_url} target="_blank" rel="noreferrer noopener">{title}</a> : title}
+                {cardIcon[props.job.state]}{title}
             </div>
             <div className="col-md-2 text-end">
             {cancelAction}
@@ -151,7 +151,7 @@ const JobStatus = (props) => {
     );
 }
 
-const JobFailures = (props) => {
+const JobLiveFailures = (props) => {
     const jobStatus = (props.status) ? props.status : props.job.status;
     if (!jobStatus) {
         return null;
@@ -296,43 +296,20 @@ const JobOutput = (props) => {
     );
 };
 
-const RowElement = (props) => {
+const Application = (props) => {
     return (
         <div className="card my-1">
-            <div className="card-body p-2">
-                <div className="row justify-content-between">
-                    <div className="col col-md-4">
-                        <span className={`text-${cardColor[props.failures ? "errored" : "passed"]}`}>{cardIcon[props.failures ? "errored" : "passed"]}</span>
-                        {props.name}
-                    </div>
-                    <div className="col col-md-2 text-end">
-                        {(props.failures > 0) && <span className="badge rounded-pill bg-danger me-1">{`${props.failures} failed`}</span>}
-                        {(props.success > 0) && <span className="badge rounded-pill bg-success">{`${props.success} success`}</span>}
-                    </div>
+            <a className="btn" type="button" href={`/details/${props.uid}/builds/${props.name.replace("/", ":")}`}>
+            <div className="row justify-content-between">
+                <div className="col col-md-4 text-start">
+                    <span className={`text-${cardColor[props.failures ? "errored" : "passed"]}`}>{cardIcon[props.failures ? "errored" : "passed"]}</span>
+                    {props.name}
+                </div>
+                <div className="col col-md-2 text-end">
+                    {(props.failures > 0) && <span className="badge rounded-pill bg-danger me-1">{`${props.failures} failed`}</span>}
+                    {(props.success > 0) && <span className="badge rounded-pill bg-success">{`${props.success} success`}</span>}
                 </div>
             </div>
-        </div>
-    );
-};
-
-const JobBuildFailure = (props) => {
-    return (
-        <div className="card m-1">
-            <a className="btn" type="button" href={`${process.env.REACT_APP_MURDOCK_HTTP_BASE_URL}/results/${props.uid}/output/compile/${props.build.application}/${props.build.board}:${props.build.toolchain}.txt`} target="_blank" rel="noreferrer noopener">
-                <div className="row">
-                <div className="col col-md-5 text-start">
-                    <i className="bi-x-circle-fill text-danger me-1"></i>{props.build.application}
-                </div>
-                <div className="col col-md-2 text-start">
-                    <i className="bi-cpu pull-left me-1"></i>{props.build.board}:{props.build.toolchain}
-                </div>
-                <div className="col col-md-4 text-start">
-                    <i className="bi-wrench me-1"></i>{props.build.worker}
-                </div>
-                <div className="col col-md-1 text-start pe-2">
-                    <i className="bi-clock me-1"></i>{props.build.runtime.toFixed(2)}s
-                </div>
-                </div>
             </a>
         </div>
     );
@@ -344,7 +321,7 @@ const JobBuilds = (props) => {
 
     return (
         <>
-        {(props.buildFailures) && (
+        {(props.buildFailures && props.buildFailures.length) && (
         <div className="card border-danger m-1">
             <div className="card-header text-light bg-danger">
                 <div className="row align-items-center">
@@ -359,7 +336,7 @@ const JobBuilds = (props) => {
             <div className="card-body p-1">
                 {props.buildFailures
                     .filter(build => (build.application.includes(failuresFilter) || build.board.includes(failuresFilter)))
-                    .map(build => <JobBuildFailure uid={props.uid} build={build} />)}
+                    .map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="compile" result={build} />)}
             </div>
         </div>)}
         <div className="card m-1">
@@ -371,36 +348,13 @@ const JobBuilds = (props) => {
                     </div>
                 </div>
             </div>
-            <div className="card-body">
+            <div className="card-body p-1">
                 {props.builds
                     .filter(build => build.application.includes(filter))
-                    .map(build => <RowElement key={build.application} name={build.application} success={build.build_success} failures={build.build_failures} />)}
+                    .map(build => <Application key={build.application} uid={props.uid} name={build.application} success={build.build_success} failures={build.build_failures} />)}
             </div>
         </div>
         </>
-    );
-};
-
-const JobTestFailure = (props) => {
-    return (
-        <div className="card m-1">
-            <a className="btn" type="button" href={`${process.env.REACT_APP_MURDOCK_HTTP_BASE_URL}/results/${props.uid}/output/run_test/${props.test.application}/${props.test.board}:${props.test.toolchain}.txt`} target="_blank" rel="noreferrer noopener">
-                <div className="row">
-                <div className="col col-md-5 text-start">
-                    <i className="bi-x-circle-fill text-danger me-1"></i>{props.test.application}
-                </div>
-                <div className="col col-md-2 text-start">
-                    <i className="bi-cpu pull-left me-1"></i>{props.test.board}:{props.test.toolchain}
-                </div>
-                <div className="col col-md-4 text-start">
-                    <i className="bi-wrench me-1"></i>{props.test.worker}
-                </div>
-                <div className="col col-md-1 text-start pe-2">
-                    <i className="bi-clock me-1"></i>{props.test.runtime.toFixed(2)}s
-                </div>
-                </div>
-            </a>
-        </div>
     );
 };
 
@@ -410,7 +364,7 @@ const JobTests = (props) => {
 
     return (
         <>
-        {(props.testFailures) && (
+        {(props.testFailures && props.testFailures.length) && (
         <div className="card border-danger m-1">
             <div className="card-header text-light bg-danger">
                 <div className="row align-items-center">
@@ -425,7 +379,7 @@ const JobTests = (props) => {
             <div className="card-body p-1">
                 {props.testFailures
                     .filter(test => (test.application.includes(failuresFilter) || test.board.includes(failuresFilter)))
-                    .map(test => <JobTestFailure uid={props.uid} test={test} />)}
+                    .map(test => <Result key={`${test.application}-${test.board}-${test.toolchain}`} uid={props.uid} type="run_test" result={test} />)}
             </div>
         </div>)}
         <div className="card m-1">
@@ -440,7 +394,7 @@ const JobTests = (props) => {
             <div className="card-body">
                 {props.tests
                     .filter(test => test.application.includes(filter))
-                    .map(test => <RowElement key={test.application} name={test.application} success={test.test_success} failures={test.test_failures} />)}
+                    .map(test => <Application key={test.application} name={test.application} success={test.test_success} failures={test.test_failures} />)}
             </div>
         </div>
         </>
@@ -562,80 +516,92 @@ const JobDetails = (props) => {
 
     let { uid } = useParams();
 
-    const fetchJob = () => {
-        axios.get(`${murdockHttpBaseUrl}/job/${uid}`)
-        .then(res => {
-            setJob(res.data);
-            setFetched(true);
-            setJobStatus(res.data.status);
-            setJobOutput(res.data.output);
-        })
-        .catch(error => {
-            console.log(error);
-            setJob(null);
-            setJobStatus(null);
-            setJobOutput("");
-            setFetched(true);
-        });
-    };
+    const fetchJob = useCallback(
+        () => {
+            axios.get(`${murdockHttpBaseUrl}/job/${uid}`)
+            .then(res => {
+                setJob(res.data);
+                setJobStatus(res.data.status);
+                setJobOutput(res.data.output);
+                setFetched(true);
+            })
+            .catch(error => {
+                console.log(error);
+                setJob(null);
+                setJobStatus(null);
+                setJobOutput("");
+                setFetched(true);
+            });
+        }, [uid]
+    );
 
-    const fetchBuilds = () => {
-        setBuilds([]);
-        axios.get(`${murdockHttpBaseUrl}/results/${uid}/builds.json`)
-        .then(res => {
-            setBuilds(res.data);
-            if (res.data.length > 0) {
-                setActivePanel("builds");
-            }
-        })
-        .catch(error => {
-            console.log("No build results found");
-        });
-    };
+    const fetchBuilds = useCallback(
+        () => {
+            setBuilds([]);
+            axios.get(`${murdockHttpBaseUrl}/results/${uid}/builds.json`)
+            .then(res => {
+                setBuilds(res.data);
+                if (res.data.length > 0) {
+                    setActivePanel("builds");
+                }
+            })
+            .catch(error => {
+                console.log("No build results found");
+            });
+        }, [uid]
+    );
 
-    const fetchBuildFailures = () => {
-        setBuildFailures([]);
-        axios.get(`${murdockHttpBaseUrl}/results/${uid}/build_failures.json`)
-        .then(res => {
-            setBuildFailures(res.data);
-        })
-        .catch(error => {
-            console.log("No build failures found");
-        });
-    };
+    const fetchBuildFailures = useCallback(
+        () => {
+            setBuildFailures([]);
+            axios.get(`${murdockHttpBaseUrl}/results/${uid}/build_failures.json`)
+            .then(res => {
+                setBuildFailures(res.data);
+            })
+            .catch(error => {
+                console.log("No build failures found");
+            });
+        }, [uid]
+    );
 
-    const fetchTests = () => {
-        setTests([]);
-        axios.get(`${murdockHttpBaseUrl}/results/${uid}/tests.json`)
-        .then(res => {
-            setTests(res.data);
-        })
-        .catch(error => {
-            console.log("No test results found");
-        });
-    };
+    const fetchTests = useCallback(
+        () => {
+            setTests([]);
+            axios.get(`${murdockHttpBaseUrl}/results/${uid}/tests.json`)
+            .then(res => {
+                setTests(res.data);
+            })
+            .catch(error => {
+                console.log("No test results found");
+            });
+        }, [uid]
+    );
 
-    const fetchTestFailures = () => {
-        setTestFailures([]);
-        axios.get(`${murdockHttpBaseUrl}/results/${uid}/test_failures.json`)
-        .then(res => {
-            setTestFailures(res.data);
-        })
-        .catch(error => {
-            console.log("No test failures found");
-        });
-    };
+    const fetchTestFailures = useCallback(
+        () => {
+            setTestFailures([]);
+            axios.get(`${murdockHttpBaseUrl}/results/${uid}/test_failures.json`)
+            .then(res => {
+                setTestFailures(res.data);
+            })
+            .catch(error => {
+                console.log("No test failures found");
+            });
+        }, [uid]
+    );
 
-    const fetchStats = () => {
-        setStats({});
-        axios.get(`${murdockHttpBaseUrl}/results/${uid}/stats.json`)
-        .then(res => {
-            setStats(res.data);
-        })
-        .catch(error => {
-            console.log("No job statitics found");
-        });
-    };
+    const fetchStats = useCallback(
+        () => {
+            setStats({});
+            axios.get(`${murdockHttpBaseUrl}/results/${uid}/stats.json`)
+            .then(res => {
+                setStats(res.data);
+            })
+            .catch(error => {
+                console.log("No job statitics found");
+            });
+        }, [uid]
+    );
 
     const handleWsData = (data) => {
         const msg = JSON.parse(data);
@@ -684,7 +650,7 @@ const JobDetails = (props) => {
     };
 
     useEffect(() => {
-        if (!fetched && !job) {
+        if (!fetched) {
             fetchJob();
             return;
         }
@@ -694,30 +660,30 @@ const JobDetails = (props) => {
         }
 
         if (["errored", "passed"].includes(job.state)) {
-           if (!builds) {
+            if (!builds) {
                 fetchBuilds();
             }
-
             if (!buildFailures) {
                 fetchBuildFailures();
             }
-
             if (!tests) {
                 fetchTests();
             }
-
             if (!testFailures) {
                 fetchTestFailures();
             }
-
-            if (!stats) {
+            if (!testFailures) {
                 fetchStats();
             }
         }
 
         const jobInfo = (job.prinfo) ? `PR #${job.prinfo.number}` : refRepr(job.ref)
         document.title = `Murdock - ${jobInfo} - ${job.commit.sha.slice(0, 7)}`;
-    });
+    }, [
+        buildFailures, builds, fetchBuildFailures, fetchBuilds, fetchJob,
+        fetchStats, fetchTestFailures, fetchTests, fetched, job, stats,
+        testFailures, tests
+    ]);
 
     return (
         (fetched && job) ? (
@@ -745,7 +711,7 @@ const JobDetails = (props) => {
                     <div className="card-body">
                         <JobInfo job={job} />
                         {jobStatus && <JobStatus job={job} status={jobStatus} />}
-                        {["running", "stopped"].includes(job.state) && <JobFailures job={job} status={jobStatus} />}
+                        {["running", "stopped"].includes(job.state) && <JobLiveFailures job={job} status={jobStatus} />}
                     </div>
                 </div>
                 {(job.state !== "queued") &&

@@ -41,6 +41,7 @@ import { LoadingSpinner } from './components';
 
 const JobList = lazy(() => import('./JobList'));
 const JobDetails = lazy(() => import('./JobDetails'));
+const ApplicationResults = lazy(() => import('./ApplicationResults'));
 const Nightlies = lazy(() => import('./Nightlies'));
 
 
@@ -148,6 +149,8 @@ class Murdock extends Component {
               <Switch>
                   <Route exact path="/" render={() => <JobList user={this.state.user} userPermissions={this.state.userPermissions} />} />
                   <Route exact path="/details/:uid" render={() => <JobDetails user={this.state.user} userPermissions={this.state.userPermissions} />} />
+                  <Route exact path="/details/:uid/builds/:application" render={() => <ApplicationResults type="builds" />} />
+                  <Route exact path="/details/:uid/tests/:application" render={() => <ApplicationResults type="tests" />} />
                   <Route path="/nightlies" element={<Nightlies />} />
               </Switch>
           </Suspense>
