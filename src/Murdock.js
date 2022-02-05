@@ -48,6 +48,8 @@ const Nightlies = lazy(() => import('./Nightlies'));
 const MurdockNavBar = (props) => {
     const location = useLocation();
 
+    const role = (props.userPermissions === "push") ? "Maintainer" : "User";
+
     return (
         <>
           <nav className="navbar navbar-expand-lg sticky-top shadow navbar-dark bg-dark">
@@ -69,7 +71,7 @@ const MurdockNavBar = (props) => {
                   </li>
                 </ul>
                 <div className="d-flex align-items-center">
-                  <GithubUserButton user={props.user} onLoginSuccess={props.onLoginSuccess} onLoginFailure={props.onLoginFailure} onLogout={props.onLogout} />
+                  <GithubUserButton user={props.user} role={role} onLoginSuccess={props.onLoginSuccess} onLoginFailure={props.onLoginFailure} onLogout={props.onLogout} />
                 </div>
               </div>
             </div>
@@ -144,7 +146,7 @@ class Murdock extends Component {
   render() {
     return (
       <Router>
-          <MurdockNavBar user={this.state.user} onLoginSuccess={this.onLoginSuccess} onLoginFailure={this.onLoginFailure} onLogout={this.onLogout} />
+          <MurdockNavBar user={this.state.user} userPermissions={this.state.userPermissions} onLoginSuccess={this.onLoginSuccess} onLoginFailure={this.onLoginFailure} onLogout={this.onLogout} />
           <Suspense fallback={<div className="container"><LoadingSpinner /></div>}>
               <Switch>
                   <Route exact path="/" render={() => <JobList user={this.state.user} userPermissions={this.state.userPermissions} />} />
