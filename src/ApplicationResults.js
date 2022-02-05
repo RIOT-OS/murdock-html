@@ -74,7 +74,7 @@ const ApplicationResults = (props) => {
                         </div>
                     </div>
                 </div>
-                <div className="card-body">
+                <div className="card-body p-1">
                     {applicationData.jobs
                         .filter(result => result.board.includes(filter))
                         .map(result => <Result key={`${result.application}-${result.board}-${result.toolchain}`} uid={uid} type={typePath} result={result} />)}
