@@ -130,10 +130,12 @@ const JobStatus = (props) => {
         <>
         <div className="row my-1">
             <div className="col col-md-4">
-                <div className="progress my-1 me-1">
-                    <div className="progress-bar progress-bar-striped" role="progressbar"
+                <div className="progress my-1 me-1 position-relative" style={{height: "20px"}}>
+                    <div className={`progress-bar progress-bar-striped bg-${props.job.status.failed ? "danger" : "warning"}`} role="progressbar"
                             style={{ width: `${progressPercent}%` }}
                             aria-valuenow={progressPercent} aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                    <div className="position-absolute top-50 start-50 translate-middle">
                         {progressPercent}%
                     </div>
                 </div>
