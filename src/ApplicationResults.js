@@ -14,6 +14,7 @@ const ApplicationResults = (props) => {
 
     const appPath = application.replace(":", "/");
     const typePath = (props.type === "tests") ? "run_test" : "compile";
+    const typeUpperCase = props.type.replace(/./, char => char.toUpperCase())
 
     const fetchApplicationData = useCallback(
         () => {
@@ -39,16 +40,10 @@ const ApplicationResults = (props) => {
     return (
         <div className="container">
             <a className="btn btn-outline-primary m-1" type="button" href={`/details/${uid}`}>
-            <   i className="bi-chevron-left me-1"></i>Back to job results
+                <i className="bi-chevron-left me-1"></i>Back to job results
             </a>
-            <div className="card m-1">
-                    <div className="card-body bg-light">
-                        <div className="row align-items-center">
-                            <div className="col-md-4 text-start">
-                                Application: <strong>{`${appPath}`}</strong>
-                            </div>
-                        </div>
-                    </div>
+            <div className="m-1">
+            <h3>{`${typeUpperCase}: ${appPath}`}</h3>
             </div>
             {(applicationData && applicationData.failures && applicationData.failures.length > 0) && (
             <div className="card border-danger m-1">
@@ -73,7 +68,7 @@ const ApplicationResults = (props) => {
             <div className="card m-1">
                 <div className="card-header">
                     <div className="row align-items-center">
-                        <div className="col-md-8">{`${props.type.replace(/./, char => char.toUpperCase())}`}{(applicationData.jobs.length > 0) ? ` (${applicationData.jobs.length})` : ""}</div>
+                        <div className="col-md-8">{`${typeUpperCase}`}{(applicationData.jobs.length > 0) ? ` (${applicationData.jobs.length})` : ""}</div>
                         <div className="col-md-4">
                             <input className="form-control pull-right" type="text" placeholder="Filter builds" onChange={(event) => {setFilter(event.target.value)}} />
                         </div>
