@@ -6,7 +6,7 @@ import Websocket from 'react-websocket';
 import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 
-import { murdockHttpBaseUrl, murdockWsUrl, cardColor, cardIcon, linkColor, textColor } from './constants';
+import { murdockHttpBaseUrl, murdockWsUrl, cardColor, cardIcon, linkColor, textColor, stateBadge } from './constants';
 import { LoadingSpinner } from './components';
 import { CommitWithAuthorCol, DateCompleteCol, GithubCol, RuntimeCol } from './components';
 import { Result } from './Result';
@@ -454,7 +454,12 @@ const JobInfo = (props) => {
     const commitMsgLines = props.job.commit.message.split("\n");
 
     return (
-        <>
+        <div className="position-relative">
+        <div className="row position-absolute top-0 end-0">
+            <div className="col col-md2 text-end">
+                <h4>{stateBadge[props.job.state]}</h4>
+            </div>
+        </div>
         <div className="row my-1">
             {
                 (props.job.prinfo) ? (
@@ -493,7 +498,7 @@ const JobInfo = (props) => {
         <div className="row my-1">
             {(props.job.runtime) ? <RuntimeCol runtime={moment.duration(props.job.runtime * -1000).humanize()} /> : (<div className="col-md-2"></div>)}
         </div>
-        </>
+        </div>
     );
 }
 
@@ -704,7 +709,7 @@ const JobDetails = (props) => {
                             notify={notify}
                         />
                     </div>
-                    <div className="card-body">
+                    <div className="card-body p-2 px-3">
                         <JobInfo job={job} />
                         {jobStatus && <JobStatus job={job} status={jobStatus} />}
                         {["running", "stopped"].includes(job.state) && <JobLiveFailures job={job} status={jobStatus} />}
