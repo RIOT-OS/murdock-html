@@ -50,7 +50,7 @@ export const Result = (props) => {
                 <div className="bg-dark overflow-auto p-2 mb-1 position-relative">
                     <div className="btn-toolbar position-absolute top-0 end-0 m-2" role="toolbar">
                         <div className="btn-group justify-content-right" role="group">
-                            <a type="button" class="btn btn-outline-light" href={outputUrl} target="_blank" rel="noopener noreferrer" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Open in new tab">
+                            <a type="button" className="btn btn-outline-light" href={outputUrl} target="_blank" rel="noopener noreferrer" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Open in new tab">
                                 <i className="bi-box-arrow-up-right"></i>
                             </a>
                         </div>

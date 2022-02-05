@@ -722,35 +722,45 @@ const JobDetails = (props) => {
                     <ul className="nav nav-tabs">
                         {(builds && builds.length > 0) && (
                         <li className="nav-item">
-                            <button className={`btn nav-link ${(activePanel === "builds") ? "active" : ""}`} aria-current="page" onClick={() => setActivePanel("builds")}>
+                            <button className={`nav-link ${(activePanel === "builds") ? "active" : ""}`} id="builds-tab" data-bs-toggle="tab" data-bs-target="#builds" type="button" role="tab" aria-controls="builds" aria-selected="false">
                                 <i className={`bi-${buildFailures && buildFailures.length > 0 ? "x text-danger": "check text-success"} me-1`}></i>Builds
                             </button>
                         </li>
                         )}
                         {(tests && tests.length > 0) && (
                         <li className="nav-item">
-                            <button className={`btn nav-link ${(activePanel === "tests") ? "active" : ""}`} aria-current="page" onClick={() => setActivePanel("tests")}>
+                            <button className="nav-link" id="tests-tab" data-bs-toggle="tab" data-bs-target="#tests" type="button" role="tab" aria-controls="tests" aria-selected="false">
                             <i className={`bi-${testFailures && testFailures.length > 0 ? "x text-danger": "check text-success"} me-1`}></i>Tests
                             </button>
                         </li>
                         )}
                         <li className="nav-item">
-                            <button className={`btn nav-link ${(activePanel === "output") ? "active" : ""}`} aria-current="page" onClick={() => {setActivePanel("output")}}>
+                            <button className={`nav-link ${(activePanel === "output") ? "active" : ""}`} id="output-tab" data-bs-toggle="tab" data-bs-target="#output" type="button" role="tab" aria-controls="output" aria-selected="false">
                                 <i className="bi-file-text-fill text-dark me-1"></i>Output
                             </button>
                         </li>
                         {(stats && stats.total_jobs > 0) && (
                         <li className="nav-item">
-                            <button className={`btn nav-link ${(activePanel === "stats") ? "active" : ""}`} aria-current="page" onClick={() => setActivePanel("stats")}>
+                            <button className="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="false">
                                 <i className={`bi-bar-chart-line text-dark me-1`}></i>Stats
                             </button>
                         </li>
                         )}
                     </ul>
-                    {(activePanel === "output") && <JobOutput job={job} output={jobOutput} />}
-                    {(activePanel === "builds" && builds && builds.length > 0) && <JobBuilds uid={uid} builds={builds} buildFailures={buildFailures} stats={stats} />}
-                    {(activePanel === "tests" && tests && tests.length > 0) && <JobTests tests={tests} testFailures={testFailures} stats={stats} />}
-                    {(activePanel === "stats" && stats && stats.total_jobs && stats.total_jobs > 0) && <JobStats stats={stats} />}
+                    <div className="tab-content">
+                        <div className={`tab-pane fade ${(activePanel === "output") ? "show active" : ""}`} id="output" role="tabpanel" aria-labelledby="output-tab">
+                            <JobOutput job={job} output={jobOutput} />
+                        </div>
+                        <div className={`tab-pane fade ${(activePanel === "builds") ? "show active" : ""}`} id="builds" role="tabpanel" aria-labelledby="builds-tab">
+                            {(builds && builds.length > 0) && <JobBuilds uid={uid} builds={builds} buildFailures={buildFailures} stats={stats} />}
+                        </div>
+                        <div className="tab-pane fade" id="tests" role="tabpanel" aria-labelledby="tests-tab">
+                            {(tests && tests.length > 0) && <JobTests tests={tests} testFailures={testFailures} stats={stats} />}
+                        </div>
+                        <div className="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats-tab">
+                            {(stats && stats.total_jobs && stats.total_jobs > 0) && <JobStats stats={stats} />}
+                        </div>
+                    </div>
                 </div>
                 }
                 <Websocket
