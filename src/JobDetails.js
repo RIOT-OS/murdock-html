@@ -157,7 +157,7 @@ const JobLiveFailures = (props) => {
         return null;
     }
 
-    const failed_jobs = (jobStatus.failed_jobs && jobStatus.failed_jobs.length) && (
+    const failed_jobs = (jobStatus.failed_jobs && jobStatus.failed_jobs.length > 0) && (
         jobStatus.failed_jobs.map((jobs, index) =>
             <div key={`pr-${props.job.uid}-${jobs.name}-${index}`} className="col-md-3 px-2">
             {(jobs.href) ? (
@@ -171,7 +171,7 @@ const JobLiveFailures = (props) => {
         )
     );
 
-    const failed_builds = (jobStatus.failed_builds && jobStatus.failed_builds.length) && (
+    const failed_builds = (jobStatus.failed_builds && jobStatus.failed_builds.length > 0) && (
         jobStatus.failed_builds.map((jobs, index) =>
             <div key={`pr-${props.job.uid}-${jobs.name}-${index}`} className="col-md-3 px-2">
             {(jobs.href) ? (
@@ -185,7 +185,7 @@ const JobLiveFailures = (props) => {
         )
     );
 
-    const failed_tests = (jobStatus.failed_tests && jobStatus.failed_tests.length) && (
+    const failed_tests = (jobStatus.failed_tests && jobStatus.failed_tests.length > 0) && (
         jobStatus.failed_tests.map((jobs, index) =>
             <div key={`pr-${props.job.uid}-${jobs.name}-${index}`} className="col-md-3 px-2">
             {(jobs.href) ? (
@@ -321,7 +321,7 @@ const JobBuilds = (props) => {
 
     return (
         <>
-        {(props.buildFailures && props.buildFailures.length) && (
+        {(props.buildFailures && props.buildFailures.length > 0) && (
         <div className="card border-danger m-1">
             <div className="card-header text-light bg-danger">
                 <div className="row align-items-center">
@@ -364,7 +364,7 @@ const JobTests = (props) => {
 
     return (
         <>
-        {(props.testFailures && props.testFailures.length) && (
+        {(props.testFailures && props.testFailures.length > 0) && (
         <div className="card border-danger m-1">
             <div className="card-header text-light bg-danger">
                 <div className="row align-items-center">
@@ -413,10 +413,6 @@ const Worker = (props) => {
 };
 
 const JobStats = (props) => {
-    if (!props.stats.total_jobs) {
-        return null;
-    }
-
     return (
         <>
             <div className="card m-1">
@@ -736,7 +732,7 @@ const JobDetails = (props) => {
                                 <i className="bi-file-text-fill text-dark me-1"></i>Output
                             </button>
                         </li>
-                        {(stats && stats.total_jobs) && (
+                        {(stats && stats.total_jobs > 0) && (
                         <li className="nav-item">
                             <button className={`btn nav-link ${(activePanel === "stats") ? "active" : ""}`} aria-current="page" onClick={() => setActivePanel("stats")}>
                                 <i className={`bi-bar-chart-line text-dark me-1`}></i>Stats
@@ -745,9 +741,9 @@ const JobDetails = (props) => {
                         )}
                     </ul>
                     {(activePanel === "output") && <JobOutput job={job} output={jobOutput} />}
-                    {(activePanel === "builds" && builds && builds.length) && <JobBuilds uid={uid} builds={builds} buildFailures={buildFailures} stats={stats} />}
-                    {(activePanel === "tests" && tests && tests.length) && <JobTests tests={tests} testFailures={testFailures} stats={stats} />}
-                    {(activePanel === "stats" && stats && stats.total_jobs) && <JobStats stats={stats} />}
+                    {(activePanel === "builds" && builds && builds.length > 0) && <JobBuilds uid={uid} builds={builds} buildFailures={buildFailures} stats={stats} />}
+                    {(activePanel === "tests" && tests && tests.length > 0) && <JobTests tests={tests} testFailures={testFailures} stats={stats} />}
+                    {(activePanel === "stats" && stats && stats.total_jobs && stats.total_jobs > 0) && <JobStats stats={stats} />}
                 </div>
                 }
                 <Websocket
