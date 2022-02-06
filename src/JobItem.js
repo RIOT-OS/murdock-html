@@ -147,7 +147,7 @@ export const JobItem = (props) => {
                 {(props.job.state === "running") && (
                     (buildInProgress) ? (
                         <a className="btn" style={{width: "100%"}} href={`/details/${props.job.uid}`} data-bs-toggle="tooltip" data-bs-placement="bottom" title={runningJobStatus}>
-                            {props.job.status.failed ? <i className="bi-exclamation-triangle me-1 text-danger"></i> : null}{`${moment.duration(props.job.status.eta, "seconds").humanize(true)} (${progressPercent}%)`}
+                            {props.job.status.failed ? <i className="animate-flicker bi-exclamation-triangle me-1 text-danger"></i> : null}{`${moment.duration(props.job.status.eta, "seconds").humanize(true)} (${progressPercent}%)`}
                             <div className="progress position-relative" style={{height: "5px"}}>
                                 <div className={`progress-bar progress-bar-animated progress-bar-striped bg-${props.job.status.failed ? "danger" : "warning"}`} role="progressbar"
                                     style={{ width: `${progressPercent}%` }}
