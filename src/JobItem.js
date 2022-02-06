@@ -146,15 +146,15 @@ export const JobItem = (props) => {
             <td className="text-center align-middle py-0" style={{width: "20%"}}>
                 {(props.job.state === "running") && (
                     (buildInProgress) ? (
-                        <div className="progress position-relative" style={{height: "20px"}} data-bs-toggle="tooltip" data-bs-placement="bottom" title={runningJobStatus}>
-                            <div className={`progress-bar progress-bar-striped bg-${props.job.status.failed ? "danger" : "warning"}`} role="progressbar"
-                                style={{ width: `${progressPercent}%` }}
-                                aria-valuenow={progressPercent} aria-valuemin="0" aria-valuemax="100">
+                        <a className="btn" style={{width: "100%"}} href={`/details/${props.job.uid}`} data-bs-toggle="tooltip" data-bs-placement="bottom" title={runningJobStatus}>
+                            {props.job.status.failed ? <i className="bi-exclamation-triangle me-1 text-danger"></i> : null}{`${moment.duration(props.job.status.eta, "seconds").humanize(true)} (${progressPercent}%)`}
+                            <div className="progress position-relative" style={{height: "5px"}}>
+                                <div className={`progress-bar progress-bar-animated progress-bar-striped bg-${props.job.status.failed ? "danger" : "warning"}`} role="progressbar"
+                                    style={{ width: `${progressPercent}%` }}
+                                    aria-valuenow={progressPercent} aria-valuemin="0" aria-valuemax="100">
+                                </div>
                             </div>
-                            <div className="position-absolute w-100 top-50 start-50 translate-middle">
-                                {props.job.status.failed ? <i className="bi-exclamation-triangle me-1"></i> : null}{`${moment.duration(props.job.status.eta, "seconds").humanize(true)} (${progressPercent}%)`}
-                            </div>
-                        </div>
+                        </a>
                     ) : (
                         <>
                         <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
