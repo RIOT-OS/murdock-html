@@ -457,7 +457,7 @@ const JobInfo = (props) => {
         <div className="position-relative">
         <div className="row position-absolute top-0 end-0">
             <div className="col col-md2 text-end">
-                <h4>{stateBadge[props.job.state]}</h4>
+                <h5>{stateBadge[props.job.state]}</h5>
             </div>
         </div>
         <div className="row my-1">
