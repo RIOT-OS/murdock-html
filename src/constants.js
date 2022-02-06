@@ -62,15 +62,15 @@ export const linkColor = {
 export const textColor = {
     "errored": "light",
     "passed": "light",
-    "queued": "dark",
-    "running": "dark",
+    "queued": "light",
+    "running": "light",
     "stopped": "light",
 };
 
 export const stateBadge = {
     "errored": (<span className="badge text-light bg-danger">Failed</span>),
     "passed": (<span className="badge text-light bg-success">Success</span>),
-    "queued": (<span className="badge text-dark bg-info">Queued</span>),
-    "running": (<span className="badge text-dark bg-warning">Running</span>),
+    "queued": (<span className="badge text-light bg-info">Queued</span>),
+    "running": (<span className="badge text-light bg-warning">Running</span>),
     "stopped": (<span className="badge text-light bg-secondary">Stopped</span>),
 };

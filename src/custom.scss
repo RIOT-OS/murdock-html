@@ -1,3 +1,18 @@
+// RIOT colors
+$riot-red: #bc202a;
+$riot-green: #40a687;
+
+// Abstraction of colors
+$success:$riot-green;
+$success-light: lighten($success, $amount: 20);
+
+$danger:$riot-red;
+$danger-light: lighten($color: $danger, $amount: 20);
+
+$light: #ffffff;
+$dark: #212121;
+$gray: #aaaaaa;
+
 @import "~bootswatch/dist/cosmo/variables";
 @import "~bootstrap/scss/bootstrap";
 @import "~bootswatch/dist/cosmo/bootswatch";
