@@ -440,13 +440,8 @@ const JobInfo = (props) => {
     const commitMsgLines = props.job.commit.message.split("\n");
 
     return (
-        <div className="position-relative">
-        <div className="row position-absolute top-0 end-0">
-            <div className="col col-md2 text-end">
-                <h5>{stateBadge[props.job.state]}</h5>
-            </div>
-        </div>
-        <div className="row my-1">
+        <>
+        <div className="row align-items-center">
             <CommitWithAuthorCol color={linkColor[props.job.state]} commit={props.job.commit.sha} author={props.job.commit.author} />
             {
                 (props.job.prinfo) ? (
@@ -462,8 +457,11 @@ const JobInfo = (props) => {
             </div>
             )}
             {(props.job.runtime) ? <RuntimeCol runtime={moment.duration(props.job.runtime * -1000).humanize()} /> : (<div className="col-md-2"></div>)}
+            <div className="col col-md2 text-end">
+                <h5>{stateBadge[props.job.state]}</h5>
+            </div>
         </div>
-        <div className="row my-1">
+        <div className="row">
             <div className="col col-md12 text-start">
                 <i className="bi-card-text me-1"></i>{commitMsgLines[0]}
                 {(commitMsgLines.length > 1) && (
@@ -478,7 +476,7 @@ const JobInfo = (props) => {
                 )}
             </div>
         </div>
-        </div>
+        </>
     );
 }
 
