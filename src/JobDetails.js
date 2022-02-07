@@ -8,7 +8,7 @@ import { useParams } from "react-router-dom";
 
 import { murdockHttpBaseUrl, murdockWsUrl, cardColor, cardIcon, linkColor, textColor, stateBadge } from './constants';
 import { LoadingSpinner } from './components';
-import { CommitWithAuthorCol, DateCompleteCol, GithubCol, RuntimeCol } from './components';
+import { CommitWithAuthorCol, DateCol, GithubCol, RuntimeCol } from './components';
 import { Result } from './Result';
 
 const jobOutputMaxHeight = "500px";
@@ -450,14 +450,14 @@ const JobInfo = (props) => {
                     <GithubCol title={`${props.job.ref.split("/")[2]}`} url={`https://github.com/${process.env.REACT_APP_GITHUB_REPO}/tree/${props.job.ref.split("/")[2]}`} color={linkColor[props.job.state]} />
                 )
             }
-            <DateCompleteCol date={prDate} />
-            {(props.job.state === "running" && props.job.status && props.job.status.eta) && (
+            <DateCol date={prDate} />
+            {(props.job.state === "running" && props.status && props.status.eta) && (
             <div className="col col-md-2">
-                <i className="bi-clock"></i><span className="m-1">{moment.duration(props.job.status.eta, "seconds").humanize(true)}</span>
+                <i className="bi-clock"></i><span className="m-1">{moment.duration(props.status.eta, "seconds").humanize(true)}</span>
             </div>
             )}
-            {(props.job.state !== "running" && props.job.runtime) ? <RuntimeCol runtime={moment.duration(props.job.runtime * -1000).humanize()} /> : (<div className="col-md-2"></div>)}
-            <div className="col col-md1 text-end">
+            {(props.job.state !== "running" && props.job.runtime) && <RuntimeCol runtime={moment.duration(props.job.runtime * -1000).humanize()} />}
+            <div className="col col-md-2 text-end">
                 <h5>{stateBadge[props.job.state]}</h5>
             </div>
         </div>
@@ -705,7 +705,7 @@ const JobDetails = (props) => {
                         />
                     </div>
                     <div className="card-body p-2 px-3">
-                        <JobInfo job={job} />
+                        <JobInfo job={job} status={jobStatus} />
                         {jobStatus && <JobStatus job={job} status={jobStatus} />}
                         {["running", "stopped"].includes(job.state) && <JobLiveFailures job={job} status={jobStatus} />}
                     </div>
