@@ -456,8 +456,8 @@ const JobInfo = (props) => {
                 <i className="bi-clock"></i><span className="m-1">{moment.duration(props.job.status.eta, "seconds").humanize(true)}</span>
             </div>
             )}
-            {(props.job.runtime) ? <RuntimeCol runtime={moment.duration(props.job.runtime * -1000).humanize()} /> : (<div className="col-md-2"></div>)}
-            <div className="col col-md2 text-end">
+            {(props.job.state !== "running" && props.job.runtime) ? <RuntimeCol runtime={moment.duration(props.job.runtime * -1000).humanize()} /> : (<div className="col-md-2"></div>)}
+            <div className="col col-md1 text-end">
                 <h5>{stateBadge[props.job.state]}</h5>
             </div>
         </div>
