@@ -667,6 +667,19 @@ const JobDetails = (props) => {
         const jobInfo = (job.prinfo) ? `PR #${job.prinfo.number}` : refRepr(job.ref)
         document.title = `Murdock - ${jobInfo} - ${job.commit.sha.slice(0, 7)}`;
 
+        const favicon = getFaviconElement();
+        if (job.state === "passed") {
+            favicon.href = "/passed.png";
+            document.title += " - Passed";
+        }
+        else if (job.state === "errored") {
+            favicon.href = "/failed.png";
+            document.title += " - Failed";
+        }
+        else {
+            favicon.href = "/favicon.png";
+        }
+
         if (["errored", "passed"].includes(job.state)) {
             if (!builds) {
                 fetchBuilds();
@@ -682,16 +695,6 @@ const JobDetails = (props) => {
             }
             if (!testFailures) {
                 fetchStats();
-            }
-
-            const favicon = getFaviconElement();
-            if (job.state === "passed") {
-                favicon.href = "/passed.png";
-                document.title += " - Passed";
-            }
-            else {
-                favicon.href = "/failed.png";
-                document.title += " - Failed";
             }
         }
     }, [

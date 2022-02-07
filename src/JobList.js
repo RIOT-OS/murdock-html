@@ -168,6 +168,9 @@ class JobList extends Component {
         if (!this.state.isFetched) {
             this.fetchJobs();
         }
+
+        const favicon = document.getElementById("favicon");
+        favicon.href = "/favicon.ico";
     }
 
     notify(uid, result, message) {
