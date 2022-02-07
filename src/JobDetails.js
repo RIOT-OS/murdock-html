@@ -484,19 +484,23 @@ const JobInfo = (props) => {
 }
 
 const JobDetails = (props) => {
+    let { uid, tab } = useParams();
+
+    if (!tab || !["builds", "tests", "output", "stats"].includes(tab)) {
+        tab = "output";
+    }
+
     const [ fetched, setFetched ] = useState(false);
     const [ job, setJob ] = useState(null);
     const [ jobStatus, setJobStatus ] = useState(null);
     const [ jobOutput, setJobOutput ] = useState(null);
-    const [ activePanel, setActivePanel ] = useState("output");
+    const [ activePanel, setActivePanel ] = useState(tab);
     const [ stats, setStats ] = useState(null);
     const [ builds, setBuilds ] = useState(null);
     const [ buildFailures, setBuildFailures ] = useState(null);
     const [ tests, setTests ] = useState(null);
     const [ testFailures, setTestFailures ] = useState(null);
     const [ alerts, setAlerts ] = useState([]);
-
-    let { uid } = useParams();
 
     const fetchJob = useCallback(
         () => {
@@ -523,7 +527,7 @@ const JobDetails = (props) => {
             axios.get(`${murdockHttpBaseUrl}/results/${uid}/builds.json`)
             .then(res => {
                 setBuilds(res.data);
-                if (res.data.length > 0) {
+                if (!tab && res.data.length > 0) {
                     setActivePanel("builds");
                 }
             })
@@ -725,7 +729,7 @@ const JobDetails = (props) => {
                         )}
                         {(tests && tests.length > 0) && (
                         <li className="nav-item">
-                            <button className="nav-link" id="tests-tab" data-bs-toggle="tab" data-bs-target="#tests" type="button" role="tab" aria-controls="tests" aria-selected="false">
+                            <button className={`nav-link ${(activePanel === "tests") ? "active" : ""}`} id="tests-tab" data-bs-toggle="tab" data-bs-target="#tests" type="button" role="tab" aria-controls="tests" aria-selected="false">
                             <i className={`bi-${testFailures && testFailures.length > 0 ? "x text-danger": "check text-success"} me-1`}></i>Tests
                             </button>
                         </li>
@@ -737,7 +741,7 @@ const JobDetails = (props) => {
                         </li>
                         {(stats && stats.total_jobs > 0) && (
                         <li className="nav-item">
-                            <button className="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="false">
+                            <button className={`nav-link ${(activePanel === "stats") ? "active" : ""}`} id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="false">
                                 <i className={`bi-bar-chart-line text-dark me-1`}></i>Stats
                             </button>
                         </li>
@@ -750,10 +754,10 @@ const JobDetails = (props) => {
                         <div className={`tab-pane fade ${(activePanel === "builds") ? "show active" : ""}`} id="builds" role="tabpanel" aria-labelledby="builds-tab">
                             {(builds && builds.length > 0) && <JobBuilds uid={uid} builds={builds} buildFailures={buildFailures} stats={stats} />}
                         </div>
-                        <div className="tab-pane fade" id="tests" role="tabpanel" aria-labelledby="tests-tab">
+                        <div className={`tab-pane fade ${(activePanel === "tests") ? "show active" : ""}`} id="tests" role="tabpanel" aria-labelledby="tests-tab">
                             {(tests && tests.length > 0) && <JobTests tests={tests} testFailures={testFailures} stats={stats} />}
                         </div>
-                        <div className="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats-tab">
+                        <div className={`tab-pane fade ${(activePanel === "stats") ? "show active" : ""}`} id="stats" role="tabpanel" aria-labelledby="stats-tab">
                             {(stats && stats.total_jobs && stats.total_jobs > 0) && <JobStats stats={stats} />}
                         </div>
                     </div>
