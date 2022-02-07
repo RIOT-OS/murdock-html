@@ -34,8 +34,18 @@ export const Result = (props) => {
         <div className="card my-1">
             <button className="btn" type="button" onClick={toggleOutput} data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${outputVisible ? "Hide": "Show"} output`}>
                 <div className="row">
-                    <div className="col col-md-7 text-start">
+                    {(props.withApplication) && (
+                    <div className="col col-md-4 text-start">
                         <span className={`text-${cardColor[props.result.status ? "passed" : "errored"]}`}>{cardIcon[props.result.status ? "passed" : "errored"]}</span>
+                        {props.result.application}
+                    </div>
+                    )}
+                    <div className={`col col-md-${props.withApplication ? "3" : "7"} text-start`}>
+                        {(props.withApplication) ? (
+                            <i className="bi-cpu me-1"></i>
+                        ) : (
+                            <span className={`text-${cardColor[props.result.status ? "passed" : "errored"]}`}>{cardIcon[props.result.status ? "passed" : "errored"]}</span>
+                        )}
                         {props.result.board}:{props.result.toolchain}
                     </div>
                     <div className="col col-md-4 text-start">

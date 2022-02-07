@@ -322,7 +322,7 @@ const JobBuilds = (props) => {
             <div className="card-body p-1">
                 {props.buildFailures
                     .filter(build => (build.application.includes(failuresFilter) || build.board.includes(failuresFilter)))
-                    .map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="compile" result={build} />)}
+                    .map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="compile" withApplication={true} result={build} />)}
             </div>
         </div>)}
         <div className="card m-1">
@@ -365,7 +365,7 @@ const JobTests = (props) => {
             <div className="card-body p-1">
                 {props.testFailures
                     .filter(test => (test.application.includes(failuresFilter) || test.board.includes(failuresFilter)))
-                    .map(test => <Result key={`${test.application}-${test.board}-${test.toolchain}`} uid={props.uid} type="run_test" result={test} />)}
+                    .map(test => <Result key={`${test.application}-${test.board}-${test.toolchain}`} uid={props.uid} type="run_test" withApplication={true} result={test} />)}
             </div>
         </div>)}
         <div className="card m-1">
