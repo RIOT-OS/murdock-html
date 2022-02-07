@@ -650,6 +650,10 @@ const JobDetails = (props) => {
         return "";
     };
 
+    function getFaviconElement() {
+        return document.getElementById("favicon");
+      }
+
     useEffect(() => {
         if (!fetched) {
             fetchJob();
@@ -659,6 +663,9 @@ const JobDetails = (props) => {
         if (!job) {
             return;
         }
+
+        const jobInfo = (job.prinfo) ? `PR #${job.prinfo.number}` : refRepr(job.ref)
+        document.title = `Murdock - ${jobInfo} - ${job.commit.sha.slice(0, 7)}`;
 
         if (["errored", "passed"].includes(job.state)) {
             if (!builds) {
@@ -676,10 +683,17 @@ const JobDetails = (props) => {
             if (!testFailures) {
                 fetchStats();
             }
-        }
 
-        const jobInfo = (job.prinfo) ? `PR #${job.prinfo.number}` : refRepr(job.ref)
-        document.title = `Murdock - ${jobInfo} - ${job.commit.sha.slice(0, 7)}`;
+            const favicon = getFaviconElement();
+            if (job.state === "passed") {
+                favicon.href = "/passed.png";
+                document.title += " - Passed";
+            }
+            else {
+                favicon.href = "/failed.png";
+                document.title += " - Failed";
+            }
+        }
     }, [
         buildFailures, builds, fetchBuildFailures, fetchBuilds, fetchJob,
         fetchStats, fetchTestFailures, fetchTests, fetched, job, stats,
