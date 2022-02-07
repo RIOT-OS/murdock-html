@@ -439,6 +439,14 @@ const JobInfo = (props) => {
 
     const commitMsgLines = props.job.commit.message.split("\n");
 
+    let runtime = <div className="col col-md-2"></div>;
+    if (props.job.state === "running" && props.status && props.status.eta) {
+        runtime = <div className="col col-md-2"><i className="bi-clock"></i><span className="m-1">{moment.duration(props.status.eta, "seconds").humanize(true)}</span></div>;
+    }
+    else if (props.job.state !== "running" && props.job.runtime) {
+        runtime = <RuntimeCol runtime={moment.duration(props.job.runtime * -1000).humanize()} />;
+    }
+
     return (
         <>
         <div className="row align-items-center">
@@ -451,12 +459,7 @@ const JobInfo = (props) => {
                 )
             }
             <DateCol date={prDate} />
-            {(props.job.state === "running" && props.status && props.status.eta) && (
-            <div className="col col-md-2">
-                <i className="bi-clock"></i><span className="m-1">{moment.duration(props.status.eta, "seconds").humanize(true)}</span>
-            </div>
-            )}
-            {(props.job.state !== "running" && props.job.runtime) && <RuntimeCol runtime={moment.duration(props.job.runtime * -1000).humanize()} />}
+            {runtime}
             <div className="col col-md-2 text-end">
                 <h5>{stateBadge[props.job.state]}</h5>
             </div>
