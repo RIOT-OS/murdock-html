@@ -56,13 +56,13 @@ const JobTitle = (props) => {
     };
 
     const cancelAction = (props.permissions === "push" && props.job.state === "queued") && (
-        <button className={`btn badge bg-${cardColor[props.job.state]} text-danger fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cancel" onClick={cancel}>
+        <button className={`btn btn-outline-${cardColor[props.job.state]} badge fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cancel" onClick={cancel}>
             <i className="bi-x-circle"></i>
         </button>
     );
 
     const stopAction = (props.permissions === "push" && props.job.state === "running") && (
-        <button className={`btn badge bg-${cardColor[props.job.state]} text-danger fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Abort" onClick={abort}>
+        <button className={`btn btn-outline-${cardColor[props.job.state]} badge fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Abort" onClick={abort}>
             <i className="bi-x-circle"></i>
         </button>
     );
