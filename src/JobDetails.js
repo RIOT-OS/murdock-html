@@ -102,35 +102,28 @@ const JobStatus = (props) => {
         const jobsDone = props.status.passed + props.status.failed;
         progressPercent = Math.round((jobsDone * 100) / props.status.total);
         buildStatus = (
-            <div className="row my-1">
-                <div className="col col-md-4">
-                    <i className="bi-bar-chart-line me-1"></i>
-                    {`fail: ${props.status.failed} pass: ${props.status.passed} done: ${jobsDone}/${props.status.total}`}
-                </div>
+            <div className="col col-md-4">
+                <i className="bi-bar-chart-line me-1"></i>
+                {`fail: ${props.status.failed} pass: ${props.status.passed} done: ${jobsDone}/${props.status.total}`}
             </div>
         );
     }
     else if (props.status.status) {
         buildStatus = (
-            <div className="row my-1">
-                <div className="col col-md-4">
-                    <i className="bi-arrow-left-right me-1"></i>{props.status.status}
-                </div>
+            <div className="col col-md-4">
+                <i className="bi-arrow-left-right me-1"></i>{props.status.status}
             </div>
-            );
+        );
     }
     else {
         return null;
     }
 
     return (
-        <>
-        {buildStatus}
-        {(props.job.state === "running") && (
-        <>
-        <div className="row my-1 align-middle" >
-            <div className="col col-md-4 px-0">
-                <div className="progress" style={{height: "20px"}}>
+        <div className="row my-1">
+        {["running", "stopped"].includes(props.job.state) && (
+            <div className="col col-md-5">
+                <div className="progress" style={{height: "22px"}}>
                     <div className={`progress-bar progress-bar-animated progress-bar-striped bg-${props.job.status.failed ? "danger" : "warning"}`} role="progressbar"
                             style={{ width: `${progressPercent}%` }}
                             aria-valuenow={progressPercent} aria-valuemin="0" aria-valuemax="100">
@@ -138,16 +131,9 @@ const JobStatus = (props) => {
                     </div>
                 </div>
             </div>
-        </div>
-        <div className="row my-1">
-            <div className="col col-md-2">
-                <i className="bi-clock"></i>
-                <span className="m-1">{moment.duration(props.status.eta, "seconds").humanize(true)}</span>
-            </div>
-        </div>
-        </>
         )}
-        </>
+        {buildStatus}
+        </div>
     );
 }
 
@@ -158,42 +144,42 @@ const JobLiveFailures = (props) => {
     }
 
     const failed_jobs = (jobStatus.failed_jobs && jobStatus.failed_jobs.length > 0) && (
-        jobStatus.failed_jobs.map((jobs, index) =>
-            <div key={`pr-${props.job.uid}-${jobs.name}-${index}`} className="col-md-3 px-2">
-            {(jobs.href) ? (
-                <a className="text-danger link-underline-hover" href={`${jobs.href}`}>
-                    {jobs.name}
+        jobStatus.failed_jobs.map((job, index) =>
+            <div key={`pr-${props.job.uid}-${job.name}-${index}`} className="col-md-3 px-2">
+            {(job.href) ? (
+                <a className="text-danger link-underline-hover" href={`${job.href}`}>
+                    {job.name}
                 </a>
             ) : (
-                jobs.name
+                job.name
             )}
             </div>
         )
     );
 
     const failed_builds = (jobStatus.failed_builds && jobStatus.failed_builds.length > 0) && (
-        jobStatus.failed_builds.map((jobs, index) =>
-            <div key={`pr-${props.job.uid}-${jobs.name}-${index}`} className="col-md-3 px-2">
-            {(jobs.href) ? (
-                <a className="text-danger link-underline-hover" href={`${jobs.href}`}>
-                    {jobs.name}
+        jobStatus.failed_builds.map((job, index) =>
+            <div key={`pr-${props.job.uid}-${job.name}-${index}`} className="col-md-3 px-2">
+            {(job.href) ? (
+                <a className="text-danger link-underline-hover" href={`${job.href}`}>
+                    {job.name}
                 </a>
             ) : (
-                jobs.name
+                job.name
             )}
             </div>
         )
     );
 
     const failed_tests = (jobStatus.failed_tests && jobStatus.failed_tests.length > 0) && (
-        jobStatus.failed_tests.map((jobs, index) =>
-            <div key={`pr-${props.job.uid}-${jobs.name}-${index}`} className="col-md-3 px-2">
-            {(jobs.href) ? (
-                <a className="text-danger link-underline-hover" href={`${jobs.href}`}>
-                    {jobs.name}
+        jobStatus.failed_tests.map((job, index) =>
+            <div key={`pr-${props.job.uid}-${job.name}-${index}`} className="col-md-3 px-2">
+            {(job.href) ? (
+                <a className="text-danger link-underline-hover" href={`${job.href}`}>
+                    {job.name}
                 </a>
             ) : (
-                jobs.name
+                job.name
             )}
             </div>
         )
@@ -326,7 +312,7 @@ const JobBuilds = (props) => {
             <div className="card-header text-light bg-danger">
                 <div className="row align-items-center">
                     <div className="col-md-8">
-                        Failed builds ({props.buildFailures.length})
+                        {`Failed builds (${props.buildFailures.length}/${props.stats.total_builds})`}
                     </div>
                     <div className="col-md-4">
                         <input id="build_failures_filter pull-right" className="form-control" type="text" placeholder="Filter failed builds" onChange={(event) => {setFailuresFilter(event.target.value)}} />
@@ -461,6 +447,7 @@ const JobInfo = (props) => {
             </div>
         </div>
         <div className="row my-1">
+            <CommitWithAuthorCol color={linkColor[props.job.state]} commit={props.job.commit.sha} author={props.job.commit.author} />
             {
                 (props.job.prinfo) ? (
                     <GithubCol title={`PR #${props.job.prinfo.number}`} url={props.job.prinfo.url} color={linkColor[props.job.state]} />
@@ -468,9 +455,13 @@ const JobInfo = (props) => {
                     <GithubCol title={`${props.job.ref.split("/")[2]}`} url={`https://github.com/${process.env.REACT_APP_GITHUB_REPO}/tree/${props.job.ref.split("/")[2]}`} color={linkColor[props.job.state]} />
                 )
             }
-        </div>
-        <div className="row my-1">
-            <CommitWithAuthorCol color={linkColor[props.job.state]} commit={props.job.commit.sha} author={props.job.commit.author} />
+            <DateCompleteCol date={prDate} />
+            {(props.job.state === "running" && props.job.status && props.job.status.eta) && (
+            <div className="col col-md-2">
+                <i className="bi-clock"></i><span className="m-1">{moment.duration(props.job.status.eta, "seconds").humanize(true)}</span>
+            </div>
+            )}
+            {(props.job.runtime) ? <RuntimeCol runtime={moment.duration(props.job.runtime * -1000).humanize()} /> : (<div className="col-md-2"></div>)}
         </div>
         <div className="row my-1">
             <div className="col col-md12 text-start">
@@ -486,17 +477,6 @@ const JobInfo = (props) => {
                 </>
                 )}
             </div>
-        </div>
-        <div className="row my-1">
-            <DateCompleteCol date={prDate} />
-        </div>
-        <div className="row my-1">
-            <div className="col col-md-4">
-                <i className="bi-info-circle me-1"></i>{`Job: ${props.job.uid}`}
-            </div>
-        </div>
-        <div className="row my-1">
-            {(props.job.runtime) ? <RuntimeCol runtime={moment.duration(props.job.runtime * -1000).humanize()} /> : (<div className="col-md-2"></div>)}
         </div>
         </div>
     );

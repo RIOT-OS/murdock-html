@@ -50,7 +50,7 @@ const ApplicationResults = (props) => {
                 <div className="card-header text-light bg-danger">
                     <div className="row align-items-center">
                         <div className="col-md-8">
-                            Failed {props.type} {(applicationData && applicationData.failures) ? `(${applicationData.failures.length})` : ""}
+                            Failed {props.type} {(applicationData && applicationData.failures) ? `(${applicationData.failures.length}/${applicationData.jobs.length})` : ""}
                         </div>
                         <div className="col-md-4">
                             <input className="form-control" type="text" placeholder={`Filter failed ${props.type}`} onChange={(event) => {setFailuresFilter(event.target.value)}} />
