@@ -4,7 +4,7 @@ import $ from 'jquery';
 
 import Websocket from 'react-websocket';
 import { useState, useEffect, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 
 import { murdockHttpBaseUrl, murdockWsUrl, cardColor, cardIcon, linkColor, textColor, stateBadge } from './constants';
 import { LoadingSpinner } from './components';
@@ -485,6 +485,7 @@ const JobInfo = (props) => {
 
 const JobDetails = (props) => {
     let { uid, tab } = useParams();
+    let history = useHistory();
 
     if (!tab || !["builds", "tests", "output", "stats"].includes(tab)) {
         tab = "output";
@@ -722,26 +723,26 @@ const JobDetails = (props) => {
                     <ul className="nav nav-tabs">
                         {(builds && builds.length > 0) && (
                         <li className="nav-item">
-                            <button className={`nav-link ${(activePanel === "builds") ? "active" : ""}`} id="builds-tab" data-bs-toggle="tab" data-bs-target="#builds" type="button" role="tab" aria-controls="builds" aria-selected="false">
+                            <button className={`nav-link ${(activePanel === "builds") ? "active" : ""}`} id="builds-tab" data-bs-toggle="tab" data-bs-target="#builds" type="button" role="tab" aria-controls="builds" aria-selected="false" onClick={() => {history.push(`/details/${uid}/builds`)}}>
                                 <i className={`bi-${buildFailures && buildFailures.length > 0 ? "x text-danger": "check text-success"} me-1`}></i>Builds
                             </button>
                         </li>
                         )}
                         {(tests && tests.length > 0) && (
                         <li className="nav-item">
-                            <button className={`nav-link ${(activePanel === "tests") ? "active" : ""}`} id="tests-tab" data-bs-toggle="tab" data-bs-target="#tests" type="button" role="tab" aria-controls="tests" aria-selected="false">
+                            <button className={`nav-link ${(activePanel === "tests") ? "active" : ""}`} id="tests-tab" data-bs-toggle="tab" data-bs-target="#tests" type="button" role="tab" aria-controls="tests" aria-selected="false" onClick={() => {history.push(`/details/${uid}/tests`)}}>
                             <i className={`bi-${testFailures && testFailures.length > 0 ? "x text-danger": "check text-success"} me-1`}></i>Tests
                             </button>
                         </li>
                         )}
                         <li className="nav-item">
-                            <button className={`nav-link ${(activePanel === "output") ? "active" : ""}`} id="output-tab" data-bs-toggle="tab" data-bs-target="#output" type="button" role="tab" aria-controls="output" aria-selected="false">
+                            <button className={`nav-link ${(activePanel === "output") ? "active" : ""}`} id="output-tab" data-bs-toggle="tab" data-bs-target="#output" type="button" role="tab" aria-controls="output" aria-selected="false" onClick={() => {history.push(`/details/${uid}/output`)}}>
                                 <i className="bi-file-text-fill text-dark me-1"></i>Output
                             </button>
                         </li>
                         {(stats && stats.total_jobs > 0) && (
                         <li className="nav-item">
-                            <button className={`nav-link ${(activePanel === "stats") ? "active" : ""}`} id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="false">
+                            <button className={`nav-link ${(activePanel === "stats") ? "active" : ""}`} id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="false" onClick={() => {history.push(`/details/${uid}/stats`)}}>
                                 <i className={`bi-bar-chart-line text-dark me-1`}></i>Stats
                             </button>
                         </li>
