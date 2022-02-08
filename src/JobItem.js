@@ -137,9 +137,21 @@ export const JobItem = (props) => {
     return (
         <tr>
             <td style={{width: "5%"}}>
-            <a className="btn link-underline-hover p-0 m-0 text-primary" href={`/details/${props.job.uid}`}>{`${props.job.uid.substring(0, 7)}`}</a>
+            <a className="btn link-underline-hover p-0 text-primary" href={`/details/${props.job.uid}`}>{`${props.job.uid.substring(0, 7)}`}</a>
             </td>
-            <td style={{width: "40%"}}>{(props.job.prinfo) && <a className="link-underline-hover me-1 p-1 text-dark" href={props.job.prinfo.url}><i className="bi-github me-1"></i>PR #{props.job.prinfo.number}</a>}{title}</td>
+            <td style={{width: "40%"}}>
+                <span className="align-middle">
+                    {(props.job.prinfo) && (
+                        <>
+                        <i className="bi-github me-1"></i>
+                        <a className="link-underline-hover text-dark me-1" href={props.job.prinfo.url} target="_blank" rel="noreferrer noopener">
+                            PR #{props.job.prinfo.number}
+                        </a>
+                        </>
+                    )}
+                    {title}
+                </span>
+            </td>
             <td style={{width: "30%"}} className="text-center">
                 <DateElem date={jobDate} />
             </td>
