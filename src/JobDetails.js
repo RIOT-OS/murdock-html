@@ -543,7 +543,7 @@ const JobDetails = (props) => {
             .catch(error => {
                 console.log("No build results found");
             });
-        }, [tab, uid, history]
+        }, [uid]
     );
 
     const fetchBuildFailures = useCallback(
