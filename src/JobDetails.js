@@ -162,7 +162,7 @@ const JobLiveFailures = (props) => {
             <div key={`pr-${props.job.uid}-${job.name}-${index}`} className="col-md-3 px-2">
             {(job.href) ? (
                 <a className="text-danger link-underline-hover" href={`${job.href}`}>
-                    {job.name}
+                    {`${job.name} (${job.worker} - ${job.runtime.toFixed(2)}s)`}
                 </a>
             ) : (
                 job.name
