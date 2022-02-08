@@ -539,10 +539,6 @@ const JobDetails = (props) => {
             axios.get(`${murdockHttpBaseUrl}/results/${uid}/builds.json`)
             .then(res => {
                 setBuilds(res.data);
-                if (!tab && res.data.length > 0) {
-                    setActivePanel("builds");
-                    history.push(`/details/${uid}/builds`);
-                }
             })
             .catch(error => {
                 console.log("No build results found");
@@ -663,8 +659,11 @@ const JobDetails = (props) => {
         }
 
         if (!["builds", "tests", "output", "stats"].includes(tab)) {
-            setActivePanel("output");
-            history.push(`/details/${uid}/output`);
+            if (["passed", "errored"].includes(job.state)) {
+                setActivePanel("builds");
+            } else {
+                setActivePanel("output");
+            }
         }
 
         const jobInfo = (job.prinfo) ? `PR #${job.prinfo.number}` : refRepr(job.ref)
