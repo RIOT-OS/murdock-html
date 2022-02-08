@@ -399,6 +399,8 @@ const Worker = (props) => {
 };
 
 const JobStats = (props) => {
+    const [filter, setFilter] = useState("");
+
     return (
         <>
             <div className="card m-1">
@@ -413,7 +415,14 @@ const JobStats = (props) => {
                 </div>
             </div>
             <div className="card m-1">
-                <div className="card-header">Workers stats</div>
+                <div className="card-header">
+                <div className="row align-items-center">
+                    <div className="col-md-8">Workers stats</div>
+                    <div className="col-md-4">
+                        <input className="form-control pull-right" type="text" placeholder="Filter workers" onChange={(event) => {setFilter(event.target.value)}} />
+                    </div>
+                </div>
+                </div>
                 <div className="card-body">
                     <table className="table">
                         <thead>
@@ -425,7 +434,9 @@ const JobStats = (props) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {props.stats.workers.map(worker => <Worker key={worker.name} worker={worker} />)}
+                            {props.stats.workers
+                                .filter(worker => worker.name.includes(filter))
+                                .map(worker => <Worker key={worker.name} worker={worker} />)}
                         </tbody>
                     </table>
                 </div>
