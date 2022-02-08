@@ -305,39 +305,36 @@ const JobBuilds = (props) => {
     const [filter, setFilter] = useState("");
     const [failuresFilter, setFailuresFilter] = useState("");
 
+    const builds = props.builds.filter(build => build.application.includes(filter));
+    const buildFailures = (props.buildFailures) ? props.buildFailures.filter(test => (test.application.includes(failuresFilter) || test.board.includes(failuresFilter))) : [];
+
     return (
         <>
         {(props.buildFailures && props.buildFailures.length > 0) && (
         <div className="card border-danger m-1">
             <div className="card-header text-light bg-danger">
                 <div className="row align-items-center">
-                    <div className="col-md-8">
-                        {`Failed builds (${props.buildFailures.length}/${props.stats.total_builds})`}
-                    </div>
+                    <div className="col-md-8">{`Failed builds (${buildFailures.length}/${props.stats.total_builds})`}</div>
                     <div className="col-md-4">
                         <input id="build_failures_filter pull-right" className="form-control" type="text" placeholder="Filter failed builds" onChange={(event) => {setFailuresFilter(event.target.value)}} />
                     </div>
                 </div>
             </div>
             <div className="card-body p-1">
-                {props.buildFailures
-                    .filter(build => (build.application.includes(failuresFilter) || build.board.includes(failuresFilter)))
-                    .map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="compile" withApplication={true} result={build} />)}
+                {buildFailures.map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="compile" withApplication={true} result={build} />)}
             </div>
         </div>)}
         <div className="card m-1">
             <div className="card-header">
                 <div className="row align-items-center">
-                    <div className="col-md-8">Builds{(props.stats.total_builds) ? ` (${props.stats.total_builds})` : ""}</div>
+                    <div className="col-md-8">Applications{` (${builds.length})`}</div>
                     <div className="col-md-4">
-                        <input className="form-control pull-right" type="text" placeholder="Filter builds" onChange={(event) => {setFilter(event.target.value)}} />
+                        <input className="form-control pull-right" type="text" placeholder="Filter applications" onChange={(event) => {setFilter(event.target.value)}} />
                     </div>
                 </div>
             </div>
             <div className="card-body p-1">
-                {props.builds
-                    .filter(build => build.application.includes(filter))
-                    .map(build => <Application key={build.application} uid={props.uid} name={build.application} success={build.build_success} failures={build.build_failures} />)}
+                {builds.map(build => <Application key={build.application} uid={props.uid} name={build.application} success={build.build_success} failures={build.build_failures} />)}
             </div>
         </div>
         </>
@@ -348,39 +345,36 @@ const JobTests = (props) => {
     const [filter, setFilter] = useState("");
     const [failuresFilter, setFailuresFilter] = useState("");
 
+    const tests = props.tests.filter(test => test.application.includes(filter));
+    const testFailures = (props.testFailures) ? props.testFailures.filter(test => (test.application.includes(failuresFilter) || test.board.includes(failuresFilter))) : [];
+
     return (
         <>
         {(props.testFailures && props.testFailures.length > 0) && (
         <div className="card border-danger m-1">
             <div className="card-header text-light bg-danger">
                 <div className="row align-items-center">
-                    <div className="col-md-8">
-                        Failed tests ({props.testFailures.length})
-                    </div>
+                    <div className="col-md-8">{`Failed tests (${testFailures.length}/${props.stats.total_tests})`}</div>
                     <div className="col-md-4">
                         <input id="build_failures_filter pull-right" className="form-control" type="text" placeholder="Filter failed tests" onChange={(event) => {setFailuresFilter(event.target.value)}} />
                     </div>
                 </div>
             </div>
             <div className="card-body p-1">
-                {props.testFailures
-                    .filter(test => (test.application.includes(failuresFilter) || test.board.includes(failuresFilter)))
-                    .map(test => <Result key={`${test.application}-${test.board}-${test.toolchain}`} uid={props.uid} type="run_test" withApplication={true} result={test} />)}
+                {testFailures.map(test => <Result key={`${test.application}-${test.board}-${test.toolchain}`} uid={props.uid} type="run_test" withApplication={true} result={test} />)}
             </div>
         </div>)}
         <div className="card m-1">
             <div className="card-header">
                 <div className="row align-items-center">
-                    <div className="col-md-8">Tests{(props.stats.total_tests) ? ` (${props.stats.total_tests})` : ""}</div>
+                    <div className="col-md-8">Applications{` (${tests.length})`}</div>
                     <div className="col-md-4">
-                        <input className="form-control pull-right" type="text" placeholder="Filter tests" onChange={(event) => {setFilter(event.target.value)}} />
+                        <input className="form-control pull-right" type="text" placeholder="Filter applications" onChange={(event) => {setFilter(event.target.value)}} />
                     </div>
                 </div>
             </div>
             <div className="card-body">
-                {props.tests
-                    .filter(test => test.application.includes(filter))
-                    .map(test => <Application key={test.application} name={test.application} success={test.test_success} failures={test.test_failures} />)}
+                {tests.map(test => <Application key={test.application} name={test.application} success={test.test_success} failures={test.test_failures} />)}
             </div>
         </div>
         </>
