@@ -662,6 +662,8 @@ const JobDetails = (props) => {
             } else {
                 setActivePanel("output");
             }
+        } else {
+            setActivePanel(tab);
         }
 
         const jobInfo = (job.prinfo) ? `PR #${job.prinfo.number}` : refRepr(job.ref)
@@ -763,16 +765,16 @@ const JobDetails = (props) => {
                         )}
                     </ul>
                     <div className="tab-content">
-                        <div className={`tab-pane fade ${(activePanel === "output") ? "show active" : ""}`} id="output" role="tabpanel" aria-labelledby="output-tab">
+                        <div className={`tab-pane ${(activePanel === "output") ? "show active" : ""}`} id="output" role="tabpanel" aria-labelledby="output-tab">
                             <JobOutput job={job} output={jobOutput} />
                         </div>
-                        <div className={`tab-pane fade ${(activePanel === "builds") ? "show active" : ""}`} id="builds" role="tabpanel" aria-labelledby="builds-tab">
+                        <div className={`tab-pane ${(activePanel === "builds") ? "show active" : ""}`} id="builds" role="tabpanel" aria-labelledby="builds-tab">
                             {(builds && builds.length > 0) && <JobBuilds uid={uid} builds={builds} buildFailures={buildFailures} stats={stats} />}
                         </div>
-                        <div className={`tab-pane fade ${(activePanel === "tests") ? "show active" : ""}`} id="tests" role="tabpanel" aria-labelledby="tests-tab">
+                        <div className={`tab-pane ${(activePanel === "tests") ? "show active" : ""}`} id="tests" role="tabpanel" aria-labelledby="tests-tab">
                             {(tests && tests.length > 0) && <JobTests tests={tests} testFailures={testFailures} stats={stats} />}
                         </div>
-                        <div className={`tab-pane fade ${(activePanel === "stats") ? "show active" : ""}`} id="stats" role="tabpanel" aria-labelledby="stats-tab">
+                        <div className={`tab-pane ${(activePanel === "stats") ? "show active" : ""}`} id="stats" role="tabpanel" aria-labelledby="stats-tab">
                             {(stats && stats.total_jobs && stats.total_jobs > 0) && <JobStats stats={stats} />}
                         </div>
                     </div>
