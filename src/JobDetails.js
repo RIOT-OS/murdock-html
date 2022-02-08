@@ -662,9 +662,9 @@ const JobDetails = (props) => {
             return;
         }
 
-        if (tab && !["builds", "tests", "output", "stats"].includes(tab)) {
+        if (!["builds", "tests", "output", "stats"].includes(tab)) {
             setActivePanel("output");
-            history.push(`/details/${uid}`);
+            history.push(`/details/${uid}/output`);
         }
 
         const jobInfo = (job.prinfo) ? `PR #${job.prinfo.number}` : refRepr(job.ref)
