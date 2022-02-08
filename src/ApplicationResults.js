@@ -39,11 +39,33 @@ const ApplicationResults = (props) => {
 
     return (
         <div className="container">
-            <a className="btn btn-outline-primary m-1" type="button" href={`/details/${uid}`}>
+            <a className="btn btn-outline-primary m-1" type="button" href={`/details/${uid}/${props.type}`}>
                 <i className="bi-chevron-left me-1"></i>Back to job results
             </a>
-            <div className="m-1">
-            <h3>{`${typeUpperCase}: ${appPath}`}</h3>
+            <div className="card m-1">
+                <h5 className="card-header">{`${typeUpperCase}: ${appPath}`}</h5>
+                {(applicationData && applicationData.jobs) && (
+                <div className="card-body">
+                    <table className="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">Average time (s)</th>
+                            <th scope="col">Min time (s)</th>
+                            <th scope="col">Max time (s)</th>
+                            <th scope="col">Total CPU time (s)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{(applicationData.jobs.reduce((total, job) => total + job.runtime, 0) / applicationData.jobs.length).toFixed(2)}</td>
+                            <td>{applicationData.jobs.reduce((min, job) => Math.min(min, job.runtime), 100000).toFixed(2)}</td>
+                            <td>{applicationData.jobs.reduce((max, job) => Math.max(max, job.runtime), 0).toFixed(2)}</td>
+                            <td>{applicationData.jobs.reduce((total, job) => total + job.runtime, 0).toFixed(2)}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                )}
             </div>
             {(applicationData && applicationData.failures && applicationData.failures.length > 0) && (
             <div className="card border-danger m-1">
