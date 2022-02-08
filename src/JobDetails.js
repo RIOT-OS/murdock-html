@@ -502,10 +502,6 @@ const JobDetails = (props) => {
     let { uid, tab } = useParams();
     let history = useHistory();
 
-    if (!tab || !["builds", "tests", "output", "stats"].includes(tab)) {
-        tab = "output";
-    }
-
     const [ fetched, setFetched ] = useState(false);
     const [ job, setJob ] = useState(null);
     const [ jobStatus, setJobStatus ] = useState(null);
@@ -545,12 +541,13 @@ const JobDetails = (props) => {
                 setBuilds(res.data);
                 if (!tab && res.data.length > 0) {
                     setActivePanel("builds");
+                    history.push(`/details/${uid}/builds`);
                 }
             })
             .catch(error => {
                 console.log("No build results found");
             });
-        }, [uid, tab]
+        }, [tab, uid, history]
     );
 
     const fetchBuildFailures = useCallback(
@@ -665,6 +662,11 @@ const JobDetails = (props) => {
             return;
         }
 
+        if (tab && !["builds", "tests", "output", "stats"].includes(tab)) {
+            setActivePanel("output");
+            history.push(`/details/${uid}`);
+        }
+
         const jobInfo = (job.prinfo) ? `PR #${job.prinfo.number}` : refRepr(job.ref)
         document.title = `Murdock - ${jobInfo} - ${job.commit.sha.slice(0, 7)}`;
 
@@ -701,7 +703,7 @@ const JobDetails = (props) => {
     }, [
         buildFailures, builds, fetchBuildFailures, fetchBuilds, fetchJob,
         fetchStats, fetchTestFailures, fetchTests, fetched, job, stats,
-        testFailures, tests
+        testFailures, tests, history, tab, uid
     ]);
 
     return (
