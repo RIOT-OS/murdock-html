@@ -659,7 +659,7 @@ const JobDetails = (props) => {
         }
 
         if (!["builds", "tests", "output", "stats"].includes(tab)) {
-            if (["passed", "errored"].includes(job.state)) {
+            if (builds && builds.length && ["passed", "errored"].includes(job.state)) {
                 setActivePanel("builds");
             } else {
                 setActivePanel("output");
