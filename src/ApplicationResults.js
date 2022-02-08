@@ -40,7 +40,7 @@ const ApplicationResults = (props) => {
     return (
         <div className="container">
             <a className="btn btn-outline-primary m-1" type="button" href={`/details/${uid}/${props.type}`}>
-                <i className="bi-chevron-left me-1"></i>Back to job results
+                <i className="bi-chevron-left me-1"></i>{`Back to job ${props.type}`}
             </a>
             <div className="card m-1">
                 <h5 className="card-header">{`${typeUpperCase}: ${appPath}`}</h5>
