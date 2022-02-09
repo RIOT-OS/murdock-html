@@ -26,41 +26,51 @@ export const JobBuilds = (props) => {
     const [filter, setFilter] = useState("");
     const [failuresFilter, setFailuresFilter] = useState("");
 
-    const buildsDynamic = props.builds.filter(build => build.application.includes(filter));
-    const buildFailuresDynamic = (props.buildFailures) ? props.buildFailures.filter(test => (test.application.includes(failuresFilter) || test.board.includes(failuresFilter))) : [];
-    const buildFilterVisible = props.buildFailures && props.buildFailures.length;
-
-    // const build;
+    const builds = (props.builds) ? props.builds.filter(build => build.application.includes(filter)) : [];
+    const buildFailures = (props.buildFailures) ? props.buildFailures.filter(test => (test.application.includes(failuresFilter) || test.board.includes(failuresFilter))) : [];
+    const buildFailuresLive = (props.status.failed_builds && props.status.failed_builds.length > 0) ? props.status.failed_builds : [];
 
     return (
         <>
-        {(props.buildFailures && props.buildFailures.length > 0) && (
+        {(props.buildFailures && props.buildFailures.length > 0) &&
         <div className="card border-danger m-1">
             <div className="card-header text-light bg-danger">
                 <div className="row align-items-center">
-                    <div className="col-md-8">{`Failed builds (${buildFailuresDynamic.length}/${props.stats.total_builds})`}</div>
+                    <div className="col-md-8">{`Failed builds (${buildFailures.length}/${props.stats.total_builds})`}</div>
                     <div className="col-md-4">
-                        {buildFilterVisible && <input id="build_failures_filter pull-right" className="form-control" type="text" placeholder="Filter failed builds" onChange={(event) => {setFailuresFilter(event.target.value)}} />}
+                        <input id="build_failures_filter pull-right" className="form-control" type="text" placeholder="Filter failed builds" onChange={(event) => {setFailuresFilter(event.target.value)}} />
                     </div>
                 </div>
             </div>
             <div className="card-body p-1">
-                {buildFailuresDynamic.map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="compile" withApplication={true} result={build} />)}
+                {buildFailures.map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="compile" withApplication={true} result={build} />)}
             </div>
-        </div>)}
+        </div>}
+        {["running", "stopped"].includes(props.job.state) &&
+        <div className="card border-danger m-1">
+            <div className="card-header text-light bg-danger">
+                <div className="row align-items-center">
+                    <div className="col-md-8">{`Failed builds (${buildFailuresLive.length})`}</div>
+                </div>
+            </div>
+            <div className="card-body p-1">
+                {buildFailuresLive.map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="compile" withApplication={true} result={build} />)}
+            </div>
+        </div>}
+        {["errored", "passed"].includes(props.job.state) &&
         <div className="card m-1">
             <div className="card-header">
                 <div className="row align-items-center">
-                    <div className="col-md-8">Applications{` (${buildsDynamic.length})`}</div>
+                    <div className="col-md-8">Applications{` (${builds.length})`}</div>
                     <div className="col-md-4">
                         <input className="form-control pull-right" type="text" placeholder="Filter applications" onChange={(event) => {setFilter(event.target.value)}} />
                     </div>
                 </div>
             </div>
             <div className="card-body p-1">
-                {buildsDynamic.map(build => <Application key={build.application} uid={props.uid} name={build.application} success={build.build_success} failures={build.build_failures} />)}
+                {builds.map(build => <Application key={build.application} uid={props.uid} name={build.application} success={build.build_success} failures={build.build_failures} />)}
             </div>
-        </div>
+        </div>}
         </>
     );
 };
@@ -71,6 +81,7 @@ export const JobTests = (props) => {
 
     const tests = props.tests.filter(test => test.application.includes(filter));
     const testFailures = (props.testFailures) ? props.testFailures.filter(test => (test.application.includes(failuresFilter) || test.board.includes(failuresFilter))) : [];
+    const testFailuresLive = (props.status.failed_tests && props.status.failed_tests.length > 0) ? props.status.failed_tests : [];
 
     return (
         <>
@@ -88,6 +99,17 @@ export const JobTests = (props) => {
                 {testFailures.map(test => <Result key={`${test.application}-${test.board}-${test.toolchain}`} uid={props.uid} type="run_test" withApplication={true} result={test} />)}
             </div>
         </div>)}
+        {["running", "stopped"].includes(props.job.state) &&
+        <div className="card border-danger m-1">
+            <div className="card-header text-light bg-danger">
+                <div className="row align-items-center">
+                    <div className="col-md-8">{`Failed tests (${testFailuresLive.length})`}</div>
+                </div>
+            </div>
+            <div className="card-body p-1">
+                {testFailuresLive.map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="compile" withApplication={true} result={build} />)}
+            </div>
+        </div>}
         <div className="card m-1">
             <div className="card-header">
                 <div className="row align-items-center">

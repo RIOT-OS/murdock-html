@@ -136,84 +136,6 @@ const JobStatus = (props) => {
     );
 }
 
-const JobLiveFailures = (props) => {
-    const jobStatus = (props.status) ? props.status : props.job.status;
-    if (!jobStatus) {
-        return null;
-    }
-
-    const failed_jobs = (jobStatus.failed_jobs && jobStatus.failed_jobs.length > 0) && (
-        jobStatus.failed_jobs.map((job, index) =>
-            <div key={`pr-${props.job.uid}-${job.name}-${index}`} className="col-md-3 px-2">
-            {(job.href) ? (
-                <a className="text-danger link-underline-hover" href={`${job.href}`}>
-                    {job.name}
-                </a>
-            ) : (
-                job.name
-            )}
-            </div>
-        )
-    );
-
-    const failed_builds = (jobStatus.failed_builds && jobStatus.failed_builds.length > 0) && (
-        jobStatus.failed_builds.map((job, index) =>
-            <div key={`pr-${props.job.uid}-${job.name}-${index}`} className="col-md-3 px-2">
-            {(job.href) ? (
-                <a className="text-danger link-underline-hover" href={`${job.href}`}>
-                    {(job.worker) ? `${job.name} (${job.worker} - ${job.runtime.toFixed(2)}s)`: `${job.name}`}
-                </a>
-            ) : (
-                job.name
-            )}
-            </div>
-        )
-    );
-
-    const failed_tests = (jobStatus.failed_tests && jobStatus.failed_tests.length > 0) && (
-        jobStatus.failed_tests.map((job, index) =>
-            <div key={`pr-${props.job.uid}-${job.name}-${index}`} className="col-md-3 px-2">
-            {(job.href) ? (
-                <a className="text-danger link-underline-hover" href={`${job.href}`}>
-                    {job.name}
-                </a>
-            ) : (
-                job.name
-            )}
-            </div>
-        )
-    );
-
-    return (
-        <>
-        {(failed_jobs) && (
-            <div className="row my-1">
-                <h6 className='my-2'><strong>Job failures ({jobStatus.failed_jobs.length})</strong></h6>
-                <div className="d-flex flex-wrap">
-                    {failed_jobs}
-                </div>
-            </div>
-        )}
-        {(failed_builds) && (
-            <div className="row my-1">
-                <h6 className='my-2'><strong>Build failures ({jobStatus.failed_builds.length})</strong></h6>
-                <div className="d-flex flex-wrap">
-                    {failed_builds}
-                </div>
-            </div>
-        )}
-        {(failed_tests) && (
-            <div className="row my-1">
-                <h6 className='my-2'><strong>Test failures ({jobStatus.failed_tests.length})</strong></h6>
-                <div className="d-flex flex-wrap">
-                    {failed_tests}
-                </div>
-            </div>
-        )}
-        </>
-    );
-}
-
 const JobInfo = (props) => {
     const prDate = new Date(props.job.since * 1000);
 
@@ -426,6 +348,8 @@ const JobDetails = (props) => {
         if (!["builds", "tests", "output", "stats"].includes(tab)) {
             if (builds && builds.length && ["passed", "errored"].includes(job.state)) {
                 setActivePanel("builds");
+            } else if (jobStatus && jobStatus.failed_builds && (jobStatus.failed_builds.length > 0) && ["stopped", "running"].includes(job.state)) {
+                setActivePanel("builds");
             } else {
                 setActivePanel("output");
             }
@@ -469,20 +393,28 @@ const JobDetails = (props) => {
     }, [
         buildFailures, builds, fetchBuildFailures, fetchBuilds, fetchJob,
         fetchStats, fetchTestFailures, fetchTests, fetched, job, stats,
-        testFailures, tests, history, tab, uid
+        testFailures, tests, history, tab, uid, jobStatus
     ]);
 
     const buildsTabAvailable = (
         (builds && builds.length > 0) ||
-        (jobStatus && jobStatus.failed_builds && jobStatus.failed_builds.length > 0) ||
-        (job && job.status && job.status.failed_builds && job.status.failed_builds.length > 0)
+        (jobStatus && jobStatus.failed_builds && jobStatus.failed_builds.length > 0)
     );
 
     const testsTabAvailable = (
         (tests && tests.length > 0) ||
-        (jobStatus && jobStatus.failed_tests && jobStatus.failed_tests.length > 0) ||
-        (job && job.status && job.status.failed_tests && job.status.failed_tests.length > 0)
+        (jobStatus && jobStatus.failed_tests && jobStatus.failed_tests.length > 0)
     );
+
+    const hasFailedBuilds = (
+        (buildFailures && buildFailures.length > 0) ||
+        (jobStatus && jobStatus.failed_builds && jobStatus.failed_builds.length > 0)
+    )
+
+    const hasFailedTests = (
+        (buildFailures && buildFailures.length > 0) ||
+        (jobStatus && jobStatus.failed_builds && jobStatus.failed_builds.length > 0)
+    )
 
     return (
         (fetched && job) ? (
@@ -510,7 +442,6 @@ const JobDetails = (props) => {
                     <div className="card-body p-2 px-3">
                         <JobInfo job={job} status={jobStatus} />
                         {jobStatus && <JobStatus job={job} status={jobStatus} />}
-                        {["running", "stopped"].includes(job.state) && <JobLiveFailures job={job} status={jobStatus} />}
                     </div>
                 </div>
                 {(job.state !== "queued") &&
@@ -519,14 +450,14 @@ const JobDetails = (props) => {
                         {buildsTabAvailable && (
                         <li className="nav-item">
                             <button className={`nav-link ${(activePanel === "builds") ? "active" : ""}`} id="builds-tab" data-bs-toggle="tab" data-bs-target="#builds" type="button" role="tab" aria-controls="builds" aria-selected="false" onClick={() => {history.push(`/details/${uid}/builds`)}}>
-                                <i className={`bi-${buildFailures && buildFailures.length > 0 ? "x text-danger": "check text-success"} me-1`}></i>Builds
+                                <i className={`bi-${hasFailedBuilds ? "x text-danger": "check text-success"} me-1`}></i>Builds
                             </button>
                         </li>
                         )}
                         {testsTabAvailable && (
                         <li className="nav-item">
                             <button className={`nav-link ${(activePanel === "tests") ? "active" : ""}`} id="tests-tab" data-bs-toggle="tab" data-bs-target="#tests" type="button" role="tab" aria-controls="tests" aria-selected="false" onClick={() => {history.push(`/details/${uid}/tests`)}}>
-                            <i className={`bi-${testFailures && testFailures.length > 0 ? "x text-danger": "check text-success"} me-1`}></i>Tests
+                            <i className={`bi-${hasFailedTests ? "x text-danger": "check text-success"} me-1`}></i>Tests
                             </button>
                         </li>
                         )}
@@ -548,10 +479,10 @@ const JobDetails = (props) => {
                             <JobOutput job={job} output={jobOutput} />
                         </div>
                         <div className={`tab-pane ${(activePanel === "builds") ? "show active" : ""}`} id="builds" role="tabpanel" aria-labelledby="builds-tab">
-                            {buildsTabAvailable && <JobBuilds uid={uid} builds={builds} buildFailures={buildFailures} stats={stats} />}
+                            {buildsTabAvailable && <JobBuilds uid={uid} builds={builds} buildFailures={buildFailures} job={job} status={jobStatus} stats={stats} />}
                         </div>
                         <div className={`tab-pane ${(activePanel === "tests") ? "show active" : ""}`} id="tests" role="tabpanel" aria-labelledby="tests-tab">
-                            {testsTabAvailable && <JobTests tests={tests} testFailures={testFailures} stats={stats} />}
+                            {testsTabAvailable && <JobTests tests={tests} testFailures={testFailures} job={job} status={jobStatus} stats={stats} />}
                         </div>
                         <div className={`tab-pane ${(activePanel === "stats") ? "show active" : ""}`} id="stats" role="tabpanel" aria-labelledby="stats-tab">
                             {(stats && stats.total_jobs && stats.total_jobs > 0) && <JobStats stats={stats} />}
