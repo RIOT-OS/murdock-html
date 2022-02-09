@@ -34,7 +34,7 @@ class JobList extends Component {
         super(props);
         this.queryParams = {
             jobsFinishedDisplayedLimit: itemsDisplayedStep,
-            jobType: "pr",
+            jobType: "all",
             jobStates: ["queued", "running", "passed", "errored", "stopped"],
             prNumber: "",
             branch: "",
@@ -58,6 +58,7 @@ class JobList extends Component {
         this.displayMore = this.displayMore.bind(this);
         this.notify = this.notify.bind(this);
         this.search = this.search.bind(this);
+        this.isAllClicked = this.isAllClicked.bind(this);
         this.isPRClicked = this.isPRClicked.bind(this);
         this.isBranchClicked = this.isBranchClicked.bind(this);
         this.isTagClicked = this.isTagClicked.bind(this);
@@ -66,6 +67,7 @@ class JobList extends Component {
         this.showPassedClicked = this.showPassedClicked.bind(this);
         this.showErroredClicked = this.showErroredClicked.bind(this);
         this.showStoppedClicked = this.showStoppedClicked.bind(this);
+        this.jobUIDChanged = this.jobUIDChanged.bind(this);
         this.prNumberChanged = this.prNumberChanged.bind(this);
         this.branchChanged = this.branchChanged.bind(this);
         this.tagChanged = this.tagChanged.bind(this);
@@ -84,6 +86,9 @@ class JobList extends Component {
         }
         if (this.queryParams.jobType === "tag") {
             queryString = `${queryString}&is_tag=true`
+        }
+        if (this.queryParams.jobType === "all" && this.queryParams.jobUID) {
+            queryString = `${queryString}&uid=${this.queryParams.jobUID}`
         }
         if (this.queryParams.jobType === "pr" && this.queryParams.prNumber) {
             queryString = `${queryString}&prnum=${this.queryParams.prNumber}`
@@ -183,6 +188,11 @@ class JobList extends Component {
         }, 6000);
     }
 
+    isAllClicked() {
+        this.queryParams.jobType = "all";
+        this.search();
+    }
+
     isPRClicked() {
         this.queryParams.jobType = "pr";
         this.search();
@@ -229,6 +239,11 @@ class JobList extends Component {
     showStoppedClicked() {
         this.updateJobStates("stopped");
         this.search();
+    }
+
+    jobUIDChanged(event) {
+        this.queryParams.jobUID = event.target.value;
+        this.setState({queryParams: this.queryParams});
     }
 
     prNumberChanged(event) {
@@ -284,6 +299,8 @@ class JobList extends Component {
                 <div className="container">
                     <div className="btn-toolbar justify-content-center m-1" role="toolbar">
                         <div className="btn-group me-1" role="group">
+                            <input type="radio" name="jobTypeRadio" className="btn-check" id="checkAll" onClick={this.isAllClicked} defaultChecked={this.queryParams.jobType === "all"} />
+                            <label className="btn btn-outline-primary" htmlFor="checkAll">All</label>
                             <input type="radio" name="jobTypeRadio" className="btn-check" id="checkPRs" onClick={this.isPRClicked} defaultChecked={this.queryParams.jobType === "pr"} />
                             <label className="btn btn-outline-primary" htmlFor="checkPRs">PRs</label>
                             <input type="radio" name="jobTypeRadio" className="btn-check" id="checkBranches" onClick={this.isBranchClicked} defaultChecked={this.queryParams.jobType === "branch"} />
@@ -303,6 +320,10 @@ class JobList extends Component {
                             <input type="checkbox" className="btn-check" id="checkStopped" onClick={this.showStoppedClicked} defaultChecked={this.queryParams.jobStates.includes("stopped")} />
                             <label className={`btn btn-outline-${cardColor["stopped"]}`} htmlFor="checkStopped" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${this.queryParams.jobStates.includes("stopped") ? "Hide" : "Show"} stopped jobs`}><i className="bi-dash-circle-fill"></i></label>
                         </div>
+                        {(this.queryParams.jobType === "all") && <div className="input-group me-1" style={{maxWidth: "250px"}}>
+                            <div className="input-group-text" id="inputSearchJob"><i className="bi-gear me-1"></i></div>
+                            <input type="text" className="form-control" placeholder="Job UID" aria-label="Job UID" aria-describedby="inputSearchJob" value={this.queryParams.jobUID} onChange={this.jobUIDChanged} onKeyUp={this.keyUp} />
+                        </div>}
                         {(this.queryParams.jobType === "pr") && <div className="input-group me-1" style={{maxWidth: "250px"}}>
                             <div className="input-group-text" id="inputSearchPR">PR #</div>
                             <input type="text" className="form-control" placeholder="PR number" aria-label="PR number" aria-describedby="inputSearchPR" value={this.queryParams.prNumber} onChange={this.prNumberChanged} onKeyUp={this.keyUp} />
