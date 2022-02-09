@@ -1,6 +1,5 @@
 import axios from 'axios';
 import moment from 'moment';
-import $ from 'jquery';
 
 import Websocket from 'react-websocket';
 import { useState, useEffect, useCallback } from "react";
@@ -9,10 +8,9 @@ import { useHistory, useParams } from "react-router-dom";
 import { murdockHttpBaseUrl, murdockWsUrl, cardColor, cardIcon, linkColor, textColor, stateBadge } from './constants';
 import { LoadingSpinner } from './components';
 import { CommitWithAuthorCol, DateCol, GithubCol, RuntimeCol } from './components';
-import { Result } from './Result';
+import { JobBuilds, JobTests } from './JobResults';
+import { JobOutput } from './JobOutput';
 import { JobStats } from './JobStats';
-
-const jobOutputMaxHeight = "500px";
 
 const JobTitle = (props) => {
 
@@ -215,172 +213,6 @@ const JobLiveFailures = (props) => {
         </>
     );
 }
-
-const JobOutput = (props) => {
-    const [output, setOutput] = useState(props.job.state === "running" ? props.job.output : null);
-    const outputDivScrollableID = `outputScrollable${props.job.uid}`;
-    const scrollBottomButtonID = `scrollBottomButton${props.job.uid}`;
-    const scrollTopButtonID = `scrollTopButton${props.job.uid}`;
-
-    const scrollToBottom = () => {
-        const scrollableDiv = document.getElementById(outputDivScrollableID);
-        $(`#${outputDivScrollableID}`).animate({
-            scrollTop: scrollableDiv.scrollHeight - scrollableDiv.clientHeight
-        }, 250);
-    };
-
-    const scrollToTop = () => {
-        $(`#${outputDivScrollableID}`).animate({scrollTop: 0}, 250);
-    };
-
-    useEffect(() => {
-        const scrollableDiv = document.getElementById(outputDivScrollableID);
-        $(`#${outputDivScrollableID}`).on("scroll", () => {
-            if (scrollableDiv.scrollTop === 0) {
-                $(`#${scrollTopButtonID}`).addClass("invisible")
-            }
-            else if (scrollableDiv.scrollTop === scrollableDiv.scrollHeight - scrollableDiv.clientHeight) {
-                $(`#${scrollBottomButtonID}`).addClass("invisible")
-            }
-            else {
-                $(`#${scrollTopButtonID}`).removeClass("invisible")
-                $(`#${scrollBottomButtonID}`).removeClass("invisible")
-            }
-        });
-
-        if (!output && props.job.output_text_url) {
-            axios.get(props.job.output_text_url)
-            .then(res => {
-                setOutput(res.data);
-            })
-            .catch(error => {
-                console.log(error);
-            });
-        } else if (props.output && props.job.state === "running") {
-            setOutput(props.output);
-        }
-    }, [
-        outputDivScrollableID,
-        props.output,
-        props.job.output_text_url, props.job.state,
-        scrollBottomButtonID, scrollTopButtonID, output
-    ]);
-
-    return (
-        (output) ? (
-            <div className="position-relative" style={{ maxHeight: jobOutputMaxHeight }} id={`output${props.job.uid}`}>
-                <div className="bg-dark p-2 overflow-auto" style={{ maxHeight: jobOutputMaxHeight }} id={outputDivScrollableID}>
-                    <pre className="text-white">{output}</pre>
-                </div>
-                <button className="btn btn-sm position-absolute bottom-0 end-0 m-2 p-0" id={scrollBottomButtonID} data-bs-toggle="tooltip" data-bs-placement="top" title="Go to bottom" onClick={scrollToBottom}>
-                    <i className="bi-arrow-down-square text-white"></i>
-                </button>
-                <button className="btn btn-sm position-absolute top-0 end-0 m-2 p-0 invisible" id={scrollTopButtonID} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Go to top" onClick={scrollToTop}>
-                    <i className="bi-arrow-up-square text-white"></i>
-                </button>
-            </div>
-        ) : null
-    );
-};
-
-const Application = (props) => {
-    return (
-        <div className="card my-1">
-            <a className="btn" type="button" href={`/details/${props.uid}/builds/${props.name.replace("/", ":")}`}>
-            <div className="row justify-content-between">
-                <div className="col col-md-4 text-start">
-                    <span className={`text-${cardColor[props.failures ? "errored" : "passed"]}`}>{cardIcon[props.failures ? "errored" : "passed"]}</span>
-                    {props.name}
-                </div>
-                <div className="col col-md-2 text-end">
-                    {(props.failures > 0) && <span className="badge rounded-pill bg-danger me-1">{`${props.failures} failed`}</span>}
-                    {(props.success > 0) && <span className="badge rounded-pill bg-success">{`${props.success} success`}</span>}
-                </div>
-            </div>
-            </a>
-        </div>
-    );
-};
-
-const JobBuilds = (props) => {
-    const [filter, setFilter] = useState("");
-    const [failuresFilter, setFailuresFilter] = useState("");
-
-    const builds = props.builds.filter(build => build.application.includes(filter));
-    const buildFailures = (props.buildFailures) ? props.buildFailures.filter(test => (test.application.includes(failuresFilter) || test.board.includes(failuresFilter))) : [];
-
-    return (
-        <>
-        {(props.buildFailures && props.buildFailures.length > 0) && (
-        <div className="card border-danger m-1">
-            <div className="card-header text-light bg-danger">
-                <div className="row align-items-center">
-                    <div className="col-md-8">{`Failed builds (${buildFailures.length}/${props.stats.total_builds})`}</div>
-                    <div className="col-md-4">
-                        <input id="build_failures_filter pull-right" className="form-control" type="text" placeholder="Filter failed builds" onChange={(event) => {setFailuresFilter(event.target.value)}} />
-                    </div>
-                </div>
-            </div>
-            <div className="card-body p-1">
-                {buildFailures.map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="compile" withApplication={true} result={build} />)}
-            </div>
-        </div>)}
-        <div className="card m-1">
-            <div className="card-header">
-                <div className="row align-items-center">
-                    <div className="col-md-8">Applications{` (${builds.length})`}</div>
-                    <div className="col-md-4">
-                        <input className="form-control pull-right" type="text" placeholder="Filter applications" onChange={(event) => {setFilter(event.target.value)}} />
-                    </div>
-                </div>
-            </div>
-            <div className="card-body p-1">
-                {builds.map(build => <Application key={build.application} uid={props.uid} name={build.application} success={build.build_success} failures={build.build_failures} />)}
-            </div>
-        </div>
-        </>
-    );
-};
-
-const JobTests = (props) => {
-    const [filter, setFilter] = useState("");
-    const [failuresFilter, setFailuresFilter] = useState("");
-
-    const tests = props.tests.filter(test => test.application.includes(filter));
-    const testFailures = (props.testFailures) ? props.testFailures.filter(test => (test.application.includes(failuresFilter) || test.board.includes(failuresFilter))) : [];
-
-    return (
-        <>
-        {(props.testFailures && props.testFailures.length > 0) && (
-        <div className="card border-danger m-1">
-            <div className="card-header text-light bg-danger">
-                <div className="row align-items-center">
-                    <div className="col-md-8">{`Failed tests (${testFailures.length}/${props.stats.total_tests})`}</div>
-                    <div className="col-md-4">
-                        <input id="build_failures_filter pull-right" className="form-control" type="text" placeholder="Filter failed tests" onChange={(event) => {setFailuresFilter(event.target.value)}} />
-                    </div>
-                </div>
-            </div>
-            <div className="card-body p-1">
-                {testFailures.map(test => <Result key={`${test.application}-${test.board}-${test.toolchain}`} uid={props.uid} type="run_test" withApplication={true} result={test} />)}
-            </div>
-        </div>)}
-        <div className="card m-1">
-            <div className="card-header">
-                <div className="row align-items-center">
-                    <div className="col-md-8">Applications{` (${tests.length})`}</div>
-                    <div className="col-md-4">
-                        <input className="form-control pull-right" type="text" placeholder="Filter applications" onChange={(event) => {setFilter(event.target.value)}} />
-                    </div>
-                </div>
-            </div>
-            <div className="card-body">
-                {tests.map(test => <Application key={test.application} name={test.application} success={test.test_success} failures={test.test_failures} />)}
-            </div>
-        </div>
-        </>
-    );
-};
 
 const JobInfo = (props) => {
     const prDate = new Date(props.job.since * 1000);
@@ -640,6 +472,18 @@ const JobDetails = (props) => {
         testFailures, tests, history, tab, uid
     ]);
 
+    const buildsTabAvailable = (
+        (builds && builds.length > 0) ||
+        (jobStatus && jobStatus.failed_builds && jobStatus.failed_builds.length > 0) ||
+        (job && job.status && job.status.failed_builds && job.status.failed_builds.length > 0)
+    );
+
+    const testsTabAvailable = (
+        (tests && tests.length > 0) ||
+        (jobStatus && jobStatus.failed_tests && jobStatus.failed_tests.length > 0) ||
+        (job && job.status && job.status.failed_tests && job.status.failed_tests.length > 0)
+    );
+
     return (
         (fetched && job) ? (
             <div className="container">
@@ -672,14 +516,14 @@ const JobDetails = (props) => {
                 {(job.state !== "queued") &&
                 <div className="m-2">
                     <ul className="nav nav-tabs">
-                        {(builds && builds.length > 0) && (
+                        {buildsTabAvailable && (
                         <li className="nav-item">
                             <button className={`nav-link ${(activePanel === "builds") ? "active" : ""}`} id="builds-tab" data-bs-toggle="tab" data-bs-target="#builds" type="button" role="tab" aria-controls="builds" aria-selected="false" onClick={() => {history.push(`/details/${uid}/builds`)}}>
                                 <i className={`bi-${buildFailures && buildFailures.length > 0 ? "x text-danger": "check text-success"} me-1`}></i>Builds
                             </button>
                         </li>
                         )}
-                        {(tests && tests.length > 0) && (
+                        {testsTabAvailable && (
                         <li className="nav-item">
                             <button className={`nav-link ${(activePanel === "tests") ? "active" : ""}`} id="tests-tab" data-bs-toggle="tab" data-bs-target="#tests" type="button" role="tab" aria-controls="tests" aria-selected="false" onClick={() => {history.push(`/details/${uid}/tests`)}}>
                             <i className={`bi-${testFailures && testFailures.length > 0 ? "x text-danger": "check text-success"} me-1`}></i>Tests
@@ -704,10 +548,10 @@ const JobDetails = (props) => {
                             <JobOutput job={job} output={jobOutput} />
                         </div>
                         <div className={`tab-pane ${(activePanel === "builds") ? "show active" : ""}`} id="builds" role="tabpanel" aria-labelledby="builds-tab">
-                            {(builds && builds.length > 0) && <JobBuilds uid={uid} builds={builds} buildFailures={buildFailures} stats={stats} />}
+                            {buildsTabAvailable && <JobBuilds uid={uid} builds={builds} buildFailures={buildFailures} stats={stats} />}
                         </div>
                         <div className={`tab-pane ${(activePanel === "tests") ? "show active" : ""}`} id="tests" role="tabpanel" aria-labelledby="tests-tab">
-                            {(tests && tests.length > 0) && <JobTests tests={tests} testFailures={testFailures} stats={stats} />}
+                            {testsTabAvailable && <JobTests tests={tests} testFailures={testFailures} stats={stats} />}
                         </div>
                         <div className={`tab-pane ${(activePanel === "stats") ? "show active" : ""}`} id="stats" role="tabpanel" aria-labelledby="stats-tab">
                             {(stats && stats.total_jobs && stats.total_jobs > 0) && <JobStats stats={stats} />}
