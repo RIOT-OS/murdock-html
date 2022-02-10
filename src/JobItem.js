@@ -27,7 +27,7 @@ import moment from 'moment';
 import {
     stateBadge, murdockHttpBaseUrl
 } from './constants';
-import { DateElem } from './components';
+import { DateShortElem } from './components';
 
 
 export const JobItem = (props) => {
@@ -117,7 +117,8 @@ export const JobItem = (props) => {
         </li>
     );
 
-    const title = (props.job.prinfo) ? `${props.job.prinfo.title}` : refRepr(props.job.ref)
+    const title = (props.job.prinfo) ? props.job.prinfo.title : refRepr(props.job.ref)
+    const titleUrl = (props.job.prinfo) ? props.job.prinfo.url : `https://github.com/${process.env.REACT_APP_GITHUB_REPO}/tree/${props.job.ref.split("/")[2]}`
 
     let buildInProgress = (
         props.job.state === "running" &&
@@ -139,21 +140,16 @@ export const JobItem = (props) => {
             <td style={{width: "5%"}}>
             <a className="btn link-underline-hover p-0 text-primary" href={`/details/${props.job.uid}`}>{`${props.job.uid.substring(0, 7)}`}</a>
             </td>
-            <td style={{width: "40%"}}>
-                <span className="align-middle">
-                    {(props.job.prinfo) && (
-                        <>
-                        <i className="bi-github me-1"></i>
-                        <a className="link-underline-hover text-dark me-1" href={props.job.prinfo.url} target="_blank" rel="noreferrer noopener">
-                            PR #{props.job.prinfo.number}
-                        </a>
-                        </>
-                    )}
-                    {title}
+            <td style={{width: "50%"}}>
+                <span className="align-middle" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`Commit: ${props.job.commit.sha}\n\n${props.job.commit.message}`}>
+                    <i className="bi-github me-1"></i>
+                    <a className="link-underline-hover text-dark me-1" href={titleUrl} target="_blank" rel="noreferrer noopener">
+                        {props.job.prinfo ? `PR #${props.job.prinfo.number}: ${title}`: `${title}`}
+                    </a>
                 </span>
             </td>
-            <td style={{width: "30%"}} className="text-center">
-                <DateElem date={jobDate} />
+            <td style={{width: "20%"}} className="text-left">
+                <DateShortElem date={jobDate} />
             </td>
             <td className="text-center align-middle py-0" style={{width: "20%"}}>
                 {(props.job.state === "running") && (

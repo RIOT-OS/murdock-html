@@ -108,6 +108,14 @@ export const CommitWithAuthorCol = (props) => {
     );
 };
 
+export const DateShortElem = (props) => {
+    return (
+        <div data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${moment(props.date).fromNow()}`}>
+            <i className="bi-calendar2 me-1"></i>{props.date.toLocaleString()}
+        </div>
+    );
+};
+
 export const DateElem = (props) => {
     return (
         <div data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${moment(props.date).fromNow()}`}>
