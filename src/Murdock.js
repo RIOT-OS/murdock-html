@@ -42,7 +42,6 @@ import { LoadingSpinner } from './components';
 const JobList = lazy(() => import('./JobList'));
 const JobDetails = lazy(() => import('./JobDetails'));
 const ApplicationResults = lazy(() => import('./ApplicationResults'));
-const Nightlies = lazy(() => import('./Nightlies'));
 
 
 const MurdockNavBar = (props) => {
@@ -62,9 +61,6 @@ const MurdockNavBar = (props) => {
                 <ul className="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll">
                   <li className="nav-item">
                     <Link to="/" className={location.pathname === "/" ? "nav-link active": "nav-link"}>Dashboard</Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link to="/nightlies" className={location.pathname === "/nightlies" ? "nav-link active": "nav-link"}>Nightlies</Link>
                   </li>
                   <li className="nav-item">
                     <a className="nav-link" href={`${process.env.REACT_APP_MURDOCK_HTTP_BASE_URL}/api`} target="_blank" rel="noopener noreferrer">API <i className="bi-box-arrow-up-right"></i></a>
@@ -154,7 +150,6 @@ class Murdock extends Component {
                   <Route exact path="/details/:uid/:tab" render={() => <JobDetails user={this.state.user} userPermissions={this.state.userPermissions} />} />
                   <Route exact path="/details/:uid/builds/:application" render={() => <ApplicationResults type="builds" />} />
                   <Route exact path="/details/:uid/tests/:application" render={() => <ApplicationResults type="tests" />} />
-                  <Route path="/nightlies" element={<Nightlies />} />
               </Switch>
           </Suspense>
       </Router>

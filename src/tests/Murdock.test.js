@@ -41,13 +41,6 @@ test('murdock main page', async () => {
     expect(screen.getByText((content, element) => {
         return (
             element.className === "nav-link" &&
-            content === "Nightlies"
-        );
-    })).toBeDefined();
-
-    expect(screen.getByText((content, element) => {
-        return (
-            element.className === "nav-link" &&
             content === "API"
         );
     })).toBeDefined();
