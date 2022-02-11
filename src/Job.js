@@ -81,6 +81,56 @@ const JobTitle = (props) => {
     );
 }
 
+const JobDetails = (props) => {
+    return (
+        <div className="row justify-content-start mt-1">
+            <div className="col col-md-6 pe-0">
+                <div className="card">
+                    <div className="card-header">Environment</div>
+                    <div className="card-body">
+                    <table className="table table-bordered">
+                        <thead>
+                            <tr>
+                            <th scope="col" style={{width: "35%"}}>Variable</th>
+                            <th scope="col">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {Object.entries(props.job.env).map(elem => <tr key={elem[0]}><td>{elem[0]}</td><td>{` ${elem[1]}`}</td></tr>)}
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div className="col col-md-6 ps-1">
+                <div className="card">
+                    <div className="card-header">Options</div>
+                    <div className="card-body">
+                        <table className="table table-bordered">
+                        <thead>
+                            <tr>
+                            <th scope="col" style={{width: "30%"}}>Option</th>
+                            <th scope="col">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Fasttracked</td>
+                            <td>{`${props.job.fasttracked ? "True": "False"}`}</td>
+                        </tr>
+                        <tr>
+                            <td>Triggered from</td>
+                            <td>{`${props.job.trigger}`}</td>
+                        </tr>
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
 const JobStatus = (props) => {
     if ((!props.status) ||
         (props.job.state === "errored" && ((!props.status.status) || (props.status.status && props.status.status !== "canceled"))) ||
@@ -175,7 +225,7 @@ const JobInfo = (props) => {
                     <i className="bi-arrows-angle-expand"></i>
                 </button>
                 <div className="collapse" id="collapseCommitMsg">
-                    {commitMsgLines.slice(1).map(line => <div className="ms-4">{line}</div>)}
+                    {commitMsgLines.slice(1).map((line, index) => <div key={index} className="ms-4">{line}</div>)}
                 </div>
                 </>
                 )}
@@ -345,7 +395,7 @@ const Job = (props) => {
             return;
         }
 
-        if (!["builds", "tests", "output", "stats"].includes(tab)) {
+        if (!["builds", "tests", "output", "details", "stats"].includes(tab)) {
             if (builds && builds.length && ["passed", "errored"].includes(job.state)) {
                 setActivePanel("builds");
             } else if (jobStatus && jobStatus.failed_builds && (jobStatus.failed_builds.length > 0) && ["stopped", "running"].includes(job.state)) {
@@ -405,6 +455,15 @@ const Job = (props) => {
         (tests && tests.length > 0) ||
         (jobStatus && jobStatus.failed_tests && jobStatus.failed_tests.length > 0)
     );
+
+    const detailsTabAvailable = (
+        job &&
+        job.hasOwnProperty("fasttracked") &&
+        job.hasOwnProperty("trigger") &&
+        job.env
+    );
+
+    const statsTabAvailable = stats && stats.total_jobs > 0;
 
     const hasFailedBuilds = (
         (buildFailures && buildFailures.length > 0) ||
@@ -466,10 +525,17 @@ const Job = (props) => {
                                 <i className="bi-file-text-fill text-dark me-1"></i>Output
                             </button>
                         </li>
-                        {(stats && stats.total_jobs > 0) && (
+                        {statsTabAvailable && (
                         <li className="nav-item">
                             <button className={`nav-link ${(activePanel === "stats") ? "active" : ""}`} id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="false" onClick={() => {history.push(`/details/${uid}/stats`)}}>
                                 <i className={`bi-bar-chart-line text-dark me-1`}></i>Stats
+                            </button>
+                        </li>
+                        )}
+                        {detailsTabAvailable && (
+                        <li className="nav-item">
+                            <button className={`nav-link ${(activePanel === "details") ? "active" : ""}`} id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="false" onClick={() => {history.push(`/details/${uid}/details`)}}>
+                                <i className="bi-info-circle text-dark me-1"></i>Details
                             </button>
                         </li>
                         )}
@@ -484,8 +550,11 @@ const Job = (props) => {
                         <div className={`tab-pane ${(activePanel === "tests") ? "show active" : ""}`} id="tests" role="tabpanel" aria-labelledby="tests-tab">
                             {testsTabAvailable && <JobTests tests={tests} testFailures={testFailures} job={job} status={jobStatus} stats={stats} />}
                         </div>
+                        <div className={`tab-pane ${(activePanel === "details") ? "show active" : ""}`} id="details" role="tabpanel" aria-labelledby="details-tab">
+                            {detailsTabAvailable && <JobDetails job={job} />}
+                        </div>
                         <div className={`tab-pane ${(activePanel === "stats") ? "show active" : ""}`} id="stats" role="tabpanel" aria-labelledby="stats-tab">
-                            {(stats && stats.total_jobs && stats.total_jobs > 0) && <JobStats stats={stats} />}
+                            {statsTabAvailable && <JobStats stats={stats} />}
                         </div>
                     </div>
                 </div>
