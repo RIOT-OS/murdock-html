@@ -185,7 +185,7 @@ const JobInfo = (props) => {
     );
 }
 
-const JobDetails = (props) => {
+const Job = (props) => {
     let { uid, tab } = useParams();
     let history = useHistory();
 
@@ -503,4 +503,4 @@ const JobDetails = (props) => {
     );
 };
 
-export default JobDetails;
+export default Job;

@@ -40,7 +40,7 @@ import {
 import { LoadingSpinner } from './components';
 
 const JobList = lazy(() => import('./JobList'));
-const JobDetails = lazy(() => import('./JobDetails'));
+const Job = lazy(() => import('./Job'));
 const ApplicationResults = lazy(() => import('./ApplicationResults'));
 
 
@@ -146,8 +146,8 @@ class Murdock extends Component {
           <Suspense fallback={<div className="container"><LoadingSpinner /></div>}>
               <Switch>
                   <Route exact path="/" render={() => <JobList user={this.state.user} userPermissions={this.state.userPermissions} />} />
-                  <Route exact path="/details/:uid" render={() => <JobDetails user={this.state.user} userPermissions={this.state.userPermissions} />} />
-                  <Route exact path="/details/:uid/:tab" render={() => <JobDetails user={this.state.user} userPermissions={this.state.userPermissions} />} />
+                  <Route exact path="/details/:uid" render={() => <Job user={this.state.user} userPermissions={this.state.userPermissions} />} />
+                  <Route exact path="/details/:uid/:tab" render={() => <Job user={this.state.user} userPermissions={this.state.userPermissions} />} />
                   <Route exact path="/details/:uid/builds/:application" render={() => <ApplicationResults type="builds" />} />
                   <Route exact path="/details/:uid/tests/:application" render={() => <ApplicationResults type="tests" />} />
               </Switch>
