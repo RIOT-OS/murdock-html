@@ -87,10 +87,10 @@ export const JobItem = (props) => {
     };
 
     const refRepr = (ref) => {
-        if (ref) {
+        if (ref && ref.startsWith("refs/")) {
             return `${ref.split("/").slice(2).join("/")}`
         }
-        return "";
+        return ref.substring(0, 15);
     };
 
     const cancelAction = (props.permissions === "push" && props.job.state === "queued") && (
@@ -117,8 +117,15 @@ export const JobItem = (props) => {
         </li>
     );
 
-    const title = (props.job.prinfo) ? props.job.prinfo.title : refRepr(props.job.ref)
-    const titleUrl = (props.job.prinfo) ? props.job.prinfo.url : `https://github.com/${process.env.REACT_APP_GITHUB_REPO}/tree/${props.job.ref.split("/")[2]}`
+    const title = (props.job.prinfo) ? props.job.prinfo.title : refRepr(props.job.ref);
+    let titleUrl = "";
+    if (props.job.prinfo) {
+        titleUrl = props.job.prinfo.url;
+    } else if (props.job.ref && props.job.ref.startsWith("refs/")) {
+        titleUrl = `https://github.com/${process.env.REACT_APP_GITHUB_REPO}/tree/${props.job.ref.split("/")[2]}`;
+    } else {
+        titleUrl = `https://github.com/${process.env.REACT_APP_GITHUB_REPO}/commit/${props.job.commit.sha}`;
+    }
 
     let buildInProgress = (
         props.job.state === "running" &&

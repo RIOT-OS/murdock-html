@@ -48,10 +48,10 @@ const JobTitle = (props) => {
     }
 
     const refRepr = (ref) => {
-        if (ref) {
+        if (ref && ref.startsWith("refs/")) {
             return `${ref.split("/").slice(2).join("/")}`
         }
-        return "";
+        return ref.substring(0, 15);
     };
 
     const cancelAction = (props.permissions === "push" && props.job.state === "queued") && (
@@ -67,11 +67,25 @@ const JobTitle = (props) => {
     );
 
     const title = (props.job.prinfo) ? `${props.job.prinfo.title}` : refRepr(props.job.ref)
+    let titleUrl = null;
+    if (props.job.prinfo) {
+        titleUrl = props.job.prinfo.url;
+    } else if (props.job.ref && props.job.ref.startsWith("refs/")) {
+        titleUrl = `https://github.com/${process.env.REACT_APP_GITHUB_REPO}/tree/${props.job.ref.split("/")[2]}`;
+    } else {
+        titleUrl = `https://github.com/${process.env.REACT_APP_GITHUB_REPO}/commit/${props.job.commit.sha}`;
+    }
 
     return (
         <div className="row align-items-center">
             <div className="col-md-10">
-                {cardIcon[props.job.state]}{title}
+                {titleUrl ? (
+                <a className={`link-underline-hover text-${textColor[props.job.state]} me-1`} href={titleUrl} target="_blank" rel="noreferrer noopener">
+                    {cardIcon[props.job.state]}{title}
+                </a>
+                ) : (
+                    <>{cardIcon[props.job.state]}{title}</>
+                )}
             </div>
             <div className="col-md-2 text-end">
             {cancelAction}
@@ -199,17 +213,18 @@ const JobInfo = (props) => {
         runtime = <RuntimeCol runtime={moment.duration(props.job.runtime * -1000).humanize()} />;
     }
 
+    let githubCol = <div className="col col-md-2"></div>;
+    if (props.job.prinfo) {
+        githubCol = <GithubCol title={`PR #${props.job.prinfo.number}`} url={props.job.prinfo.url} color={linkColor[props.job.state]} />;
+    } else if (props.job.ref && props.job.ref.startsWith("refs/")) {
+        githubCol = <GithubCol title={`${props.job.ref.split("/")[2]}`} url={`https://github.com/${process.env.REACT_APP_GITHUB_REPO}/tree/${props.job.ref.split("/")[2]}`} color={linkColor[props.job.state]} />;
+    }
+
     return (
         <>
         <div className="row align-items-center">
             <CommitWithAuthorCol color={linkColor[props.job.state]} commit={props.job.commit.sha} author={props.job.commit.author} />
-            {
-                (props.job.prinfo) ? (
-                    <GithubCol title={`PR #${props.job.prinfo.number}`} url={props.job.prinfo.url} color={linkColor[props.job.state]} />
-                ): (
-                    <GithubCol title={`${props.job.ref.split("/")[2]}`} url={`https://github.com/${process.env.REACT_APP_GITHUB_REPO}/tree/${props.job.ref.split("/")[2]}`} color={linkColor[props.job.state]} />
-                )
-            }
+            {githubCol}
             <DateCol date={prDate} />
             {runtime}
             <div className="col col-md-2 text-end">
