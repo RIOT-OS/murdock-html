@@ -7,7 +7,7 @@ import { useHistory, useParams } from "react-router-dom";
 
 import { murdockHttpBaseUrl, murdockWsUrl, cardColor, cardIcon, linkColor, textColor, stateBadge } from './constants';
 import { LoadingSpinner } from './components';
-import { CommitWithAuthorCol, DateCol, GithubCol, RuntimeCol } from './components';
+import { CommitWithAuthorCol, DateCol, RuntimeCol } from './components';
 import { JobBuilds, JobTests } from './JobResults';
 import { JobOutput } from './JobOutput';
 import { JobStats } from './JobStats';
