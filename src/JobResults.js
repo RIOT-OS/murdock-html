@@ -28,7 +28,7 @@ export const JobBuilds = (props) => {
 
     const builds = (props.builds) ? props.builds.filter(build => build.application.includes(filter)) : [];
     const buildFailures = (props.buildFailures) ? props.buildFailures.filter(test => (test.application.includes(failuresFilter) || test.board.includes(failuresFilter))) : [];
-    const buildFailuresLive = (props.status.failed_builds && props.status.failed_builds.length > 0) ? props.status.failed_builds : [];
+    const buildFailuresLive = (props.status.failed_builds && props.status.failed_builds.length > 0) ? props.status.failed_builds.filter(build => build.application) : [];
 
     return (
         <>
@@ -46,7 +46,7 @@ export const JobBuilds = (props) => {
                 {buildFailures.map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="compile" withApplication={true} result={build} />)}
             </div>
         </div>}
-        {["running", "stopped"].includes(props.job.state) &&
+        {["running", "stopped"].includes(props.job.state) && buildFailuresLive.length > 0 &&
         <div className="card border-danger m-1">
             <div className="card-header text-light bg-danger">
                 <div className="row align-items-center">
@@ -81,7 +81,7 @@ export const JobTests = (props) => {
 
     const tests = props.tests.filter(test => test.application.includes(filter));
     const testFailures = (props.testFailures) ? props.testFailures.filter(test => (test.application.includes(failuresFilter) || test.board.includes(failuresFilter))) : [];
-    const testFailuresLive = (props.status.failed_tests && props.status.failed_tests.length > 0) ? props.status.failed_tests : [];
+    const testFailuresLive = (props.status.failed_tests && props.status.failed_tests.length > 0) ? props.status.failed_tests.filter(build => build.application) : [];
 
     return (
         <>
@@ -99,7 +99,7 @@ export const JobTests = (props) => {
                 {testFailures.map(test => <Result key={`${test.application}-${test.board}-${test.toolchain}`} uid={props.uid} type="run_test" withApplication={true} result={test} />)}
             </div>
         </div>)}
-        {["running", "stopped"].includes(props.job.state) &&
+        {["running", "stopped"].includes(props.job.state) && testFailuresLive.length > 0 &&
         <div className="card border-danger m-1">
             <div className="card-header text-light bg-danger">
                 <div className="row align-items-center">
