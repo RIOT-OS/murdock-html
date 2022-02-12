@@ -229,7 +229,7 @@ const JobInfo = (props) => {
             </div>
         </div>
         <div className="row">
-            <div className="col col-md12 text-start">
+            <div className="col col-md-6 text-start">
                 <i className="bi-card-text me-1"></i>{commitMsgLines[0]}
                 {(commitMsgLines.length > 1) && (
                 <>
@@ -242,6 +242,12 @@ const JobInfo = (props) => {
                 </>
                 )}
             </div>
+            {props.job.prinfo && props.job.prinfo.labels.length > 0 && (
+                <div className="col col-md-6 text-end">
+                {/* {labels.split(";")} */}
+                {props.job.prinfo.labels.map(label => <span className="badge rounded-pill bg-primary ms-1">{label}</span>)}
+                </div>
+            )}
         </div>
         </>
     );
