@@ -132,6 +132,11 @@ const JobDetails = (props) => {
                             <td>Fasttracked</td>
                             <td>{`${props.job.fasttracked ? "True": "False"}`}</td>
                         </tr>
+                        {props.job.hasOwnProperty("triggered_by") && (
+                        <tr>
+                            <td>Triggered by</td>
+                            <td>{`${props.job.triggered_by}`}</td>
+                        </tr>)}
                         <tr>
                             <td>Triggered from</td>
                             <td>{`${props.job.trigger}`}</td>
