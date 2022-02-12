@@ -218,18 +218,10 @@ const JobInfo = (props) => {
         runtime = <RuntimeCol runtime={moment.duration(props.job.runtime * -1000).humanize()} />;
     }
 
-    let githubCol = <div className="col col-md-2"></div>;
-    if (props.job.prinfo) {
-        githubCol = <GithubCol title={`PR #${props.job.prinfo.number}`} url={props.job.prinfo.url} color={linkColor[props.job.state]} />;
-    } else if (props.job.ref && props.job.ref.startsWith("refs/")) {
-        githubCol = <GithubCol title={`${props.job.ref.split("/")[2]}`} url={`https://github.com/${process.env.REACT_APP_GITHUB_REPO}/tree/${props.job.ref.split("/")[2]}`} color={linkColor[props.job.state]} />;
-    }
-
     return (
         <>
         <div className="row align-items-center">
             <CommitWithAuthorCol color={linkColor[props.job.state]} commit={props.job.commit.sha} author={props.job.commit.author} />
-            {githubCol}
             <DateCol date={prDate} />
             {runtime}
             <div className="col col-md-2 text-end">
