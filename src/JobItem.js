@@ -142,14 +142,23 @@ export const JobItem = (props) => {
         progressPercent = Math.round((jobsDone * 100) / props.job.status.total);
         runningJobStatus = `fail: ${props.job.status.failed} pass: ${props.job.status.passed} done: ${jobsDone}/${props.job.status.total}`;
     }
+
+    let jobItemTitleTooltip = `Commit: ${props.job.commit.sha}\n\n${props.job.commit.message}`;
+    if (props.job.prinfo && props.job.prinfo.hasOwnProperty("is_merged") && props.job.prinfo.is_merged) {
+        jobItemTitleTooltip += "\n\nState: merged"
+    }
+    else if (props.job.prinfo && props.job.prinfo.hasOwnProperty("state")) {
+        jobItemTitleTooltip += `\n\nState: ${props.job.prinfo.state}`
+    }
+
     return (
         <tr>
             <td style={{width: "5%"}}>
             <a className="btn link-underline-hover p-0 text-primary" href={`/details/${props.job.uid}`}>{`${props.job.uid.substring(0, 7)}`}</a>
             </td>
             <td style={{width: "50%"}}>
-                <span className="align-middle" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`Commit: ${props.job.commit.sha}\n\n${props.job.commit.message}`}>
-                    <i className="bi-github me-1"></i>
+                <span className="align-middle" data-bs-toggle="tooltip" data-bs-placement="bottom" title={jobItemTitleTooltip}>
+                    <i className={`bi-github ${(props.job.prinfo && props.job.prinfo.hasOwnProperty("is_merged") && props.job.prinfo.is_merged) ? "text-info": ""} me-1`}></i>
                     <a className="link-underline-hover text-dark me-1" href={titleUrl} target="_blank" rel="noreferrer noopener">
                         {props.job.prinfo ? `PR #${props.job.prinfo.number}: ${title}`: `${title}`}
                     </a>
