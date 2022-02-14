@@ -96,6 +96,8 @@ const JobTitle = (props) => {
 }
 
 const JobDetails = (props) => {
+    const envSorted = Object.fromEntries(Object.entries(props.job.env).sort())
+
     return (
         <div className="row justify-content-start mt-1">
             <div className="col col-md-6 pe-0">
@@ -110,7 +112,7 @@ const JobDetails = (props) => {
                             </tr>
                         </thead>
                         <tbody>
-                        {Object.entries(props.job.env).map(elem => <tr key={elem[0]}><td>{elem[0]}</td><td>{` ${elem[1]}`}</td></tr>)}
+                        {Object.entries(envSorted).map(elem => <tr key={elem[0]}><td>{elem[0]}</td><td>{` ${elem[1]}`}</td></tr>)}
                         </tbody>
                         </table>
                     </div>
