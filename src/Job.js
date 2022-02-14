@@ -247,7 +247,7 @@ const JobInfo = (props) => {
             {props.job.prinfo && props.job.prinfo.labels.length > 0 && (
                 <div className="col col-md-6 text-end">
                 {/* {labels.split(";")} */}
-                {props.job.prinfo.labels.map(label => <span className="badge rounded-pill bg-primary ms-1">{label}</span>)}
+                {props.job.prinfo.labels.map(label => <span key={label} className="badge rounded-pill bg-primary ms-1">{label}</span>)}
                 </div>
             )}
         </div>
