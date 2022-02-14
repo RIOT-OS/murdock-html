@@ -14,6 +14,8 @@ import { JobStats } from './JobStats';
 
 const JobTitle = (props) => {
 
+    const history = useHistory();
+
     const removeJob = (type) => {
         const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.ref})`
         axios.delete(
@@ -47,24 +49,33 @@ const JobTitle = (props) => {
         removeJob("running");
     }
 
+    const restart = () => {
+        const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.ref})`
+        console.log(`Restarting job ${props.job.commit.sha} ${context}`)
+        axios.post(
+            `${murdockHttpBaseUrl}/jobs/finished/${props.job.uid}`, {},
+            {
+                headers: {
+                    "Authorization": props.user.token,
+                },
+            },
+        )
+        .then(() => {
+            props.notify(props.job.uid, "info", `Job ${props.job.commit.sha.substring(0, 7)} ${context} restarted`);
+            history.push("/");
+        })
+        .catch(error => {
+            props.notify(props.job.uid, "danger", `Failed to restart job ${props.job.commit.sha.substring(0, 7)} ${context}`)
+            console.log(error);
+        });
+    };
+
     const refRepr = (ref) => {
         if (ref && ref.startsWith("refs/")) {
             return `${ref.split("/").slice(2).join("/")}`
         }
         return ref.substring(0, 15);
     };
-
-    const cancelAction = (props.permissions === "push" && props.job.state === "queued") && (
-        <button className={`btn btn-outline-${cardColor[props.job.state]} badge fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cancel" onClick={cancel}>
-            <i className="bi-x-circle"></i>
-        </button>
-    );
-
-    const stopAction = (props.permissions === "push" && props.job.state === "running") && (
-        <button className={`btn btn-outline-${cardColor[props.job.state]} badge fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Abort" onClick={abort}>
-            <i className="bi-x-circle"></i>
-        </button>
-    );
 
     const title = (props.job.prinfo) ? `PR #${props.job.prinfo.number}: ${props.job.prinfo.title}` : refRepr(props.job.ref)
     let titleUrl = null;
@@ -88,8 +99,18 @@ const JobTitle = (props) => {
                 )}
             </div>
             <div className="col-md-2 text-end">
-            {cancelAction}
-            {stopAction}
+            {(props.permissions === "push" && ["errored", "passed", "stopped"].includes(props.job.state)) && (
+                <button className={`btn btn-outline-${cardColor[props.job.state]} badge fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Restart" onClick={restart}>
+                    <i className="bi-arrow-clockwise"></i>
+                </button>)}
+            {(props.permissions === "push" && props.job.state === "running") && (
+                <button className={`btn btn-outline-${cardColor[props.job.state]} badge fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Abort" onClick={abort}>
+                    <i className="bi-x-circle"></i>
+                </button>)}
+            {(props.permissions === "push" && props.job.state === "queued") && (
+                <button className={`btn btn-outline-${cardColor[props.job.state]} badge fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cancel" onClick={cancel}>
+                    <i className="bi-x-circle"></i>
+                </button>)}
             </div>
         </div>
     );
