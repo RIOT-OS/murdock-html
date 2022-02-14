@@ -66,7 +66,7 @@ const JobTitle = (props) => {
         </button>
     );
 
-    const title = (props.job.prinfo) ? `${props.job.prinfo.title}` : refRepr(props.job.ref)
+    const title = (props.job.prinfo) ? `PR #${props.job.prinfo.number}: ${props.job.prinfo.title}` : refRepr(props.job.ref)
     let titleUrl = null;
     if (props.job.prinfo) {
         titleUrl = props.job.prinfo.url;
