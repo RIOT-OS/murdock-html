@@ -40,7 +40,11 @@ import {
 import { LoadingSpinner } from './components';
 
 const JobList = lazy(() => import('./JobList'));
-const Job = lazy(() => import('./Job'));
+const JobUid = lazy(() => import('./JobUid'));
+const JobBranch = lazy(() => import('./JobBranch'));
+const JobTag = lazy(() => import('./JobTag'));
+const JobCommit = lazy(() => import('./JobCommit'));
+const JobPr = lazy(() => import('./JobPr'));
 const ApplicationResults = lazy(() => import('./ApplicationResults'));
 
 
@@ -146,8 +150,16 @@ class Murdock extends Component {
           <Suspense fallback={<div className="container"><LoadingSpinner /></div>}>
               <Switch>
                   <Route exact path="/" render={() => <JobList user={this.state.user} userPermissions={this.state.userPermissions} />} />
-                  <Route exact path="/details/:uid" render={() => <Job user={this.state.user} userPermissions={this.state.userPermissions} />} />
-                  <Route exact path="/details/:uid/:tab" render={() => <Job user={this.state.user} userPermissions={this.state.userPermissions} />} />
+                  <Route exact path="/details/branch/:branch" render={() => <JobBranch user={this.state.user} userPermissions={this.state.userPermissions} />} />
+                  <Route exact path="/details/branch/:branch/:tab" render={() => <JobBranch user={this.state.user} userPermissions={this.state.userPermissions} />} />
+                  <Route exact path="/details/tag/:tag" render={() => <JobTag user={this.state.user} userPermissions={this.state.userPermissions} />} />
+                  <Route exact path="/details/tag/:tag/:tab" render={() => <JobTag user={this.state.user} userPermissions={this.state.userPermissions} />} />
+                  <Route exact path="/details/commit/:commit" render={() => <JobCommit user={this.state.user} userPermissions={this.state.userPermissions} />} />
+                  <Route exact path="/details/commit/:commit/:tab" render={() => <JobCommit user={this.state.user} userPermissions={this.state.userPermissions} />} />
+                  <Route exact path="/details/pr/:prnum" render={() => <JobPr user={this.state.user} userPermissions={this.state.userPermissions} />} />
+                  <Route exact path="/details/pr/:prnum/:tab" render={() => <JobPr user={this.state.user} userPermissions={this.state.userPermissions} />} />
+                  <Route exact path="/details/:uid" render={() => <JobUid user={this.state.user} userPermissions={this.state.userPermissions} />} />
+                  <Route exact path="/details/:uid/:tab" render={() => <JobUid user={this.state.user} userPermissions={this.state.userPermissions} />} />
                   <Route exact path="/details/:uid/builds/:application" render={() => <ApplicationResults type="builds" />} />
                   <Route exact path="/details/:uid/tests/:application" render={() => <ApplicationResults type="tests" />} />
               </Switch>

@@ -3,7 +3,7 @@ import moment from 'moment';
 
 import Websocket from 'react-websocket';
 import { useState, useEffect, useCallback } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 import { murdockHttpBaseUrl, murdockWsUrl, cardColor, cardIcon, linkColor, textColor, stateBadge } from './constants';
 import { LoadingSpinner } from './components';
@@ -276,14 +276,13 @@ const JobInfo = (props) => {
 }
 
 const Job = (props) => {
-    let { uid, tab } = useParams();
     let history = useHistory();
 
     const [ fetched, setFetched ] = useState(false);
     const [ job, setJob ] = useState(null);
     const [ jobStatus, setJobStatus ] = useState(null);
     const [ jobOutput, setJobOutput ] = useState(null);
-    const [ activePanel, setActivePanel ] = useState(tab);
+    const [ activePanel, setActivePanel ] = useState(props.tab);
     const [ stats, setStats ] = useState(null);
     const [ builds, setBuilds ] = useState(null);
     const [ buildFailures, setBuildFailures ] = useState(null);
@@ -293,7 +292,7 @@ const Job = (props) => {
 
     const fetchJob = useCallback(
         () => {
-            axios.get(`${murdockHttpBaseUrl}/job/${uid}`)
+            axios.get(`${murdockHttpBaseUrl}/job/${props.url}`)
             .then(res => {
                 setJob(res.data);
                 setJobStatus(res.data.status);
@@ -307,72 +306,72 @@ const Job = (props) => {
                 setJobOutput("");
                 setFetched(true);
             });
-        }, [uid]
+        }, [props.url]
     );
 
     const fetchBuilds = useCallback(
         () => {
             setBuilds([]);
-            axios.get(`${murdockHttpBaseUrl}/results/${uid}/builds.json`)
+            axios.get(`${murdockHttpBaseUrl}/results/${job.uid}/builds.json`)
             .then(res => {
                 setBuilds(res.data);
             })
             .catch(error => {
                 console.log("No build results found");
             });
-        }, [uid]
+        }, [job]
     );
 
     const fetchBuildFailures = useCallback(
         () => {
             setBuildFailures([]);
-            axios.get(`${murdockHttpBaseUrl}/results/${uid}/build_failures.json`)
+            axios.get(`${murdockHttpBaseUrl}/results/${job.uid}/build_failures.json`)
             .then(res => {
                 setBuildFailures(res.data);
             })
             .catch(error => {
                 console.log("No build failures found");
             });
-        }, [uid]
+        }, [job]
     );
 
     const fetchTests = useCallback(
         () => {
             setTests([]);
-            axios.get(`${murdockHttpBaseUrl}/results/${uid}/tests.json`)
+            axios.get(`${murdockHttpBaseUrl}/results/${job.uid}/tests.json`)
             .then(res => {
                 setTests(res.data);
             })
             .catch(error => {
                 console.log("No test results found");
             });
-        }, [uid]
+        }, [job]
     );
 
     const fetchTestFailures = useCallback(
         () => {
             setTestFailures([]);
-            axios.get(`${murdockHttpBaseUrl}/results/${uid}/test_failures.json`)
+            axios.get(`${murdockHttpBaseUrl}/results/${job.uid}/test_failures.json`)
             .then(res => {
                 setTestFailures(res.data);
             })
             .catch(error => {
                 console.log("No test failures found");
             });
-        }, [uid]
+        }, [job]
     );
 
     const fetchStats = useCallback(
         () => {
             setStats({});
-            axios.get(`${murdockHttpBaseUrl}/results/${uid}/stats.json`)
+            axios.get(`${murdockHttpBaseUrl}/results/${job.uid}/stats.json`)
             .then(res => {
                 setStats(res.data);
             })
             .catch(error => {
                 console.log("No job statitics found");
             });
-        }, [uid]
+        }, [job]
     );
 
     const handleWsData = (data) => {
@@ -435,7 +434,7 @@ const Job = (props) => {
             return;
         }
 
-        if (!["builds", "tests", "output", "details", "stats"].includes(tab)) {
+        if (!["builds", "tests", "output", "details", "stats"].includes(props.tab)) {
             if (builds && builds.length && ["passed", "errored"].includes(job.state)) {
                 setActivePanel("builds");
             } else if (jobStatus && jobStatus.failed_builds && (jobStatus.failed_builds.length > 0) && ["stopped", "running"].includes(job.state)) {
@@ -444,7 +443,7 @@ const Job = (props) => {
                 setActivePanel("output");
             }
         } else {
-            setActivePanel(tab);
+            setActivePanel(props.tab);
         }
 
         const jobInfo = (job.prinfo) ? `PR #${job.prinfo.number}` : refRepr(job.ref)
@@ -483,7 +482,7 @@ const Job = (props) => {
     }, [
         buildFailures, builds, fetchBuildFailures, fetchBuilds, fetchJob,
         fetchStats, fetchTestFailures, fetchTests, fetched, job, stats,
-        testFailures, tests, history, tab, uid, jobStatus
+        testFailures, tests, history, jobStatus, props.tab
     ]);
 
     const buildsTabAvailable = (
@@ -548,33 +547,33 @@ const Job = (props) => {
                     <ul className="nav nav-tabs">
                         {buildsTabAvailable && (
                         <li className="nav-item">
-                            <button className={`nav-link ${(activePanel === "builds") ? "active" : ""}`} id="builds-tab" data-bs-toggle="tab" data-bs-target="#builds" type="button" role="tab" aria-controls="builds" aria-selected="false" onClick={() => {history.push(`/details/${uid}/builds`)}}>
+                            <button className={`nav-link ${(activePanel === "builds") ? "active" : ""}`} id="builds-tab" data-bs-toggle="tab" data-bs-target="#builds" type="button" role="tab" aria-controls="builds" aria-selected="false" onClick={() => {history.push(`/details/${props.url}/builds`)}}>
                                 <i className={`bi-${hasFailedBuilds ? "x text-danger": "check text-success"} me-1`}></i>Builds
                             </button>
                         </li>
                         )}
                         {testsTabAvailable && (
                         <li className="nav-item">
-                            <button className={`nav-link ${(activePanel === "tests") ? "active" : ""}`} id="tests-tab" data-bs-toggle="tab" data-bs-target="#tests" type="button" role="tab" aria-controls="tests" aria-selected="false" onClick={() => {history.push(`/details/${uid}/tests`)}}>
+                            <button className={`nav-link ${(activePanel === "tests") ? "active" : ""}`} id="tests-tab" data-bs-toggle="tab" data-bs-target="#tests" type="button" role="tab" aria-controls="tests" aria-selected="false" onClick={() => {history.push(`/details/${props.url}/tests`)}}>
                             <i className={`bi-${hasFailedTests ? "x text-danger": "check text-success"} me-1`}></i>Tests
                             </button>
                         </li>
                         )}
                         <li className="nav-item">
-                            <button className={`nav-link ${(activePanel === "output") ? "active" : ""}`} id="output-tab" data-bs-toggle="tab" data-bs-target="#output" type="button" role="tab" aria-controls="output" aria-selected="false" onClick={() => {history.push(`/details/${uid}/output`)}}>
+                            <button className={`nav-link ${(activePanel === "output") ? "active" : ""}`} id="output-tab" data-bs-toggle="tab" data-bs-target="#output" type="button" role="tab" aria-controls="output" aria-selected="false" onClick={() => {history.push(`/details/${props.url}/output`)}}>
                                 <i className="bi-file-text-fill text-dark me-1"></i>Output
                             </button>
                         </li>
                         {statsTabAvailable && (
                         <li className="nav-item">
-                            <button className={`nav-link ${(activePanel === "stats") ? "active" : ""}`} id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="false" onClick={() => {history.push(`/details/${uid}/stats`)}}>
+                            <button className={`nav-link ${(activePanel === "stats") ? "active" : ""}`} id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="false" onClick={() => {history.push(`/details/${props.url}/stats`)}}>
                                 <i className={`bi-bar-chart-line text-dark me-1`}></i>Stats
                             </button>
                         </li>
                         )}
                         {detailsTabAvailable && (
                         <li className="nav-item">
-                            <button className={`nav-link ${(activePanel === "details") ? "active" : ""}`} id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="false" onClick={() => {history.push(`/details/${uid}/details`)}}>
+                            <button className={`nav-link ${(activePanel === "details") ? "active" : ""}`} id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="false" onClick={() => {history.push(`/details/${props.url}/details`)}}>
                                 <i className="bi-info-circle text-dark me-1"></i>Details
                             </button>
                         </li>
@@ -585,7 +584,7 @@ const Job = (props) => {
                             <JobOutput job={job} output={jobOutput} />
                         </div>
                         <div className={`tab-pane ${(activePanel === "builds") ? "show active" : ""}`} id="builds" role="tabpanel" aria-labelledby="builds-tab">
-                            {buildsTabAvailable && <JobBuilds uid={uid} builds={builds} buildFailures={buildFailures} job={job} status={jobStatus} stats={stats} />}
+                            {buildsTabAvailable && <JobBuilds uid={job.uid} builds={builds} buildFailures={buildFailures} job={job} status={jobStatus} stats={stats} />}
                         </div>
                         <div className={`tab-pane ${(activePanel === "tests") ? "show active" : ""}`} id="tests" role="tabpanel" aria-labelledby="tests-tab">
                             {testsTabAvailable && <JobTests tests={tests} testFailures={testFailures} job={job} status={jobStatus} stats={stats} />}

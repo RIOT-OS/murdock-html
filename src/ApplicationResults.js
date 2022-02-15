@@ -1,13 +1,14 @@
 import axios from "axios";
 
 import { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 
 import { murdockHttpBaseUrl } from './constants';
 import { Result } from './Result';
 
 const ApplicationResults = (props) => {
     const { uid, application } = useParams();
+    const history = useHistory();
     const [ applicationData, setApplicationData ] = useState(null);
     const [ filter, setFilter ] = useState("");
     const [ failuresFilter, setFailuresFilter ] = useState("");
@@ -39,9 +40,9 @@ const ApplicationResults = (props) => {
 
     return (
         <div className="container">
-            <a className="btn btn-outline-primary m-1" type="button" href={`/details/${uid}/${props.type}`}>
+            <button className="btn btn-outline-primary m-1" type="button" onClick={history.goBack}>
                 <i className="bi-chevron-left me-1"></i>{`Back to job ${props.type}`}
-            </a>
+            </button>
             <div className="card m-1">
                 <h5 className="card-header">{`${typeUpperCase}: ${appPath}`}</h5>
                 {(applicationData && applicationData.jobs) && (
