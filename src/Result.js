@@ -11,6 +11,8 @@ export const Result = (props) => {
 
     const outputUrl = `${murdockHttpBaseUrl}/results/${props.uid}/output/${props.type}/${props.result.application}/${props.result.board}:${props.result.toolchain}.txt`;
 
+    const hasAllinfo = props.result.hasOwnProperty("board") && props.result.hasOwnProperty("toolchain") && props.result.hasOwnProperty("worker") && props.result.hasOwnProperty("runtime");
+
     const fetchOutput = useCallback(
         () => {
             axios.get(outputUrl)
@@ -40,6 +42,8 @@ export const Result = (props) => {
                         {props.result.application}
                     </div>
                     )}
+                    {hasAllinfo &&
+                    <>
                     <div className={`col col-md-${props.withApplication ? "3" : "7"} text-start`}>
                         {(props.withApplication) ? (
                             <i className="bi-cpu me-1"></i>
@@ -54,8 +58,10 @@ export const Result = (props) => {
                     <div className="col col-md-1 text-start">
                         <i className="bi-clock me-1"></i>{props.result.runtime.toFixed(2)}s
                     </div>
+                    </>}
                 </div>
             </button>
+            {hasAllinfo &&
             <Collapse isOpened={outputVisible}>
                 <div className="bg-dark overflow-auto p-2 mb-1 position-relative">
                     <div className="btn-toolbar position-absolute top-0 end-0 m-2" role="toolbar">
@@ -67,7 +73,7 @@ export const Result = (props) => {
                     </div>
                     <pre className="text-white">{output}</pre>
                 </div>
-            </Collapse>
+            </Collapse>}
         </div>
     );
 };
