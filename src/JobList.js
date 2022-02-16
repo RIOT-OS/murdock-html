@@ -153,7 +153,7 @@ class JobList extends Component {
     }
 
     displayMore() {
-        this.queryParams.jobsDisplayedLimit = this.state.jobslength + itemsDisplayedStep;
+        this.queryParams.jobsDisplayedLimit = this.state.jobs.length + itemsDisplayedStep;
         this.fetchJobs();
     }
 
