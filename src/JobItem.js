@@ -31,7 +31,7 @@ import { DateShortElem } from './components';
 
 
 export const JobItem = (props) => {
-    const jobDate = new Date(props.job.since * 1000);
+    const jobDate = new Date(props.job.creation_time * 1000);
 
     const removeJob = (type) => {
         const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.ref})`

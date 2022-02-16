@@ -49,7 +49,7 @@ const server = setupServer(
                     "number": "16620",
                     "url": "https://github.com/RIOT-OS/RIOT/pull/16620",
                 },
-                "since": 1625648719.7717128
+                "creation_time": 1625648719.7717128
             },
             {
                 "uid": "1234",
@@ -74,7 +74,7 @@ const server = setupServer(
                     "number": "15030",
                     "url": "https://github.com/RIOT-OS/RIOT/pull/15030",
                 },
-                "since": 1625238690.1669567
+                "creation_time": 1625238690.1669567
             },
         ]
         return res(ctx.json(
@@ -93,7 +93,7 @@ const server = setupServer(
                             "url": "https://github.com/RIOT-OS/RIOT/pull/16621",
                         },
                         "state": "running",
-                        "since": 1625648720.3770814
+                        "creation_time": 1625648720.3770814
                     }
                 ],
                 "queued": [
@@ -110,7 +110,7 @@ const server = setupServer(
                             "url": "https://github.com/RIOT-OS/RIOT/pull/16622",
                         },
                         "state": "queued",
-                        "since": 1625646859.5628495
+                        "creation_time": 1625646859.5628495
                     }
                 ],
                 "finished": finished.slice(0, limit)

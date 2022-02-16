@@ -229,7 +229,7 @@ const JobStatus = (props) => {
 }
 
 const JobInfo = (props) => {
-    const prDate = new Date(props.job.since * 1000);
+    const prDate = new Date(props.job.creation_time * 1000);
 
     const commitMsgLines = props.job.commit.message.split("\n");
 

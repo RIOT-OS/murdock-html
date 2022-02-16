@@ -35,12 +35,12 @@ const server = setupServer(
                 {
                     "commit": "13eb3f05c533385f3146c2417b44eaeb12f584e8",
                     "result": "errored",
-                    "since": 1623550884.0
+                    "creation_time": 1623550884.0
                 },
                 {
                     "commit": "90dd3deb2165f64fecab6974f5fc1326e63165cd",
                     "result": "success",
-                    "since": 1623292442.0
+                    "creation_time": 1623292442.0
                 }
             ]
         ));

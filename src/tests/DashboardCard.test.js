@@ -99,7 +99,7 @@ test('pull request success card info', async () => {
             "number": "12345",
             "url": "http://localhost/test"
         },
-        "since": "1234567",
+        "creation_time": "1234567",
     }
     render(<DashboardCardInfo user="toto" jobType="passed" job={job} />);
 
@@ -138,7 +138,7 @@ test('pull request success with runtime card info', async () => {
             "number": "12345",
             "url": "http://localhost/test"
         },
-        "since": "1234567",
+        "creation_time": "1234567",
         "runtime": "42.3"
     }
     render(<DashboardCardInfo user="toto" jobType="passed" job={job} />);
@@ -159,7 +159,7 @@ test('pull request errored card info', async () => {
             "number": "12345",
             "url": "http://localhost/test"
         },
-        "since": "1234567"
+        "creation_time": "1234567"
     }
     render(<DashboardCardInfo user="toto" jobType="errored" job={job} />);
     expect(screen.getByText("toto")).toBeDefined();
@@ -187,7 +187,7 @@ test('pull request running card info', async () => {
             "number": "12345",
             "url": "http://localhost/test"
         },
-        "since": "1234567"
+        "creation_time": "1234567"
     }
     render(<DashboardCardInfo user="toto" jobType="running" job={job} />);
     expect(screen.getByText("toto")).toBeDefined();
@@ -365,7 +365,7 @@ test('pull request card', async () => {
                 "number": 12345,
             },
             "runtime": "42",
-            "since": 1234567789,
+            "creation_time": 1234567789,
         }
         render(<DashboardCard
                 job_type={jobTypes[idx]}

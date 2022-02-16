@@ -33,7 +33,7 @@ class JobList extends Component {
     constructor(props) {
         super(props);
         this.queryParams = {
-            jobsFinishedDisplayedLimit: itemsDisplayedStep,
+            jobsDisplayedLimit: itemsDisplayedStep,
             jobType: "all",
             jobStates: ["queued", "running", "passed", "errored", "stopped"],
             prNumber: "",
@@ -45,9 +45,7 @@ class JobList extends Component {
         this.state = {
             alerts: [],
             isFetched: false,
-            jobsQueued: [],
-            jobsRunning: [],
-            jobsFinished: [],
+            jobs: [],
             queryParams: this.queryParams,
         };
         this.fetchJobs = this.fetchJobs.bind(this);
@@ -76,7 +74,7 @@ class JobList extends Component {
     }
 
     fetchJobs() {
-        let queryString = `limit=${this.queryParams.jobsFinishedDisplayedLimit}&states=${this.queryParams.jobStates.join("+")}`;
+        let queryString = `limit=${this.queryParams.jobsDisplayedLimit}&states=${this.queryParams.jobStates.join("+")}`;
         if (this.queryParams.jobType === "pr") {
             queryString = `${queryString}&is_pr=true`
         }
@@ -104,14 +102,9 @@ class JobList extends Component {
         axios.get(`${murdockHttpBaseUrl}/jobs?${queryString}`)
             .then(res => {
                 const jobs = res.data;
-                const queued = (jobs.queued) ? jobs.queued : [];
-                const running = (jobs.running) ? jobs.running : [];
-                const finished = (jobs.finished) ? jobs.finished : [];
                 const newState = { 
                     isFetched : true,
-                    jobsQueued: queued,
-                    jobsRunning: running,
-                    jobsFinished: finished,
+                    jobs: jobs,
                     queryParams: this.queryParams,
                 };
                 this.setState(newState);
@@ -128,25 +121,25 @@ class JobList extends Component {
             this.fetchJobs();
         }
         else if (msg.cmd === "status" && this.state.isFetched) {
-            if (this.state.jobsRunning.length) {
-                let jobs = this.state.jobsRunning.slice();
+            if (this.state.jobs.length) {
+                let jobs = this.state.jobs.slice();
                 for (let idx = 0; idx < jobs.length; idx++) {
                     if (jobs[idx].uid === msg.uid) {
                         jobs[idx].status = msg.status;
                     }
                 }
-                this.setState({jobsRunning: jobs});
+                this.setState({jobs: jobs});
             }
         }
         else if (msg.cmd === "output" && this.state.isFetched) {
-            if (this.state.jobsRunning.length) {
-                let jobs = this.state.jobsRunning.slice();
+            if (this.state.jobs.length) {
+                let jobs = this.state.jobs.slice();
                 for (let idx = 0; idx < jobs.length; idx++) {
                     if (jobs[idx].uid === msg.uid) {
                         jobs[idx].output += msg.line;
                     }
                 }
-                this.setState({jobsRunning: jobs});
+                this.setState({jobs: jobs});
             }
         }
     }
@@ -160,7 +153,7 @@ class JobList extends Component {
     }
 
     displayMore() {
-        this.queryParams.jobsFinishedDisplayedLimit = this.state.jobsFinished.length + itemsDisplayedStep;
+        this.queryParams.jobsDisplayedLimit = this.state.jobslength + itemsDisplayedStep;
         this.fetchJobs();
     }
 
@@ -335,7 +328,7 @@ class JobList extends Component {
                     {
                         (!this.state.isFetched) ? (
                             <LoadingSpinner />
-                        ) : (this.state.jobsQueued.length || this.state.jobsRunning.length || this.state.jobsFinished.length) ? (
+                        ) : (this.state.jobs.length) ? (
                         <table className="table table-sm table-striped table-hover">
                         <thead>
                             <tr>
@@ -347,9 +340,7 @@ class JobList extends Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {this.state.jobsQueued.map(job => <JobItem key={job.uid} job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
-                            {this.state.jobsRunning.map(job => <JobItem key={job.uid} job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
-                            {this.state.jobsFinished.map(job => <JobItem key={job.uid} job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
+                            {this.state.jobs.map(job => <JobItem key={job.uid} job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
                         </tbody>
                         </table>
                         ) : (
@@ -360,7 +351,7 @@ class JobList extends Component {
                             </div>
                         )
                     }
-                    {(this.state.isFetched && this.state.jobsFinished.length && this.state.jobsFinished.length === this.queryParams.jobsFinishedDisplayedLimit) ? <ShowMore onclick={this.displayMore} /> : null}
+                    {(this.state.isFetched && this.state.jobs.length && this.state.jobs.length === this.queryParams.jobsDisplayedLimit) ? <ShowMore onclick={this.displayMore} /> : null}
                 </div>
                 <Websocket
                     url={murdockWsUrl}

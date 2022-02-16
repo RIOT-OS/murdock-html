@@ -28,8 +28,8 @@ import { cardColor, cardIcon, linkColor, textColor, itemsDisplayedStep, nightlie
 import { LoadingSpinner, CommitCol, DateCol, ShowMore } from './components';
 
 const NightlyJob = (props) => {
-    const dateSince = new Date(props.job.since * 1000);
-    const date = new Date(props.job.since * 1000).toLocaleDateString(
+    const dateSince = new Date(props.job.creation_time * 1000);
+    const date = new Date(props.job.creation_time * 1000).toLocaleDateString(
         navigator.language,
         {weekday: "short", year: "numeric", month: "short", day: "numeric"}
     );
