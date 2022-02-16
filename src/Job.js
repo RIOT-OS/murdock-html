@@ -439,6 +439,8 @@ const Job = (props) => {
                 setActivePanel("builds");
             } else if (jobStatus && jobStatus.failed_builds && (jobStatus.failed_builds.length > 0) && ["stopped", "running"].includes(job.state)) {
                 setActivePanel("builds");
+            } else if (job.state === "queued") {
+                setActivePanel("details");
             } else {
                 setActivePanel("output");
             }
@@ -542,7 +544,6 @@ const Job = (props) => {
                         {jobStatus && <JobStatus job={job} status={jobStatus} />}
                     </div>
                 </div>
-                {(job.state !== "queued") &&
                 <div className="m-2">
                     <ul className="nav nav-tabs">
                         {buildsTabAvailable && (
@@ -559,11 +560,12 @@ const Job = (props) => {
                             </button>
                         </li>
                         )}
+                        {(job.state !== "queued") &&
                         <li className="nav-item">
                             <button className={`nav-link ${(activePanel === "output") ? "active" : ""}`} id="output-tab" data-bs-toggle="tab" data-bs-target="#output" type="button" role="tab" aria-controls="output" aria-selected="false" onClick={() => {history.push(`/details/${props.url}/output`)}}>
                                 <i className="bi-file-text-fill text-dark me-1"></i>Output
                             </button>
-                        </li>
+                        </li>}
                         {statsTabAvailable && (
                         <li className="nav-item">
                             <button className={`nav-link ${(activePanel === "stats") ? "active" : ""}`} id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="false" onClick={() => {history.push(`/details/${props.url}/stats`)}}>
@@ -597,7 +599,6 @@ const Job = (props) => {
                         </div>
                     </div>
                 </div>
-                }
                 <Websocket
                     url={murdockWsUrl}
                     onOpen={handleWsOpen}
