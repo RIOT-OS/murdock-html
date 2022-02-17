@@ -164,7 +164,7 @@ export const JobItem = (props) => {
                     </a>
                 </span>
             </td>
-            <td style={{width: "20%"}} className="text-left">
+            <td style={{width: "20%"}} className="align-middle text-left">
                 <DateShortElem date={jobDate} />
             </td>
             <td className="text-center align-middle py-0" style={{width: "20%"}}>
