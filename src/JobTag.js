@@ -6,7 +6,7 @@ const JobTag = (props) => {
     const { tag, tab } = useParams();
 
     return (
-        <Job tab={tab} url={`tag/${tag}`} />
+        <Job tab={tab} url={`tag/${tag}`} {...props} />
     );
 };
 

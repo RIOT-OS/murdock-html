@@ -6,7 +6,7 @@ const JobCommit = (props) => {
     const { commit, tab } = useParams();
 
     return (
-        <Job tab={tab} url={`commit/${commit}`} />
+        <Job tab={tab} url={`commit/${commit}`} {...props} />
     );
 };
 

@@ -6,7 +6,7 @@ const JobUid = (props) => {
     const { uid, tab } = useParams();
 
     return (
-        <Job tab={tab} url={`${uid}`} />
+        <Job tab={tab} url={`${uid}`} {...props} />
     );
 };
 

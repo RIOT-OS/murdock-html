@@ -6,7 +6,7 @@ const JobBranch = (props) => {
     const { branch, tab } = useParams();
 
     return (
-        <Job tab={tab} url={`branch/${branch}`} />
+        <Job tab={tab} url={`branch/${branch}`} {...props} />
     );
 };
 
