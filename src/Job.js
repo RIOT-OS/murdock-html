@@ -91,7 +91,7 @@ const JobTitle = (props) => {
         <div className="row align-items-center">
             <div className="col-md-10">
                 {titleUrl ? (
-                <a className={`link-underline-hover text-${textColor[props.job.state]} me-1`} href={titleUrl} target="_blank" rel="noreferrer noopener">
+                <a className={`link-underline-hover text-${textColor[props.job.state]} align-middle me-1`} href={titleUrl} target="_blank" rel="noreferrer noopener">
                     {cardIcon[props.job.state]}{title}
                 </a>
                 ) : (
@@ -100,15 +100,15 @@ const JobTitle = (props) => {
             </div>
             <div className="col-md-2 text-end">
             {(props.permissions === "push" && ["errored", "passed", "stopped"].includes(props.job.state)) && (
-                <button className={`btn btn-outline-${cardColor[props.job.state]} badge fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Restart" onClick={restart}>
+                <button className={`btn btn-outline-${cardColor[props.job.state]} badge fs-5 p-0 align-middle`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Restart" onClick={restart}>
                     <i className="bi-arrow-clockwise"></i>
                 </button>)}
             {(props.permissions === "push" && props.job.state === "running") && (
-                <button className={`btn btn-outline-${cardColor[props.job.state]} badge fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Abort" onClick={abort}>
+                <button className={`btn btn-outline-${cardColor[props.job.state]} badge fs-5 p-0 align-middle`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Abort" onClick={abort}>
                     <i className="bi-x-circle"></i>
                 </button>)}
             {(props.permissions === "push" && props.job.state === "queued") && (
-                <button className={`btn btn-outline-${cardColor[props.job.state]} badge fs-5 p-0`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cancel" onClick={cancel}>
+                <button className={`btn btn-outline-${cardColor[props.job.state]} badge fs-5 p-0 align-middle`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cancel" onClick={cancel}>
                     <i className="bi-x-circle"></i>
                 </button>)}
             </div>
