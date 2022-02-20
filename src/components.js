@@ -48,7 +48,7 @@ export const ShowMore = (props) => {
 
 export const UserCol = (props) => {
     return (
-        <div className="col col-md-2">
+        <div className="col col-sm-2">
             <i className="bi-person me-1"></i>{props.user}
         </div>
     );
@@ -56,7 +56,7 @@ export const UserCol = (props) => {
 
 export const LinkCol = (props) => {
     return (
-        <div className="col col-md-2">
+        <div className="col col-sm-2">
             <i className="bi-link-45deg me-1"></i>
             <a className={`link-underline-hover text-${props.color}`} href={props.url} target="_blank" rel="noreferrer noopener">{props.title}</a>
         </div>
@@ -65,7 +65,7 @@ export const LinkCol = (props) => {
 
 export const CommitCol = (props) => {
     return (
-        <div className="col col-md-2">
+        <div className="col col-sm-2">
             <i className="bi-tag me-1"></i>
             <a className={`link-underline-hover text-${props.color}`} href={`https://github.com/${process.env.REACT_APP_GITHUB_REPO}/commit/${props.commit}`} target="_blank" rel="noreferrer noopener">{props.commit.substring(0, 7)}</a>
         </div>
@@ -74,7 +74,7 @@ export const CommitCol = (props) => {
 
 export const DateCol = (props) => {
     return (
-        <div className="col col-md-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${moment(props.date).fromNow()}`}>
+        <div className="col col-sm-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${moment(props.date).fromNow()}`}>
             <i className="bi-calendar2 me-1"></i>
             {`${props.date.toLocaleString()}`}
         </div>
@@ -83,7 +83,7 @@ export const DateCol = (props) => {
 
 export const RuntimeCol = (props) => {
     return (
-        <div className="col col-md-2">
+        <div className="col col-sm-2">
             <i className="bi-clock me-1"></i>{props.runtime}
         </div>
     );
@@ -91,7 +91,7 @@ export const RuntimeCol = (props) => {
 
 export const GithubCol = (props) => {
     return (
-        <div className="col col-md-2">
+        <div className="col col-sm-2">
             <i className="bi-github me-1"></i>
             <a className={`link-underline-hover text-${props.color}`} href={props.url} target="_blank" rel="noreferrer noopener">{props.title}</a>
         </div>
@@ -100,7 +100,7 @@ export const GithubCol = (props) => {
 
 export const CommitWithAuthorCol = (props) => {
     return (
-        <div className="col col-md-5">
+        <div className="col col-sm-5">
             <i className="bi-tag me-1"></i>
             <a className={`link-underline-hover text-${props.color} me-1`} href={`https://github.com/${process.env.REACT_APP_GITHUB_REPO}/commit/${props.commit}`} target="_blank" rel="noreferrer noopener">{props.commit.substring(0, 7)}</a>
             (<i className="bi-person me-1"></i>{props.author})
@@ -110,9 +110,9 @@ export const CommitWithAuthorCol = (props) => {
 
 export const DateShortElem = (props) => {
     return (
-        <div data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${moment(props.date).fromNow()}`}>
+        <span className="align-middle" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${moment(props.date).fromNow()}`}>
             <i className="bi-calendar2 me-1"></i>{props.date.toLocaleString()}
-        </div>
+        </span>
     );
 };
 
@@ -127,7 +127,7 @@ export const DateElem = (props) => {
 
 export const DateCompleteCol = (props) => {
     return (
-        <div className="col col-md-4" >
+        <div className="col col-sm-4" >
             <DateElem date={props.date} />
         </div>
     );

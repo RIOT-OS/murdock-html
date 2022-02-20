@@ -89,7 +89,7 @@ const JobTitle = (props) => {
 
     return (
         <div className="row align-items-center">
-            <div className="col-md-10">
+            <div className="col-sm-10">
                 {titleUrl ? (
                 <a className={`link-underline-hover text-${textColor[props.job.state]} align-middle me-1`} href={titleUrl} target="_blank" rel="noreferrer noopener">
                     {cardIcon[props.job.state]}{title}
@@ -98,7 +98,7 @@ const JobTitle = (props) => {
                     <>{cardIcon[props.job.state]}{title}</>
                 )}
             </div>
-            <div className="col-md-2 text-end">
+            <div className="col-sm-2 text-end">
             {(props.permissions === "push" && ["errored", "passed", "stopped"].includes(props.job.state)) && (
                 <button className={`btn btn-outline-${cardColor[props.job.state]} badge fs-5 p-0 align-middle`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Restart" onClick={restart}>
                     <i className="bi-arrow-clockwise"></i>
@@ -120,56 +120,40 @@ const JobDetails = (props) => {
     const envSorted = Object.fromEntries(Object.entries(props.job.env).sort())
 
     return (
-        <div className="row justify-content-start mt-1">
-            <div className="col col-md-6 pe-0">
-                <div className="card">
-                    <div className="card-header">Environment</div>
-                    <div className="card-body">
-                    <table className="table table-bordered">
-                        <thead>
-                            <tr>
-                            <th scope="col" style={{width: "35%"}}>Variable</th>
-                            <th scope="col">Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {Object.entries(envSorted).map(elem => <tr key={elem[0]}><td>{elem[0]}</td><td>{` ${elem[1]}`}</td></tr>)}
-                        </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div className="col col-md-6 ps-1">
-                <div className="card">
-                    <div className="card-header">Options</div>
-                    <div className="card-body">
-                        <table className="table table-bordered">
-                        <thead>
-                            <tr>
-                            <th scope="col" style={{width: "30%"}}>Option</th>
-                            <th scope="col">Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>Fasttracked</td>
-                            <td>{`${props.job.fasttracked ? "True": "False"}`}</td>
-                        </tr>
-                        {props.job.hasOwnProperty("triggered_by") && (
-                        <tr>
-                            <td>Triggered by</td>
-                            <td>{`${props.job.triggered_by}`}</td>
-                        </tr>)}
-                        <tr>
-                            <td>Triggered from</td>
-                            <td>{`${props.job.trigger}`}</td>
-                        </tr>
-                        </tbody>
-                        </table>
-                    </div>
-                </div>
+        <>
+        <div className="card m-1">
+            <div className="card-header">Context</div>
+            <div className="card-body p-0">
+                <table className="table table-sm">
+                <tbody>
+                {props.job.hasOwnProperty("triggered_by") && (
+                <tr>
+                    <td>Triggered by</td>
+                    <td>{`${props.job.triggered_by}`}</td>
+                </tr>)}
+                <tr>
+                    <td>Trigger type</td>
+                    <td>{`${props.job.trigger}`}</td>
+                </tr>
+                <tr>
+                    <td>Fasttracked</td>
+                    <td>{`${props.job.fasttracked ? "True": "False"}`}</td>
+                </tr>
+                </tbody>
+                </table>
             </div>
         </div>
+        <div className="card m-1">
+            <div className="card-header">Environment</div>
+            <div className="card-body p-0">
+            <table className="table table-sm">
+                <tbody>
+                {Object.entries(envSorted).map(elem => <tr key={elem[0]}><td>{elem[0]}</td><td><span className="text-break">{elem[1]}</span></td></tr>)}
+                </tbody>
+                </table>
+            </div>
+        </div>
+        </>
     )
 }
 
@@ -247,12 +231,12 @@ const JobInfo = (props) => {
             <CommitWithAuthorCol color={linkColor[props.job.state]} commit={props.job.commit.sha} author={props.job.commit.author} />
             <DateCol date={prDate} />
             {runtime}
-            <div className="col col-md-2 text-end">
+            <div className="col col-sm-2 text-end">
                 <h5>{stateBadge[props.job.state]}</h5>
             </div>
         </div>
         <div className="row">
-            <div className="col col-md-6 text-start">
+            <div className="col col-sm-6 text-start">
                 <i className="bi-card-text me-1"></i>{commitMsgLines[0]}
                 {(commitMsgLines.length > 1) && (
                 <>
@@ -266,7 +250,7 @@ const JobInfo = (props) => {
                 )}
             </div>
             {props.job.prinfo && props.job.prinfo.labels.length > 0 && (
-                <div className="col col-md-6 text-end">
+                <div className="col col-sm-6 text-end">
                 {props.job.prinfo.labels.map(label => <span key={label} className="badge rounded-pill bg-primary ms-1">{label}</span>)}
                 </div>
             )}

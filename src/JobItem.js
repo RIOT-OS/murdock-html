@@ -153,10 +153,10 @@ export const JobItem = (props) => {
 
     return (
         <tr>
-            <td style={{width: "5%"}}>
-            <a className="btn link-underline-hover p-0 text-primary" href={`/details/${props.job.uid}`}>{`${props.job.uid.substring(0, 7)}`}</a>
+            <td style={{ width: "30px" }}>
+                <a className="btn link-underline-hover p-0 text-primary" href={`/details/${props.job.uid}`}>{`${props.job.uid.substring(0, 7)}`}</a>
             </td>
-            <td style={{width: "50%"}}>
+            <td>
                 <span className="align-middle" data-bs-toggle="tooltip" data-bs-placement="bottom" title={jobItemTitleTooltip}>
                     <i className={`bi-github ${(props.job.prinfo && props.job.prinfo.hasOwnProperty("is_merged") && props.job.prinfo.is_merged) ? "text-info": ""} me-1`}></i>
                     <a className="link-underline-hover text-dark me-1" href={titleUrl} target="_blank" rel="noreferrer noopener">
@@ -164,13 +164,13 @@ export const JobItem = (props) => {
                     </a>
                 </span>
             </td>
-            <td style={{width: "20%"}} className="align-middle text-left">
+            <td style={{ width: "250px" }}>
                 <DateShortElem date={jobDate} />
             </td>
-            <td className="text-center align-middle py-0" style={{width: "20%"}}>
+            <td className="text-center" style={{ width: "200px" }}>
                 {(props.job.state === "running") && (
                     (buildInProgress) ? (
-                        <a className="btn" style={{width: "100%"}} href={`/details/${props.job.uid}`} data-bs-toggle="tooltip" data-bs-placement="bottom" title={runningJobStatus}>
+                        <a className="btn align-middle" style={{width: "100%"}} href={`/details/${props.job.uid}`} data-bs-toggle="tooltip" data-bs-placement="bottom" title={runningJobStatus}>
                             {props.job.status.failed ? <i className="animate-flicker bi-exclamation-triangle me-1 text-danger"></i> : null}{`${moment.duration(props.job.status.eta, "seconds").humanize(true)} (${progressPercent}%)`}
                             <div className="progress position-relative" style={{height: "5px"}}>
                                 <div className={`progress-bar progress-bar-animated progress-bar-striped bg-${props.job.status.failed ? "danger" : "warning"}`} role="progressbar"
@@ -188,10 +188,10 @@ export const JobItem = (props) => {
                         </>
                     )
                 )}
-                {["passed", "errored", "stopped"].includes(props.job.state) && `${moment.duration(props.job.runtime * -1000).humanize()}`}
-                {props.job.state === "queued" && " - "}
+                {["passed", "errored", "stopped"].includes(props.job.state) && <span className="align-middle">{`${moment.duration(props.job.runtime * -1000).humanize()}`}</span>}
+                {props.job.state === "queued" && <span className="align-middle">{" - "}</span>}
             </td>
-            <td className="text-end pe-3">
+            <td className="text-end pe-3" style={{ width: "30px" }}>
                 <div className="dropdown">
                     <button className="btn dropdown-toggle p-0" type="button" id="dropdownMenuActions" data-bs-toggle="dropdown" aria-expanded="false">
                     {stateBadge[props.job.state]}

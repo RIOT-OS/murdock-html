@@ -39,12 +39,12 @@ export const Result = (props) => {
             <button className="btn" type="button" onClick={toggleOutput} data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${outputVisible ? "Hide": "Show"} output`}>
                 <div className="row">
                     {(props.withApplication) && (
-                    <div className="col col-md-4 text-start">
+                    <div className="col col-sm-4 text-start">
                         <span className={`text-${cardColor[props.result.status ? "passed" : "errored"]}`}>{cardIcon[props.result.status ? "passed" : "errored"]}</span>
                         {props.result.application}
                     </div>
                     )}
-                    <div className={`col col-md-${props.withApplication ? "3" : "7"} text-start`}>
+                    <div className={`col col-sm-${props.withApplication ? "2" : "6"} text-start`}>
                         {(props.withApplication) ? (
                             <i className="bi-cpu me-1"></i>
                         ) : (
@@ -52,10 +52,10 @@ export const Result = (props) => {
                         )}
                         {props.result.board}:{props.result.toolchain}
                     </div>
-                    <div className="col col-md-4 text-start">
+                    <div className="col col-sm-4 text-middle">
                         <i className="bi-wrench me-1"></i>{props.result.worker}
                     </div>
-                    <div className="col col-md-1 text-start">
+                    <div className="col col-sm-2 text-end">
                         <i className="bi-clock me-1"></i>{props.result.runtime.toFixed(2)}s
                     </div>
                 </div>
@@ -75,7 +75,7 @@ export const Result = (props) => {
         </div>}
         {props.withApplication && props.result.application && !hasDetailedinfo &&
         <div className="row">
-            <div className="col-md-4">
+            <div className="col-sm-4">
                 {props.result.application}
             </div>
         </div>}

@@ -332,8 +332,8 @@ class JobList extends Component {
                         <table className="table table-sm table-striped table-hover">
                         <thead>
                             <tr>
-                                <th scope="col" className="text-center">Job</th>
-                                <th scope="col"></th>
+                                <th scope="col" className="text-left">Job</th>
+                                <th scope="col" className="text-left">Title</th>
                                 <th scope="col" className="text-left">Date</th>
                                 <th scope="col" className="text-center">Duration</th>
                                 <th scope="col" className="text-center">State</th>

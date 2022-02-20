@@ -4,13 +4,13 @@ const Worker = (props) => {
     return (
         <tr>
             <th scope="row">{props.worker.name}</th>
-            <td>{props.worker.runtime_avg.toFixed(2)}</td>
-            <td>{props.worker.runtime_min.toFixed(2)}</td>
-            <td>{props.worker.runtime_max.toFixed(2)}</td>
-            <td>{props.worker.total_cpu_time.toFixed(2)}</td>
-            <td>{props.worker.jobs_passed}</td>
-            <td>{props.worker.jobs_failed}</td>
-            <td>{props.worker.jobs_count}</td>
+            <td><span className="text-break">{props.worker.runtime_avg.toFixed(2)}</span></td>
+            <td><span className="text-break">{props.worker.runtime_min.toFixed(2)}</span></td>
+            <td><span className="text-break">{props.worker.runtime_max.toFixed(2)}</span></td>
+            <td><span className="text-break">{props.worker.total_cpu_time.toFixed(2)}</span></td>
+            <td><span className="text-break">{props.worker.jobs_passed}</span></td>
+            <td><span className="text-break">{props.worker.jobs_failed}</span></td>
+            <td><span className="text-break">{props.worker.jobs_count}</span></td>
         </tr>
     );
 };
@@ -44,14 +44,14 @@ export const JobStats = (props) => {
                     <table className="table">
                         <thead>
                             <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Average time (s)</th>
-                                <th scope="col">Min time (s)</th>
-                                <th scope="col">Max time (s)</th>
-                                <th scope="col">Total CPU time (s)</th>
-                                <th scope="col">Passed jobs</th>
-                                <th scope="col">Failed jobs</th>
-                                <th scope="col">Total jobs</th>
+                                <th scope="col"><span className="text-break">Name</span></th>
+                                <th scope="col"><span className="text-break">Average time (s)</span></th>
+                                <th scope="col"><span className="text-break">Min time (s)</span></th>
+                                <th scope="col"><span className="text-break">Max time (s)</span></th>
+                                <th scope="col"><span className="text-break">Total CPU time (s)</span></th>
+                                <th scope="col"><span className="text-break">Passed jobs</span></th>
+                                <th scope="col"><span className="text-break">Failed jobs</span></th>
+                                <th scope="col"><span className="text-break">Total jobs</span></th>
                             </tr>
                         </thead>
                         <tbody>
