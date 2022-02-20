@@ -74,7 +74,7 @@ export const CommitCol = (props) => {
 
 export const DateCol = (props) => {
     return (
-        <div className="col col-sm-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${moment(props.date).fromNow()}`}>
+        <div className="col col-sm-3" style={{ minWidth: "250px"}} data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${moment(props.date).fromNow()}`}>
             <i className="bi-calendar2 me-1"></i>
             {`${props.date.toLocaleString()}`}
         </div>
@@ -83,7 +83,7 @@ export const DateCol = (props) => {
 
 export const RuntimeCol = (props) => {
     return (
-        <div className="col col-sm-2">
+        <div className="col col-sm-2" style={{ minWidth: "250px"}}>
             <i className="bi-clock me-1"></i>{props.runtime}
         </div>
     );
@@ -100,11 +100,11 @@ export const GithubCol = (props) => {
 
 export const CommitWithAuthorCol = (props) => {
     return (
-        <div className="col col-sm-5">
+        <>
             <i className="bi-tag me-1"></i>
             <a className={`link-underline-hover text-${props.color} me-1`} href={`https://github.com/${process.env.REACT_APP_GITHUB_REPO}/commit/${props.commit}`} target="_blank" rel="noreferrer noopener">{props.commit.substring(0, 7)}</a>
             (<i className="bi-person me-1"></i>{props.author})
-        </div>
+        </>
     );
 };
 

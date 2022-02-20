@@ -37,14 +37,14 @@ export const Result = (props) => {
         {hasDetailedinfo &&
         <div className="card my-1">
             <button className="btn" type="button" onClick={toggleOutput} data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${outputVisible ? "Hide": "Show"} output`}>
-                <div className="row">
+                <div className="row row-cols-sm-1">
                     {(props.withApplication) && (
-                    <div className="col col-sm-4 text-start">
+                    <div className="col col-sm-3 text-start" style={{ minWidth: "250px"}}>
                         <span className={`text-${cardColor[props.result.status ? "passed" : "errored"]}`}>{cardIcon[props.result.status ? "passed" : "errored"]}</span>
                         {props.result.application}
                     </div>
                     )}
-                    <div className={`col col-sm-${props.withApplication ? "2" : "6"} text-start`}>
+                    <div className={`col col-sm-${props.withApplication ? "3" : "6"} text-start`} style={{ minWidth: "250px"}}>
                         {(props.withApplication) ? (
                             <i className="bi-cpu me-1"></i>
                         ) : (
@@ -52,10 +52,10 @@ export const Result = (props) => {
                         )}
                         {props.result.board}:{props.result.toolchain}
                     </div>
-                    <div className="col col-sm-4 text-middle">
+                    <div className="col col-sm-4 text-start" style={{ minWidth: "250px"}}>
                         <i className="bi-wrench me-1"></i>{props.result.worker}
                     </div>
-                    <div className="col col-sm-2 text-end">
+                    <div className="col col-sm-2 text-start" style={{ minWidth: "200px"}}>
                         <i className="bi-clock me-1"></i>{props.result.runtime.toFixed(2)}s
                     </div>
                 </div>

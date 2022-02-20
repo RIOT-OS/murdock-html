@@ -226,36 +226,44 @@ const JobInfo = (props) => {
     }
 
     return (
-        <>
-        <div className="row align-items-center">
-            <CommitWithAuthorCol color={linkColor[props.job.state]} commit={props.job.commit.sha} author={props.job.commit.author} />
-            <DateCol date={prDate} />
-            {runtime}
-            <div className="col col-sm-2 text-end">
+        <div className="position-relative">
+            <div className="position-absolute top-0 end-0">
                 <h5>{stateBadge[props.job.state]}</h5>
             </div>
-        </div>
         <div className="row">
-            <div className="col col-sm-6 text-start">
-                <i className="bi-card-text me-1"></i>{commitMsgLines[0]}
-                {(commitMsgLines.length > 1) && (
-                <>
-                <button className="btn btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCommitMsg" aria-expanded="false" aria-controls="collapseCommitMsg">
-                    <i className="bi-arrows-angle-expand"></i>
-                </button>
-                <div className="collapse" id="collapseCommitMsg">
-                    {commitMsgLines.slice(1).map((line, index) => <div key={index} className="ms-4">{line}</div>)}
+            <div className="col col-sm-5" style={{ minWidth: "250px"}}>
+                <div className="row align-items-center">
+                    <div className="col">
+                        <CommitWithAuthorCol color={linkColor[props.job.state]} commit={props.job.commit.sha} author={props.job.commit.author} />
+                    </div>
                 </div>
-                </>
-                )}
+                <div className="row align-items-center">
+                    <div className="col">
+                        <i className="bi-card-text me-1"></i>{commitMsgLines[0]}
+                        {(commitMsgLines.length > 1) && (
+                        <>
+                        <button className="btn btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCommitMsg" aria-expanded="false" aria-controls="collapseCommitMsg">
+                            <i className="bi-arrows-angle-expand"></i>
+                        </button>
+                        <div className="collapse" id="collapseCommitMsg">
+                            {commitMsgLines.slice(1).map((line, index) => <div key={index} className="ms-4">{line}</div>)}
+                        </div>
+                        </>
+                        )}
+                    </div>
+                </div>
             </div>
-            {props.job.prinfo && props.job.prinfo.labels.length > 0 && (
-                <div className="col col-sm-6 text-end">
-                {props.job.prinfo.labels.map(label => <span key={label} className="badge rounded-pill bg-primary ms-1">{label}</span>)}
-                </div>
-            )}
+            <DateCol date={prDate} />
+            {runtime}
         </div>
-        </>
+        {props.job.prinfo && props.job.prinfo.labels.length > 0 && (
+        <div className="row align-items-center">
+            <div className="col col-sm-12 text-start">
+            {props.job.prinfo.labels.map(label => <span key={label} className="badge rounded-pill bg-primary ms-1">{label}</span>)}
+            </div>
+        </div>
+        )}
+        </div>
     );
 }
 
