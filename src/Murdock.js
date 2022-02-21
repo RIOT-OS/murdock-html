@@ -86,11 +86,13 @@ class Murdock extends Component {
     this.state = {
         user: getUserFromStorage(),
         userPermissions: "unknown",
+        alerts: [],
     };
     this.onLoginSuccess = this.onLoginSuccess.bind(this);
     this.onLoginFailure = this.onLoginFailure.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.fetchUserPermissions = this.fetchUserPermissions.bind(this);
+    this.notify = this.notify.bind(this);
   };
 
   onLoginSuccess(response) {
@@ -137,6 +139,16 @@ class Murdock extends Component {
     });
   };
 
+  notify(uid, result, message) {
+    const alertsList = this.state.alerts.slice();
+    alertsList.push({uid: uid, result: result, message: message})
+    this.setState({alerts: alertsList.reverse()});
+    setTimeout(() => {
+        const alertsList = this.state.alerts.filter(item => item.uid !== uid);
+        this.setState({alerts: alertsList});
+    }, 6000);
+  }
+
   componentDidMount() {
     if (this.state.userPermissions === "unknown") {
       this.fetchUserPermissions(this.state.user);
@@ -145,26 +157,39 @@ class Murdock extends Component {
 
   render() {
     return (
+      <>
+      <div className="position-fixed bottom-0 end-0 p-3" style={{zIndex:11}}>
+      {
+          this.state.alerts.map(item => (
+              <div key={item.uid} className="toast show m-1" role="alert" aria-live="assertive" aria-atomic="true">
+                  <div className={`toast-body text-${item.result}`}>
+                      <i className={`bi-${(item.result === "danger") ? "x" : "info"}-circle-fill me-2`}></i>{item.message}
+                  </div>
+              </div>
+          ))
+      }
+      </div>
       <Router>
           <MurdockNavBar user={this.state.user} userPermissions={this.state.userPermissions} onLoginSuccess={this.onLoginSuccess} onLoginFailure={this.onLoginFailure} onLogout={this.onLogout} />
           <Suspense fallback={<div className="container"><LoadingSpinner /></div>}>
               <Switch>
-                  <Route exact path="/" render={() => <JobList user={this.state.user} userPermissions={this.state.userPermissions} />} />
-                  <Route exact path="/details/branch/:branch" render={() => <JobBranch user={this.state.user} userPermissions={this.state.userPermissions} />} />
-                  <Route exact path="/details/branch/:branch/:tab" render={() => <JobBranch user={this.state.user} userPermissions={this.state.userPermissions} />} />
-                  <Route exact path="/details/tag/:tag" render={() => <JobTag user={this.state.user} userPermissions={this.state.userPermissions} />} />
-                  <Route exact path="/details/tag/:tag/:tab" render={() => <JobTag user={this.state.user} userPermissions={this.state.userPermissions} />} />
-                  <Route exact path="/details/commit/:commit" render={() => <JobCommit user={this.state.user} userPermissions={this.state.userPermissions} />} />
-                  <Route exact path="/details/commit/:commit/:tab" render={() => <JobCommit user={this.state.user} userPermissions={this.state.userPermissions} />} />
-                  <Route exact path="/details/pr/:prnum" render={() => <JobPr user={this.state.user} userPermissions={this.state.userPermissions} />} />
-                  <Route exact path="/details/pr/:prnum/:tab" render={() => <JobPr user={this.state.user} userPermissions={this.state.userPermissions} />} />
-                  <Route exact path="/details/:uid" render={() => <JobUid user={this.state.user} userPermissions={this.state.userPermissions} />} />
-                  <Route exact path="/details/:uid/:tab" render={() => <JobUid user={this.state.user} userPermissions={this.state.userPermissions} />} />
+                  <Route exact path="/" render={() => <JobList user={this.state.user} userPermissions={this.state.userPermissions} notify={this.notify} />} />
+                  <Route exact path="/details/branch/:branch" render={() => <JobBranch user={this.state.user} userPermissions={this.state.userPermissions} notify={this.notify} />} />
+                  <Route exact path="/details/branch/:branch/:tab" render={() => <JobBranch user={this.state.user} userPermissions={this.state.userPermissions} notify={this.notify} />} />
+                  <Route exact path="/details/tag/:tag" render={() => <JobTag user={this.state.user} userPermissions={this.state.userPermissions} notify={this.notify} />} />
+                  <Route exact path="/details/tag/:tag/:tab" render={() => <JobTag user={this.state.user} userPermissions={this.state.userPermissions} notify={this.notify} />} />
+                  <Route exact path="/details/commit/:commit" render={() => <JobCommit user={this.state.user} userPermissions={this.state.userPermissions} notify={this.notify} />} />
+                  <Route exact path="/details/commit/:commit/:tab" render={() => <JobCommit user={this.state.user} userPermissions={this.state.userPermissions} notify={this.notify} />} />
+                  <Route exact path="/details/pr/:prnum" render={() => <JobPr user={this.state.user} userPermissions={this.state.userPermissions} notify={this.notify} />} />
+                  <Route exact path="/details/pr/:prnum/:tab" render={() => <JobPr user={this.state.user} userPermissions={this.state.userPermissions} notify={this.notify} />} />
+                  <Route exact path="/details/:uid" render={() => <JobUid user={this.state.user} userPermissions={this.state.userPermissions} notify={this.notify} />} />
+                  <Route exact path="/details/:uid/:tab" render={() => <JobUid user={this.state.user} userPermissions={this.state.userPermissions} notify={this.notify} />} />
                   <Route exact path="/details/:uid/builds/:application" render={() => <ApplicationResults type="builds" />} />
                   <Route exact path="/details/:uid/tests/:application" render={() => <ApplicationResults type="tests" />} />
               </Switch>
           </Suspense>
       </Router>
+      </>
     )
   }
 };

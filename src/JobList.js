@@ -43,7 +43,6 @@ class JobList extends Component {
             commitAuthor: "",
         }
         this.state = {
-            alerts: [],
             isFetched: false,
             jobs: [],
             queryParams: this.queryParams,
@@ -54,7 +53,6 @@ class JobList extends Component {
         this.handleWsOpen = this.handleWsOpen.bind(this);
         this.handleWsClose = this.handleWsClose.bind(this);
         this.displayMore = this.displayMore.bind(this);
-        this.notify = this.notify.bind(this);
         this.search = this.search.bind(this);
         this.isAllClicked = this.isAllClicked.bind(this);
         this.isPRClicked = this.isPRClicked.bind(this);
@@ -167,16 +165,6 @@ class JobList extends Component {
         favicon.href = "/favicon.ico";
     }
 
-    notify(uid, result, message) {
-        const alertsList = this.state.alerts.slice();
-        alertsList.push({uid: uid, result: result, message: message})
-        this.setState({alerts: alertsList.reverse()});
-        setTimeout(() => {
-            const alertsList = this.state.alerts.filter(item => item.uid !== uid);
-            this.setState({alerts: alertsList});
-        }, 6000);
-    }
-
     isAllClicked() {
         this.queryParams.jobType = "all";
         this.search();
@@ -269,17 +257,6 @@ class JobList extends Component {
     render() {
         return (
             <>
-                <div className="position-fixed bottom-0 end-0 p-3" style={{zIndex:11}}>
-                    {
-                        this.state.alerts.map(item => (
-                            <div key={item.uid} className="toast show m-1" role="alert" aria-live="assertive" aria-atomic="true">
-                                <div className={`toast-body text-${item.result}`}>
-                                    <i className={`bi-${(item.result === "danger") ? "x" : "info"}-circle-fill me-2`}></i>{item.message}
-                                </div>
-                            </div>
-                        ))
-                    }
-                </div>
                 <div className="container">
                     <div className="btn-toolbar justify-content-left my-1" role="toolbar">
                         <div className="btn-group me-1" role="group">
@@ -340,7 +317,7 @@ class JobList extends Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {this.state.jobs.map(job => <JobItem key={job.uid} job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.notify}/>)}
+                            {this.state.jobs.map(job => <JobItem key={job.uid} job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.props.notify}/>)}
                         </tbody>
                         </table>
                         ) : (

@@ -395,16 +395,6 @@ const Job = (props) => {
         console.log("Websocket closed");
     }
 
-    const notify = (uid, result, message) => {
-        const alertsList = alerts.slice();
-        alertsList.push({uid: uid, result: result, message: message})
-        setAlerts(alertsList);
-        setTimeout(() => {
-            const alertsList = alerts.filter(item => item.uid !== uid);
-            setAlerts(alertsList);
-        }, 6000);
-    }
-
     const refRepr = (ref) => {
         if (ref) {
             return `${ref.split("/").slice(2).join("/")}`
@@ -528,7 +518,7 @@ const Job = (props) => {
                             job={job}
                             user={props.user}
                             permissions={props.userPermissions}
-                            notify={notify}
+                            notify={props.notify}
                         />
                     </div>
                     <div className="card-body p-2 px-3">
