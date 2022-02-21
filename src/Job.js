@@ -280,7 +280,6 @@ const Job = (props) => {
     const [ buildFailures, setBuildFailures ] = useState(null);
     const [ tests, setTests ] = useState(null);
     const [ testFailures, setTestFailures ] = useState(null);
-    const [ alerts, setAlerts ] = useState([]);
 
     const fetchJob = useCallback(
         () => {
@@ -501,17 +500,6 @@ const Job = (props) => {
     return (
         (fetched && job) ? (
             <div className="container">
-                <div className="position-fixed bottom-0 end-0 p-3" style={{zIndex:11}}>
-                    {
-                        alerts.map(item => (
-                            <div key={item.uid} className="toast show m-1" role="alert" aria-live="assertive" aria-atomic="true">
-                                <div className={`toast-body text-${item.result}`}>
-                                    <i className={`bi-${(item.result === "danger") ? "x" : "info"}-circle-fill me-2`}></i>{item.message}
-                                </div>
-                            </div>
-                        ))
-                    }
-                </div>
                 <div className={`card m-2`}>
                     <div className={`card-header text-${textColor[job.state]} bg-${cardColor[job.state]}`}>
                         <JobTitle
