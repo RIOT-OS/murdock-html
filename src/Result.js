@@ -9,9 +9,9 @@ export const Result = (props) => {
     const [output, setOutput] = useState("");
     const [outputVisible, setOutputVisible] = useState(false);
 
-    const outputUrl = `${murdockHttpBaseUrl}/results/${props.uid}/output/${props.type}/${props.result.application}/${props.result.board}:${props.result.toolchain}.txt`;
+    const outputUrl = `${murdockHttpBaseUrl}/results/${props.uid}/output/${props.type}/${props.result.application}/${props.result.target}:${props.result.toolchain}.txt`;
 
-    const hasDetailedinfo = props.result.board && props.result.toolchain && props.result.worker && props.result.runtime;
+    const hasDetailedinfo = props.result.target && props.result.toolchain && props.result.worker && props.result.runtime;
 
     const fetchOutput = useCallback(
         () => {
@@ -50,7 +50,7 @@ export const Result = (props) => {
                         ) : (
                             <span className={`text-${cardColor[props.result.status ? "passed" : "errored"]}`}>{cardIcon[props.result.status ? "passed" : "errored"]}</span>
                         )}
-                        {props.result.board}:{props.result.toolchain}
+                        {props.result.target}:{props.result.toolchain}
                     </div>
                     <div className="col col-sm-4 text-start" style={{ minWidth: "250px"}}>
                         <i className="bi-wrench me-1"></i>{props.result.worker}
