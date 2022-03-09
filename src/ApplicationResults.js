@@ -14,20 +14,19 @@ const ApplicationResults = (props) => {
     const [ failuresFilter, setFailuresFilter ] = useState("");
 
     const appPath = application.replace(":", "/");
-    const typePath = (props.type === "tests") ? "run_test" : "compile";
     const typeUpperCase = props.type.replace(/./, char => char.toUpperCase())
 
     const fetchApplicationData = useCallback(
         () => {
             setApplicationData({});
-            axios.get(`${murdockHttpBaseUrl}/results/${uid}/output/${typePath}/${appPath}/app.json`)
+            axios.get(`${murdockHttpBaseUrl}/results/${uid}/output/${props.type}/${appPath}/app.json`)
             .then(res => {
                 setApplicationData(res.data);
             })
             .catch(error => {
                 console.log("No application data found");
             });
-        }, [uid, appPath, typePath]
+        }, [uid, appPath, props.type]
     );
 
     useEffect(() => {
@@ -36,7 +35,7 @@ const ApplicationResults = (props) => {
         }
 
         document.title = `Murdock - ${appPath} ${props.type}`;
-    }, [applicationData, appPath, typePath, fetchApplicationData, props.type]);
+    }, [applicationData, appPath, fetchApplicationData, props.type]);
 
     return (
         <div className="container">
@@ -83,7 +82,7 @@ const ApplicationResults = (props) => {
                 <div className="card-body p-1">
                     {applicationData.failures
                         .filter(result => (result.board.includes(failuresFilter)))
-                        .map(result => <Result key={`${result.application}-${result.board}-${result.toolchain}`} uid={uid} type={typePath} result={result} />)}
+                        .map(result => <Result key={`${result.application}-${result.board}-${result.toolchain}`} uid={uid} type={props.type} result={result} />)}
                 </div>
             </div>
             )}
@@ -100,7 +99,7 @@ const ApplicationResults = (props) => {
                 <div className="card-body p-1">
                     {applicationData.jobs
                         .filter(result => result.board.includes(filter))
-                        .map(result => <Result key={`${result.application}-${result.board}-${result.toolchain}`} uid={uid} type={typePath} result={result} />)}
+                        .map(result => <Result key={`${result.application}-${result.board}-${result.toolchain}`} uid={uid} type={props.type} result={result} />)}
                 </div>
             </div>
         )}

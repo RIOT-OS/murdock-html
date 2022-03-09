@@ -59,8 +59,8 @@ const server = setupServer(
                 "status": {
                     "failed_jobs": [
                         {
-                            "name": "compile/tests/driver_sx127x/samr21-xpro:gnu",
-                            "href": "https://ci.riot-os.org/RIOT-OS/RIOT/15030/1dc94b981680ab30351df64b3f5a2c1e6e8cc9b0/output/compile/tests/driver_sx127x/samr21-xpro:gnu.txt"
+                            "name": "builds/tests/driver_sx127x/samr21-xpro:gnu",
+                            "href": "https://ci.riot-os.org/RIOT-OS/RIOT/15030/1dc94b981680ab30351df64b3f5a2c1e6e8cc9b0/output/builds/tests/driver_sx127x/samr21-xpro:gnu.txt"
                         }
                     ]
                 },

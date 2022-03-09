@@ -43,7 +43,7 @@ export const JobBuilds = (props) => {
                 </div>
             </div>
             <div className="card-body p-1">
-                {buildFailures.map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="compile" withApplication={true} result={build} />)}
+                {buildFailures.map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="builds" withApplication={true} result={build} />)}
             </div>
         </div>}
         {["running", "stopped"].includes(props.job.state) && buildFailuresLive.length > 0 &&
@@ -54,7 +54,7 @@ export const JobBuilds = (props) => {
                 </div>
             </div>
             <div className="card-body p-1">
-                {buildFailuresLive.map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="compile" withApplication={true} result={build} />)}
+                {buildFailuresLive.map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="builds" withApplication={true} result={build} />)}
             </div>
         </div>}
         {["errored", "passed"].includes(props.job.state) &&
@@ -96,7 +96,7 @@ export const JobTests = (props) => {
                 </div>
             </div>
             <div className="card-body p-1">
-                {testFailures.map(test => <Result key={`${test.application}-${test.board}-${test.toolchain}`} uid={props.uid} type="run_test" withApplication={true} result={test} />)}
+                {testFailures.map(test => <Result key={`${test.application}-${test.board}-${test.toolchain}`} uid={props.uid} type="tests" withApplication={true} result={test} />)}
             </div>
         </div>)}
         {["running", "stopped"].includes(props.job.state) && testFailuresLive.length > 0 &&
@@ -107,7 +107,7 @@ export const JobTests = (props) => {
                 </div>
             </div>
             <div className="card-body p-1">
-                {testFailuresLive.map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="compile" withApplication={true} result={build} />)}
+                {testFailuresLive.map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="tests" withApplication={true} result={build} />)}
             </div>
         </div>}
         <div className="card m-1">
