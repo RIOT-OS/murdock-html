@@ -27,7 +27,7 @@ export const JobBuilds = (props) => {
     const [failuresFilter, setFailuresFilter] = useState("");
 
     const builds = (props.builds) ? props.builds.filter(build => build.application.includes(filter)) : [];
-    const buildFailures = (props.buildFailures) ? props.buildFailures.filter(test => (test.application.includes(failuresFilter) || test.board.includes(failuresFilter))) : [];
+    const buildFailures = (props.buildFailures) ? props.buildFailures.filter(test => (test.application.includes(failuresFilter) || test.target.includes(failuresFilter))) : [];
     const buildFailuresLive = (props.status.failed_builds && props.status.failed_builds.length > 0) ? props.status.failed_builds.filter(build => build.application) : [];
 
     return (
@@ -43,7 +43,7 @@ export const JobBuilds = (props) => {
                 </div>
             </div>
             <div className="card-body p-1">
-                {buildFailures.map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="builds" withApplication={true} result={build} />)}
+                {buildFailures.map(build => <Result key={`${build.application}-${build.target}-${build.toolchain}`} uid={props.uid} type="builds" withApplication={true} result={build} />)}
             </div>
         </div>}
         {["running", "stopped"].includes(props.job.state) && buildFailuresLive.length > 0 &&
@@ -54,7 +54,7 @@ export const JobBuilds = (props) => {
                 </div>
             </div>
             <div className="card-body p-1">
-                {buildFailuresLive.map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="builds" withApplication={true} result={build} />)}
+                {buildFailuresLive.map(build => <Result key={`${build.application}-${build.target}-${build.toolchain}`} uid={props.uid} type="builds" withApplication={true} result={build} />)}
             </div>
         </div>}
         {["errored", "passed"].includes(props.job.state) &&
@@ -80,7 +80,7 @@ export const JobTests = (props) => {
     const [failuresFilter, setFailuresFilter] = useState("");
 
     const tests = props.tests.filter(test => test.application.includes(filter));
-    const testFailures = (props.testFailures) ? props.testFailures.filter(test => (test.application.includes(failuresFilter) || test.board.includes(failuresFilter))) : [];
+    const testFailures = (props.testFailures) ? props.testFailures.filter(test => (test.application.includes(failuresFilter) || test.target.includes(failuresFilter))) : [];
     const testFailuresLive = (props.status.failed_tests && props.status.failed_tests.length > 0) ? props.status.failed_tests.filter(build => build.application) : [];
 
     return (
@@ -96,7 +96,7 @@ export const JobTests = (props) => {
                 </div>
             </div>
             <div className="card-body p-1">
-                {testFailures.map(test => <Result key={`${test.application}-${test.board}-${test.toolchain}`} uid={props.uid} type="tests" withApplication={true} result={test} />)}
+                {testFailures.map(test => <Result key={`${test.application}-${test.target}-${test.toolchain}`} uid={props.uid} type="tests" withApplication={true} result={test} />)}
             </div>
         </div>)}
         {["running", "stopped"].includes(props.job.state) && testFailuresLive.length > 0 &&
@@ -107,7 +107,7 @@ export const JobTests = (props) => {
                 </div>
             </div>
             <div className="card-body p-1">
-                {testFailuresLive.map(build => <Result key={`${build.application}-${build.board}-${build.toolchain}`} uid={props.uid} type="tests" withApplication={true} result={build} />)}
+                {testFailuresLive.map(test => <Result key={`${test.application}-${test.target}-${test.toolchain}`} uid={props.uid} type="tests" withApplication={true} result={test} />)}
             </div>
         </div>}
         <div className="card m-1">

@@ -81,8 +81,8 @@ const ApplicationResults = (props) => {
                 </div>
                 <div className="card-body p-1">
                     {applicationData.failures
-                        .filter(result => (result.board.includes(failuresFilter)))
-                        .map(result => <Result key={`${result.application}-${result.board}-${result.toolchain}`} uid={uid} type={props.type} result={result} />)}
+                        .filter(result => (result.target.includes(failuresFilter)))
+                        .map(result => <Result key={`${result.application}-${result.target}-${result.toolchain}`} uid={uid} type={props.type} result={result} />)}
                 </div>
             </div>
             )}
@@ -98,8 +98,8 @@ const ApplicationResults = (props) => {
                 </div>
                 <div className="card-body p-1">
                     {applicationData.jobs
-                        .filter(result => result.board.includes(filter))
-                        .map(result => <Result key={`${result.application}-${result.board}-${result.toolchain}`} uid={uid} type={props.type} result={result} />)}
+                        .filter(result => result.target.includes(filter))
+                        .map(result => <Result key={`${result.application}-${result.target}-${result.toolchain}`} uid={uid} type={props.type} result={result} />)}
                 </div>
             </div>
         )}
