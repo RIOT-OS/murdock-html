@@ -40,7 +40,7 @@ export const Result = (props) => {
                 <div className="row row-cols-sm-1">
                     {(props.withApplication) && (
                     <div className="col col-sm-3 text-start" style={{ minWidth: "250px"}}>
-                        <span className={`text-${cardColor[props.result.status ? "passed" : "errored"]}`}>{cardIcon[props.result.status ? "passed" : "errored"]}</span>
+                        <span className={`text-${cardColor[props.result.status ? "passed" : "errored"]} me-2`}>{cardIcon[props.result.status ? "passed" : "errored"]}</span>
                         {props.result.application}
                     </div>
                     )}
@@ -48,7 +48,7 @@ export const Result = (props) => {
                         {(props.withApplication) ? (
                             <i className="bi-cpu me-1"></i>
                         ) : (
-                            <span className={`text-${cardColor[props.result.status ? "passed" : "errored"]}`}>{cardIcon[props.result.status ? "passed" : "errored"]}</span>
+                            <span className={`text-${cardColor[props.result.status ? "passed" : "errored"]} me-2`}>{cardIcon[props.result.status ? "passed" : "errored"]}</span>
                         )}
                         {props.result.target}:{props.result.toolchain}
                     </div>

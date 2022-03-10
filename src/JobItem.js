@@ -25,7 +25,7 @@ import axios from 'axios';
 import moment from 'moment';
 
 import {
-    stateBadge, murdockHttpBaseUrl
+    cardColor, cardIcon, textColor, stateText, murdockHttpBaseUrl
 } from './constants';
 import { DateShortElem } from './components';
 
@@ -159,7 +159,7 @@ export const JobItem = (props) => {
             <td style={{ width: "30px" }}>
                 <a className="btn link-underline-hover p-0 text-primary" href={`/details/${props.job.uid}`}>{`${props.job.uid.substring(0, 7)}`}</a>
             </td>
-            <td>
+            <td style={{ width: "800px" }}>
                 <span className="align-middle" data-bs-toggle="tooltip" data-bs-placement="bottom" title={jobItemTitleTooltip}>
                     <i className={`bi-github ${(props.job.prinfo && props.job.prinfo.hasOwnProperty("is_merged") && props.job.prinfo.is_merged) ? "text-info": ""} me-1`}></i>
                     <a className="link-underline-hover text-dark me-1" href={titleUrl} target="_blank" rel="noreferrer noopener">
@@ -191,13 +191,16 @@ export const JobItem = (props) => {
                         </>
                     )
                 )}
-                {["passed", "errored", "stopped"].includes(props.job.state) && <span className="align-middle">{`${moment.duration(props.job.runtime * -1000).humanize()}`}</span>}
+                {["passed", "errored", "stopped"].includes(props.job.state) && <span className="align-middle text-break">{`${moment.duration(props.job.runtime * -1000).humanize()}`}</span>}
                 {props.job.state === "queued" && <span className="align-middle">{" - "}</span>}
             </td>
             <td className="text-end pe-3" style={{ width: "30px" }}>
-                <div className="dropdown">
-                    <button className="btn dropdown-toggle p-0" type="button" id="dropdownMenuActions" data-bs-toggle="dropdown" aria-expanded="false">
-                    {stateBadge[props.job.state]}
+                <div className="dropdown" data-bs-toggle="tooltip" data-bs-placement="bottom" title={stateText[props.job.state]}>
+                    <button className="btn dropdown-toggle p-0 d-none d-sm-block" type="button" id="dropdownMenuActions" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span className={`badge text-${textColor[props.job.state]} bg-${cardColor[props.job.state]}`}>Failed</span>
+                    </button>
+                    <button className="btn dropdown-toggle p-0 d-block d-sm-none" type="button" id="dropdownMenuActions" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span className={`badge text-${textColor[props.job.state]} bg-${cardColor[props.job.state]}`}>{cardIcon[props.job.state]}</span>
                     </button>
                     <ul className="dropdown-menu dropdown-menu-end p-0" style={{minWidth: "20px"}} aria-labelledby="dropdownMenuActions">
                         <li>

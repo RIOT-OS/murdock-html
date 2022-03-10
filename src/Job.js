@@ -95,10 +95,10 @@ const JobTitle = (props) => {
             <div className="col-sm-10">
                 {titleUrl ? (
                 <a className={`link-underline-hover text-${textColor[props.job.state]} align-middle me-1`} href={titleUrl} target="_blank" rel="noreferrer noopener">
-                    {cardIcon[props.job.state]}{title}
+                    <span className="me-2">{cardIcon[props.job.state]}</span>{title}
                 </a>
                 ) : (
-                    <>{cardIcon[props.job.state]}{title}</>
+                    <><span className="me-2">{cardIcon[props.job.state]}</span>{title}</>
                 )}
             </div>
             <div className="col-sm-2 text-end">

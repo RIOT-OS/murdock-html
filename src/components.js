@@ -110,9 +110,16 @@ export const CommitWithAuthorCol = (props) => {
 
 export const DateShortElem = (props) => {
     return (
-        <span className="align-middle" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${moment(props.date).fromNow()}`}>
-            <i className="bi-calendar2 me-1"></i>{props.date.toLocaleString()}
-        </span>
+        <>
+        <div className="d-none d-sm-block">
+            <span className="align-middle" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${moment(props.date).fromNow()}`}>
+                <i className="bi-calendar2 me-1"></i>{props.date.toLocaleString()}
+            </span>
+        </div>
+        <div className="d-block d-sm-none" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${props.date.toLocaleString()} (${moment(props.date).fromNow()})`}>
+            <i className="bi-calendar2 me-1"></i>
+        </div>
+        </>
     );
 };
 

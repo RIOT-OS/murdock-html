@@ -36,11 +36,11 @@ export const cardColor = {
 };
 
 export const cardIcon = {
-    "errored": (<i className="bi-x-circle-fill me-2"></i>),
-    "passed": (<i className="bi-check-circle-fill me-2"></i>),
-    "queued": (<i className="bi-inbox me-2"></i>),
-    "running": (<span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>),
-    "stopped": (<i className="bi-dash-circle-fill me-2"></i>),
+    "errored": (<i className="bi-x-circle-fill"></i>),
+    "passed": (<i className="bi-check-circle-fill"></i>),
+    "queued": (<i className="bi-inbox"></i>),
+    "running": (<span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>),
+    "stopped": (<i className="bi-dash-circle-fill"></i>),
 };
 
 export const jobColor = {
@@ -73,4 +73,12 @@ export const stateBadge = {
     "queued": (<span className="badge text-light bg-info">Queued</span>),
     "running": (<span className="badge text-light bg-warning">Running</span>),
     "stopped": (<span className="badge text-light bg-secondary">Stopped</span>),
+};
+
+export const stateText = {
+    "errored": "Failed",
+    "passed": "Success",
+    "queued": "Queued",
+    "running": "Running",
+    "stopped": "Stopped",
 };
