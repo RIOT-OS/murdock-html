@@ -499,7 +499,7 @@ const Job = (props) => {
 
     return (
         (fetched && job) ? (
-            <div className="container">
+            <>
                 <div className={`card m-2`}>
                     <div className={`card-header text-${textColor[job.state]} bg-${cardColor[job.state]}`}>
                         <JobTitle
@@ -575,7 +575,7 @@ const Job = (props) => {
                     onMessage={handleWsData}
                     onClose={handleWsClose}
                 />
-        </div>
+            </>
         ) : job && (
             <LoadingSpinner />
         )

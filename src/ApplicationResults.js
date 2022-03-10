@@ -38,7 +38,7 @@ const ApplicationResults = (props) => {
     }, [applicationData, appPath, fetchApplicationData, props.type]);
 
     return (
-        <div className="container">
+        <>
             <button className="btn btn-outline-primary m-1" type="button" onClick={history.goBack}>
                 <i className="bi-chevron-left me-1"></i>{`Back to job ${props.type}`}
             </button>
@@ -103,7 +103,7 @@ const ApplicationResults = (props) => {
                 </div>
             </div>
         )}
-        </div>
+        </>
     )
 };
 

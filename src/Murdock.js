@@ -158,19 +158,20 @@ class Murdock extends Component {
   render() {
     return (
       <>
-      <div className="position-fixed bottom-0 end-0 p-3" style={{zIndex:11}}>
-      {
-          this.state.alerts.map(item => (
-              <div key={item.uid} className="toast show m-1" role="alert" aria-live="assertive" aria-atomic="true">
-                  <div className={`toast-body text-${item.result}`}>
-                      <i className={`bi-${(item.result === "danger") ? "x" : "info"}-circle-fill me-2`}></i>{item.message}
-                  </div>
-              </div>
-          ))
-      }
-      </div>
       <Router>
           <MurdockNavBar user={this.state.user} userPermissions={this.state.userPermissions} onLoginSuccess={this.onLoginSuccess} onLoginFailure={this.onLoginFailure} onLogout={this.onLogout} />
+          <div className="container">
+          <div className="position-fixed bottom-0 end-0 p-3" style={{zIndex:11}}>
+          {
+              this.state.alerts.map(item => (
+                  <div key={item.uid} className="toast show m-1" role="alert" aria-live="assertive" aria-atomic="true">
+                      <div className={`toast-body text-${item.result}`}>
+                          <i className={`bi-${(item.result === "danger") ? "x" : "info"}-circle-fill me-2`}></i>{item.message}
+                      </div>
+                  </div>
+              ))
+          }
+          </div>
           <Suspense fallback={<div className="container"><LoadingSpinner /></div>}>
               <Switch>
                   <Route exact path="/" render={() => <JobList user={this.state.user} userPermissions={this.state.userPermissions} notify={this.notify} />} />
@@ -188,6 +189,7 @@ class Murdock extends Component {
                   <Route exact path="/details/:uid/tests/:application" render={() => <ApplicationResults type="tests" />} />
               </Switch>
           </Suspense>
+          </div>
       </Router>
       </>
     )

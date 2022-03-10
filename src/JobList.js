@@ -257,86 +257,84 @@ class JobList extends Component {
     render() {
         return (
             <>
-                <div className="container">
-                    <div className="btn-toolbar justify-content-left my-1" role="toolbar">
-                        <div className="btn-group me-1" role="group">
-                            <input type="radio" name="jobTypeRadio" className="btn-check" id="checkAll" onClick={this.isAllClicked} defaultChecked={this.queryParams.jobType === "all"} />
-                            <label className="btn btn-outline-primary" htmlFor="checkAll">All</label>
-                            <input type="radio" name="jobTypeRadio" className="btn-check" id="checkPRs" onClick={this.isPRClicked} defaultChecked={this.queryParams.jobType === "pr"} />
-                            <label className="btn btn-outline-primary" htmlFor="checkPRs">PRs</label>
-                            <input type="radio" name="jobTypeRadio" className="btn-check" id="checkBranches" onClick={this.isBranchClicked} defaultChecked={this.queryParams.jobType === "branch"} />
-                            <label className="btn btn-outline-primary" htmlFor="checkBranches">Branches</label>
-                            <input type="radio" name="jobTypeRadio" className="btn-check" id="checkTags" onClick={this.isTagClicked} defaultChecked={this.queryParams.jobType === "tag"} />
-                            <label className="btn btn-outline-primary" htmlFor="checkTags">Tags</label>
-                        </div>
-                        <div className="btn-group" role="group">
-                            <input type="checkbox" className="btn-check" id="checkQueued" onClick={this.showQueuedClicked} defaultChecked={this.queryParams.jobStates.includes("queued")} />
-                            <label className={`btn btn-outline-${cardColor["queued"]}`} htmlFor="checkQueued" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${this.queryParams.jobStates.includes("queued") ? "Hide" : "Show"} queued jobs`}><i className="bi-inbox"></i></label>
-                            <input type="checkbox" className="btn-check" id="checkRunning" onClick={this.showRunningClicked} defaultChecked={this.queryParams.jobStates.includes("running")} />
-                            <label className={`btn btn-outline-${cardColor["running"]}`} htmlFor="checkRunning" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${this.queryParams.jobStates.includes("running") ? "Hide" : "Show"} running jobs`}><i className="bi-gear-fill"></i></label>
-                            <input type="checkbox" className="btn-check" id="checkPassed" onClick={this.showPassedClicked} defaultChecked={this.queryParams.jobStates.includes("passed")} />
-                            <label className={`btn btn-outline-${cardColor["passed"]}`} htmlFor="checkPassed" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${this.queryParams.jobStates.includes("passed") ? "Hide" : "Show"} passed jobs`}><i className="bi-check-circle-fill"></i></label>
-                            <input type="checkbox" className="btn-check" id="checkErrored" onClick={this.showErroredClicked} defaultChecked={this.queryParams.jobStates.includes("errored")} />
-                            <label className={`btn btn-outline-${cardColor["errored"]}`} htmlFor="checkErrored" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${this.queryParams.jobStates.includes("errored") ? "Hide" : "Show"} errored jobs`}><i className="bi-x-circle-fill"></i></label>
-                            <input type="checkbox" className="btn-check" id="checkStopped" onClick={this.showStoppedClicked} defaultChecked={this.queryParams.jobStates.includes("stopped")} />
-                            <label className={`btn me-1 btn-outline-${cardColor["stopped"]}`} htmlFor="checkStopped" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${this.queryParams.jobStates.includes("stopped") ? "Hide" : "Show"} stopped jobs`}><i className="bi-dash-circle-fill"></i></label>
-                        </div>
-                        <div className="input-group me-1">
-                            <div className="input-group-text" id="inputSearchCommit"><i className="bi-tag"></i></div>
-                            <input type="text" className="form-control" placeholder="Commit SHA" aria-label="Commit SHA" aria-describedby="inputSearchCommit" value={this.queryParams.commitSha} onChange={this.commitShaChanged} onKeyUp={this.keyUp} />
-                        </div>
-                        <div className="input-group me-1">
-                            <div className="input-group-text" id="inputSearchAuthor"><i className="bi-person"></i></div>
-                            <input type="text" className="form-control" placeholder="Commit author" aria-label="Commit author" aria-describedby="inputSearchAuthor" value={this.queryParams.commitAuthor} onChange={this.commitAuthorChanged} onKeyUp={this.keyUp} />
-                        </div>
-                        {(this.queryParams.jobType === "pr") && <div className="input-group me-1" style={{maxWidth: "250px"}}>
-                            <div className="input-group-text" id="inputSearchPR">PR #</div>
-                            <input type="text" className="form-control" placeholder="PR number" aria-label="PR number" aria-describedby="inputSearchPR" value={this.queryParams.prNumber} onChange={this.prNumberChanged} onKeyUp={this.keyUp} />
-                        </div>}
-                        {(this.queryParams.jobType === "branch") && <div className="input-group me-1" style={{maxWidth: "250px"}}>
-                            <div className="input-group-text" id="inputSearchBranch">Branch</div>
-                            <input type="text" className="form-control" placeholder="Branch name" aria-label="Branch name" aria-describedby="inputSearchBranch" value={this.queryParams.branch} onChange={this.branchChanged} onKeyUp={this.keyUp} />
-                        </div>}
-                        {(this.queryParams.jobType === "tag") && <div className="input-group me-1" style={{maxWidth: "250px"}}>
-                            <div className="input-group-text" id="inputSearchTag">Tag</div>
-                            <input type="text" className="form-control" placeholder="Tag name" aria-label="Tag name" aria-describedby="inputSearchTag" value={this.queryParams.tag} onChange={this.tagChanged} onKeyUp={this.keyUp} />
-                        </div>}
+                <div className="btn-toolbar justify-content-left my-1" role="toolbar">
+                    <div className="btn-group me-1" role="group">
+                        <input type="radio" name="jobTypeRadio" className="btn-check" id="checkAll" onClick={this.isAllClicked} defaultChecked={this.queryParams.jobType === "all"} />
+                        <label className="btn btn-outline-primary" htmlFor="checkAll">All</label>
+                        <input type="radio" name="jobTypeRadio" className="btn-check" id="checkPRs" onClick={this.isPRClicked} defaultChecked={this.queryParams.jobType === "pr"} />
+                        <label className="btn btn-outline-primary" htmlFor="checkPRs">PRs</label>
+                        <input type="radio" name="jobTypeRadio" className="btn-check" id="checkBranches" onClick={this.isBranchClicked} defaultChecked={this.queryParams.jobType === "branch"} />
+                        <label className="btn btn-outline-primary" htmlFor="checkBranches">Branches</label>
+                        <input type="radio" name="jobTypeRadio" className="btn-check" id="checkTags" onClick={this.isTagClicked} defaultChecked={this.queryParams.jobType === "tag"} />
+                        <label className="btn btn-outline-primary" htmlFor="checkTags">Tags</label>
                     </div>
-                    {
-                        (!this.state.isFetched) ? (
-                            <LoadingSpinner />
-                        ) : (this.state.jobs.length) ? (
-                        <table className="table table-sm table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th scope="col" className="text-left">Job</th>
-                                <th scope="col" className="text-left">Title</th>
-                                <th scope="col" className="text-left">Date</th>
-                                <th scope="col" className="text-center">Duration</th>
-                                <th scope="col" className="text-center">State</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {this.state.jobs.map(job => <JobItem key={job.uid} job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.props.notify}/>)}
-                        </tbody>
-                        </table>
-                        ) : (
-                            <div className="row my-5 justify-content-center">
-                                <div className="col col-md-3 text-center">
-                                    <span className="text-secondary">No job matching</span>
-                                </div>
-                            </div>
-                        )
-                    }
-                    {(this.state.isFetched && this.state.jobs.length && this.state.jobs.length === this.queryParams.jobsDisplayedLimit) ? <ShowMore onclick={this.displayMore} /> : null}
+                    <div className="btn-group" role="group">
+                        <input type="checkbox" className="btn-check" id="checkQueued" onClick={this.showQueuedClicked} defaultChecked={this.queryParams.jobStates.includes("queued")} />
+                        <label className={`btn btn-outline-${cardColor["queued"]}`} htmlFor="checkQueued" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${this.queryParams.jobStates.includes("queued") ? "Hide" : "Show"} queued jobs`}><i className="bi-inbox"></i></label>
+                        <input type="checkbox" className="btn-check" id="checkRunning" onClick={this.showRunningClicked} defaultChecked={this.queryParams.jobStates.includes("running")} />
+                        <label className={`btn btn-outline-${cardColor["running"]}`} htmlFor="checkRunning" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${this.queryParams.jobStates.includes("running") ? "Hide" : "Show"} running jobs`}><i className="bi-gear-fill"></i></label>
+                        <input type="checkbox" className="btn-check" id="checkPassed" onClick={this.showPassedClicked} defaultChecked={this.queryParams.jobStates.includes("passed")} />
+                        <label className={`btn btn-outline-${cardColor["passed"]}`} htmlFor="checkPassed" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${this.queryParams.jobStates.includes("passed") ? "Hide" : "Show"} passed jobs`}><i className="bi-check-circle-fill"></i></label>
+                        <input type="checkbox" className="btn-check" id="checkErrored" onClick={this.showErroredClicked} defaultChecked={this.queryParams.jobStates.includes("errored")} />
+                        <label className={`btn btn-outline-${cardColor["errored"]}`} htmlFor="checkErrored" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${this.queryParams.jobStates.includes("errored") ? "Hide" : "Show"} errored jobs`}><i className="bi-x-circle-fill"></i></label>
+                        <input type="checkbox" className="btn-check" id="checkStopped" onClick={this.showStoppedClicked} defaultChecked={this.queryParams.jobStates.includes("stopped")} />
+                        <label className={`btn me-1 btn-outline-${cardColor["stopped"]}`} htmlFor="checkStopped" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${this.queryParams.jobStates.includes("stopped") ? "Hide" : "Show"} stopped jobs`}><i className="bi-dash-circle-fill"></i></label>
+                    </div>
+                    <div className="input-group me-1">
+                        <div className="input-group-text" id="inputSearchCommit"><i className="bi-tag"></i></div>
+                        <input type="text" className="form-control" placeholder="Commit SHA" aria-label="Commit SHA" aria-describedby="inputSearchCommit" value={this.queryParams.commitSha} onChange={this.commitShaChanged} onKeyUp={this.keyUp} />
+                    </div>
+                    <div className="input-group me-1">
+                        <div className="input-group-text" id="inputSearchAuthor"><i className="bi-person"></i></div>
+                        <input type="text" className="form-control" placeholder="Commit author" aria-label="Commit author" aria-describedby="inputSearchAuthor" value={this.queryParams.commitAuthor} onChange={this.commitAuthorChanged} onKeyUp={this.keyUp} />
+                    </div>
+                    {(this.queryParams.jobType === "pr") && <div className="input-group me-1" style={{maxWidth: "250px"}}>
+                        <div className="input-group-text" id="inputSearchPR">PR #</div>
+                        <input type="text" className="form-control" placeholder="PR number" aria-label="PR number" aria-describedby="inputSearchPR" value={this.queryParams.prNumber} onChange={this.prNumberChanged} onKeyUp={this.keyUp} />
+                    </div>}
+                    {(this.queryParams.jobType === "branch") && <div className="input-group me-1" style={{maxWidth: "250px"}}>
+                        <div className="input-group-text" id="inputSearchBranch">Branch</div>
+                        <input type="text" className="form-control" placeholder="Branch name" aria-label="Branch name" aria-describedby="inputSearchBranch" value={this.queryParams.branch} onChange={this.branchChanged} onKeyUp={this.keyUp} />
+                    </div>}
+                    {(this.queryParams.jobType === "tag") && <div className="input-group me-1" style={{maxWidth: "250px"}}>
+                        <div className="input-group-text" id="inputSearchTag">Tag</div>
+                        <input type="text" className="form-control" placeholder="Tag name" aria-label="Tag name" aria-describedby="inputSearchTag" value={this.queryParams.tag} onChange={this.tagChanged} onKeyUp={this.keyUp} />
+                    </div>}
                 </div>
-                <Websocket
-                    url={murdockWsUrl}
-                    onOpen={this.handleWsOpen}
-                    onMessage={this.handleWsData}
-                    onClose={this.handleWsClose}
-                />
-            </>
+                {
+                    (!this.state.isFetched) ? (
+                        <LoadingSpinner />
+                    ) : (this.state.jobs.length) ? (
+                    <table className="table table-sm table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col" className="text-left">Job</th>
+                            <th scope="col" className="text-left">Title</th>
+                            <th scope="col" className="text-left">Date</th>
+                            <th scope="col" className="text-center">Duration</th>
+                            <th scope="col" className="text-center">State</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {this.state.jobs.map(job => <JobItem key={job.uid} job={job} user={this.props.user} permissions={this.props.userPermissions} notify={this.props.notify}/>)}
+                    </tbody>
+                    </table>
+                    ) : (
+                        <div className="row my-5 justify-content-center">
+                            <div className="col col-md-3 text-center">
+                                <span className="text-secondary">No job matching</span>
+                            </div>
+                        </div>
+                    )
+                }
+                {(this.state.isFetched && this.state.jobs.length && this.state.jobs.length === this.queryParams.jobsDisplayedLimit) ? <ShowMore onclick={this.displayMore} /> : null}
+            <Websocket
+                url={murdockWsUrl}
+                onOpen={this.handleWsOpen}
+                onMessage={this.handleWsData}
+                onClose={this.handleWsClose}
+            />
+        </>
         );
     }
 }
