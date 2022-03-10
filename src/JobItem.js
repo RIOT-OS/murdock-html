@@ -33,8 +33,21 @@ import { DateShortElem } from './components';
 export const JobItem = (props) => {
     const jobDate = new Date(props.job.creation_time * 1000);
 
+    const refRepr = (ref) => {
+        if (ref && ref.startsWith("refs/")) {
+            return `${ref.split("/").slice(2).join("/")}`
+        }
+        return ref.substring(0, 15);
+    };
+
+    let jobContext = "";
+    if (props.job.prinfo) {
+        jobContext = `(PR #${props.job.prinfo.number})`;
+    } else {
+        jobContext = `(${refRepr(props.job.ref)})`;
+    }
+
     const removeJob = (type) => {
-        const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.ref})`
         axios.delete(
             `${murdockHttpBaseUrl}/jobs/${type}/${props.job.uid}`,
             {
@@ -45,30 +58,27 @@ export const JobItem = (props) => {
         )
         .then(() => {
             const action = (type === "queued") ? "canceled" : "aborted";
-            props.notify(props.job.uid, "info", `Job ${props.job.commit.sha.substring(0, 7)} ${context} ${action}`)
+            props.notify(props.job.uid, "info", `Job ${props.job.uid.substring(0, 7)} ${jobContext} ${action}`)
         })
         .catch(error => {
             const action = (type === "queued") ? "cancel" : "abort";
-            props.notify(props.job.uid, "danger", `Failed to ${action} job ${props.job.commit.sha.substring(0, 7)} ${context}`)
+            props.notify(props.job.uid, "danger", `Failed to ${action} job ${props.job.uid.substring(0, 7)} ${jobContext}`)
             console.log(error);
         });
     };
 
     const cancel = () => {
-        const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.ref})`
-        console.log(`Canceling queued job ${props.job.commit.sha} ${context}`)
+        console.log(`Canceling queued job ${props.job.commit.sha} ${jobContext}`)
         removeJob("queued");
     };
 
     const abort = () => {
-        const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.ref})`
-        console.log(`Stopping running job ${props.job.commit.sha} ${context}`)
+        console.log(`Stopping running job ${props.job.commit.sha} ${jobContext}`)
         removeJob("running");
     };
 
     const restart = () => {
-        const context = (props.job.prinfo) ? `(PR #${props.job.prinfo.number})` : `(${props.job.ref})`
-        console.log(`Restarting job ${props.job.commit.sha} ${context}`)
+        console.log(`Restarting job ${props.job.commit.sha} ${jobContext}`)
         axios.post(
             `${murdockHttpBaseUrl}/jobs/finished/${props.job.uid}`, {},
             {
@@ -78,19 +88,12 @@ export const JobItem = (props) => {
             },
         )
         .then(() => {
-            props.notify(props.job.uid, "info", `Job ${props.job.commit.sha.substring(0, 7)} ${context} restarted`)
+            props.notify(props.job.uid, "info", `Job ${props.job.uid.substring(0, 7)} ${jobContext} restarted`)
         })
         .catch(error => {
-            props.notify(props.job.uid, "danger", `Failed to restart job ${props.job.commit.sha.substring(0, 7)} ${context}`)
+            props.notify(props.job.uid, "danger", `Failed to restart job ${props.job.uid.substring(0, 7)} ${jobContext}`)
             console.log(error);
         });
-    };
-
-    const refRepr = (ref) => {
-        if (ref && ref.startsWith("refs/")) {
-            return `${ref.split("/").slice(2).join("/")}`
-        }
-        return ref.substring(0, 15);
     };
 
     const cancelAction = (props.permissions === "push" && props.job.state === "queued") && (
