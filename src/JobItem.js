@@ -157,7 +157,8 @@ export const JobItem = (props) => {
     return (
         <tr>
             <td style={{ width: "30px" }}>
-                <a className="btn link-underline-hover p-0 text-primary" href={`/details/${props.job.uid}`}>{`${props.job.uid.substring(0, 7)}`}</a>
+                <a className="btn link-underline-hover p-0 text-primary d-none d-sm-block" href={`/details/${props.job.uid}`}>{`${props.job.uid.substring(0, 7)}`}</a>
+                <a className="btn link-underline-hover p-0 text-primary d-block d-sm-none" href={`/details/${props.job.uid}`}>{`${props.job.uid.substring(0, 4)}`}</a>
             </td>
             <td style={{ width: "800px" }}>
                 <span className="align-middle" data-bs-toggle="tooltip" data-bs-placement="bottom" title={jobItemTitleTooltip}>
@@ -186,7 +187,7 @@ export const JobItem = (props) => {
                         <>
                         <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
                         {(props.job.status && props.job.status.status) ? (
-                        <span className="fst-italic">{`${props.job.status.status}...`}</span>
+                        <span className="fst-italic text-break">{`${props.job.status.status}...`}</span>
                         ) :null}
                         </>
                     )

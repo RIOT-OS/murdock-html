@@ -116,8 +116,8 @@ export const DateShortElem = (props) => {
                 <i className="bi-calendar2 me-1"></i>{props.date.toLocaleString()}
             </span>
         </div>
-        <div className="d-block d-sm-none" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${props.date.toLocaleString()} (${moment(props.date).fromNow()})`}>
-            <i className="bi-calendar2 me-1"></i>
+        <div className="d-block d-sm-none text-break" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${props.date.toLocaleString()}`}>
+            <i className="bi-calendar2 me-1"></i>{moment(props.date).fromNow()}
         </div>
         </>
     );
