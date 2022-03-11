@@ -258,7 +258,7 @@ class JobList extends Component {
         return (
             <>
                 <div className="btn-toolbar justify-content-left my-1" role="toolbar">
-                    <div className="btn-group me-1" role="group">
+                    <div className="btn-group m-1" role="group">
                         <input type="radio" name="jobTypeRadio" className="btn-check" id="checkAll" onClick={this.isAllClicked} defaultChecked={this.queryParams.jobType === "all"} />
                         <label className="btn btn-outline-primary" htmlFor="checkAll">All</label>
                         <input type="radio" name="jobTypeRadio" className="btn-check" id="checkPRs" onClick={this.isPRClicked} defaultChecked={this.queryParams.jobType === "pr"} />
@@ -268,7 +268,7 @@ class JobList extends Component {
                         <input type="radio" name="jobTypeRadio" className="btn-check" id="checkTags" onClick={this.isTagClicked} defaultChecked={this.queryParams.jobType === "tag"} />
                         <label className="btn btn-outline-primary" htmlFor="checkTags">Tags</label>
                     </div>
-                    <div className="btn-group" role="group">
+                    <div className="btn-group m-1" role="group">
                         <input type="checkbox" className="btn-check" id="checkQueued" onClick={this.showQueuedClicked} defaultChecked={this.queryParams.jobStates.includes("queued")} />
                         <label className={`btn btn-outline-${cardColor["queued"]}`} htmlFor="checkQueued" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${this.queryParams.jobStates.includes("queued") ? "Hide" : "Show"} queued jobs`}><i className="bi-inbox"></i></label>
                         <input type="checkbox" className="btn-check" id="checkRunning" onClick={this.showRunningClicked} defaultChecked={this.queryParams.jobStates.includes("running")} />
@@ -278,27 +278,27 @@ class JobList extends Component {
                         <input type="checkbox" className="btn-check" id="checkErrored" onClick={this.showErroredClicked} defaultChecked={this.queryParams.jobStates.includes("errored")} />
                         <label className={`btn btn-outline-${cardColor["errored"]}`} htmlFor="checkErrored" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${this.queryParams.jobStates.includes("errored") ? "Hide" : "Show"} errored jobs`}><i className="bi-x-circle-fill"></i></label>
                         <input type="checkbox" className="btn-check" id="checkStopped" onClick={this.showStoppedClicked} defaultChecked={this.queryParams.jobStates.includes("stopped")} />
-                        <label className={`btn me-1 btn-outline-${cardColor["stopped"]}`} htmlFor="checkStopped" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${this.queryParams.jobStates.includes("stopped") ? "Hide" : "Show"} stopped jobs`}><i className="bi-dash-circle-fill"></i></label>
+                        <label className={`btn btn-outline-${cardColor["stopped"]}`} htmlFor="checkStopped" data-bs-toggle="tooltip" data-bs-placement="bottom" title={`${this.queryParams.jobStates.includes("stopped") ? "Hide" : "Show"} stopped jobs`}><i className="bi-dash-circle-fill"></i></label>
                     </div>
-                    <div className="input-group me-1">
-                        <div className="input-group-text" id="inputSearchCommit"><i className="bi-tag"></i></div>
-                        <input type="text" className="form-control" placeholder="Commit SHA" aria-label="Commit SHA" aria-describedby="inputSearchCommit" value={this.queryParams.commitSha} onChange={this.commitShaChanged} onKeyUp={this.keyUp} />
+                    <div className="input-group m-1 ">
+                        <div className="input-group-text d-none d-sm-block" id="inputSearchCommit"><i className="bi-tag"></i></div>
+                        <input type="text" className="form-control d-none d-sm-block" placeholder="Commit SHA" aria-label="Commit SHA" aria-describedby="inputSearchCommit" value={this.queryParams.commitSha} onChange={this.commitShaChanged} onKeyUp={this.keyUp} />
                     </div>
-                    <div className="input-group me-1">
-                        <div className="input-group-text" id="inputSearchAuthor"><i className="bi-person"></i></div>
-                        <input type="text" className="form-control" placeholder="Commit author" aria-label="Commit author" aria-describedby="inputSearchAuthor" value={this.queryParams.commitAuthor} onChange={this.commitAuthorChanged} onKeyUp={this.keyUp} />
+                    <div className="input-group m-1">
+                        <div className="input-group-text d-none d-sm-block" id="inputSearchAuthor"><i className="bi-person"></i></div>
+                        <input type="text" className="form-control d-none d-sm-block" placeholder="Commit author" aria-label="Commit author" aria-describedby="inputSearchAuthor" value={this.queryParams.commitAuthor} onChange={this.commitAuthorChanged} onKeyUp={this.keyUp} />
                     </div>
-                    {(this.queryParams.jobType === "pr") && <div className="input-group me-1" style={{maxWidth: "250px"}}>
-                        <div className="input-group-text" id="inputSearchPR">PR #</div>
-                        <input type="text" className="form-control" placeholder="PR number" aria-label="PR number" aria-describedby="inputSearchPR" value={this.queryParams.prNumber} onChange={this.prNumberChanged} onKeyUp={this.keyUp} />
+                    {(this.queryParams.jobType === "pr") && <div className="input-group m-1" style={{maxWidth: "250px"}}>
+                        <div className="input-group-text d-none d-sm-block" id="inputSearchPR">PR #</div>
+                        <input type="text" className="form-control d-none d-sm-block" placeholder="PR number" aria-label="PR number" aria-describedby="inputSearchPR" value={this.queryParams.prNumber} onChange={this.prNumberChanged} onKeyUp={this.keyUp} />
                     </div>}
-                    {(this.queryParams.jobType === "branch") && <div className="input-group me-1" style={{maxWidth: "250px"}}>
-                        <div className="input-group-text" id="inputSearchBranch">Branch</div>
-                        <input type="text" className="form-control" placeholder="Branch name" aria-label="Branch name" aria-describedby="inputSearchBranch" value={this.queryParams.branch} onChange={this.branchChanged} onKeyUp={this.keyUp} />
+                    {(this.queryParams.jobType === "branch") && <div className="input-group m-1" style={{maxWidth: "250px"}}>
+                        <div className="input-group-text d-none d-sm-block" id="inputSearchBranch">Branch</div>
+                        <input type="text" className="form-control d-none d-sm-block" placeholder="Branch name" aria-label="Branch name" aria-describedby="inputSearchBranch" value={this.queryParams.branch} onChange={this.branchChanged} onKeyUp={this.keyUp} />
                     </div>}
-                    {(this.queryParams.jobType === "tag") && <div className="input-group me-1" style={{maxWidth: "250px"}}>
-                        <div className="input-group-text" id="inputSearchTag">Tag</div>
-                        <input type="text" className="form-control" placeholder="Tag name" aria-label="Tag name" aria-describedby="inputSearchTag" value={this.queryParams.tag} onChange={this.tagChanged} onKeyUp={this.keyUp} />
+                    {(this.queryParams.jobType === "tag") && <div className="input-group m-1" style={{maxWidth: "250px"}}>
+                        <div className="input-group-text d-none d-sm-block" id="inputSearchTag">Tag</div>
+                        <input type="text" className="form-control d-none d-sm-block" placeholder="Tag name" aria-label="Tag name" aria-describedby="inputSearchTag" value={this.queryParams.tag} onChange={this.tagChanged} onKeyUp={this.keyUp} />
                     </div>}
                 </div>
                 {
