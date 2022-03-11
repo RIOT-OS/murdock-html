@@ -171,7 +171,7 @@ export const JobItem = (props) => {
             <td style={{ width: "250px" }}>
                 <DateShortElem date={jobDate} />
             </td>
-            <td className="text-center" style={{ width: "200px" }}>
+            <td className="text-center d-none d-sm-block" style={{ width: "200px" }}>
                 {(props.job.state === "running") && (
                     (buildInProgress) ? (
                         <a className="btn align-middle" style={{width: "100%"}} href={`/details/${props.job.uid}`} data-bs-toggle="tooltip" data-bs-placement="bottom" title={runningJobStatus}>
@@ -187,12 +187,12 @@ export const JobItem = (props) => {
                         <>
                         <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
                         {(props.job.status && props.job.status.status) ? (
-                        <span className="fst-italic text-break">{`${props.job.status.status}...`}</span>
+                        <span className="fst-italic">{`${props.job.status.status}...`}</span>
                         ) :null}
                         </>
                     )
                 )}
-                {["passed", "errored", "stopped"].includes(props.job.state) && <span className="align-middle text-break">{`${moment.duration(props.job.runtime * -1000).humanize()}`}</span>}
+                {["passed", "errored", "stopped"].includes(props.job.state) && <span className="align-middle">{`${moment.duration(props.job.runtime * -1000).humanize()}`}</span>}
                 {props.job.state === "queued" && <span className="align-middle">{" - "}</span>}
             </td>
             <td className="text-end pe-3" style={{ width: "30px" }}>

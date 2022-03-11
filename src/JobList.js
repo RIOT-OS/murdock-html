@@ -311,7 +311,7 @@ class JobList extends Component {
                             <th scope="col" className="text-left">Job</th>
                             <th scope="col" className="text-left">Title</th>
                             <th scope="col" className="text-left">Date</th>
-                            <th scope="col" className="text-center">Duration</th>
+                            <th scope="col" className="text-center d-none d-sm-block">Duration</th>
                             <th scope="col" className="text-center">State</th>
                         </tr>
                     </thead>
