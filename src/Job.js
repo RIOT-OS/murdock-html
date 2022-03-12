@@ -91,8 +91,8 @@ const JobTitle = (props) => {
     }
 
     return (
-        <div className="row align-items-center">
-            <div className="col-sm-10">
+        <div className="d-flex justify-content-between">
+            <div>
                 {titleUrl ? (
                 <a className={`link-underline-hover text-${textColor[props.job.state]} align-middle me-1`} href={titleUrl} target="_blank" rel="noreferrer noopener">
                     <span className="me-2">{cardIcon[props.job.state]}</span>{title}
@@ -101,7 +101,7 @@ const JobTitle = (props) => {
                     <><span className="me-2">{cardIcon[props.job.state]}</span>{title}</>
                 )}
             </div>
-            <div className="col-sm-2 text-end">
+            <div className="text-end">
             {(props.permissions === "push" && ["errored", "passed", "stopped"].includes(props.job.state)) && (
                 <button className={`btn btn-outline-${cardColor[props.job.state]} badge fs-5 p-0 align-middle`} data-bs-toggle="tooltip" data-bs-placement="bottom" title="Restart" onClick={restart}>
                     <i className="bi-arrow-clockwise"></i>
@@ -230,9 +230,9 @@ const JobInfo = (props) => {
 
     return (
         <div className="position-relative">
-            <div className="position-absolute top-0 end-0">
-                <h5>{stateBadge[props.job.state]}</h5>
-            </div>
+        <div className="position-absolute top-0 end-0">
+            <h6>{stateBadge[props.job.state]}</h6>
+        </div>
         <div className="row">
             <div className="col col-sm-5" style={{ minWidth: "250px"}}>
                 <div className="row align-items-center">
