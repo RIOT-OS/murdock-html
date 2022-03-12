@@ -160,8 +160,8 @@ class Murdock extends Component {
       <>
       <Router>
           <MurdockNavBar user={this.state.user} userPermissions={this.state.userPermissions} onLoginSuccess={this.onLoginSuccess} onLoginFailure={this.onLoginFailure} onLogout={this.onLogout} />
-          <div className="container">
-          <div className="position-fixed bottom-0 end-0 p-3" style={{zIndex:11}}>
+          <div className="container p-0">
+          <div className="position-fixed bottom-0 end-0 p-1" style={{zIndex:11}}>
           {
               this.state.alerts.map(item => (
                   <div key={item.uid} className="toast show m-1" role="alert" aria-live="assertive" aria-atomic="true">
