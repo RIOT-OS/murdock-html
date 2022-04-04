@@ -32,7 +32,7 @@ const JobTitle = (props) => {
 
     const removeJob = (type) => {
         axios.delete(
-            `${murdockHttpBaseUrl}/jobs/${type}/${props.job.uid}`,
+            `${murdockHttpBaseUrl}/job/${props.job.uid}`,
             {
                 headers: {
                     "Authorization": props.user.token,
@@ -63,7 +63,7 @@ const JobTitle = (props) => {
     const restart = () => {
         console.log(`Restarting job ${props.job.uid.substring(0, 7)} ${jobContext}`)
         axios.post(
-            `${murdockHttpBaseUrl}/jobs/finished/${props.job.uid}`, {},
+            `${murdockHttpBaseUrl}/job/${props.job.uid}`, {},
             {
                 headers: {
                     "Authorization": props.user.token,

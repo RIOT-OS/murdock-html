@@ -49,7 +49,7 @@ export const JobItem = (props) => {
 
     const removeJob = (type) => {
         axios.delete(
-            `${murdockHttpBaseUrl}/jobs/${type}/${props.job.uid}`,
+            `${murdockHttpBaseUrl}/job/${props.job.uid}`,
             {
                 headers: {
                     "Authorization": props.user.token,
@@ -80,7 +80,7 @@ export const JobItem = (props) => {
     const restart = () => {
         console.log(`Restarting job ${props.job.commit.sha} ${jobContext}`)
         axios.post(
-            `${murdockHttpBaseUrl}/jobs/finished/${props.job.uid}`, {},
+            `${murdockHttpBaseUrl}/job/${props.job.uid}`, {},
             {
                 headers: {
                     "Authorization": props.user.token,
