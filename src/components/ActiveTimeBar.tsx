@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { JobState, QueueJob, TimelineSegment } from '../types';
 import { Link } from 'react-router-dom';
 import styles from './ActiveTimeBar.module.css';
@@ -21,7 +22,10 @@ interface ActiveTimeBarProps {
 }
 
 export function ActiveTimeBar({ jobs, now, refreshing = false, averages }: ActiveTimeBarProps) {
-  const segments = activeTimeTimeline(jobs, { now, averages });
+  const segments = useMemo(
+    () => activeTimeTimeline(jobs, { now, averages }),
+    [jobs, now, averages],
+  );
   if (!segments.length) return null;
 
   const sum = (predicate: (seg: TimelineSegment) => boolean): number =>

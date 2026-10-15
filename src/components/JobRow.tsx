@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { GITHUB_REPO } from '../api/config';
 import controls from '../styles/controls.module.css';
 import jobs from './JobRow.module.css';
@@ -111,23 +112,52 @@ function StateCell({ job, canManage, onAction }: StateCellProps) {
 export interface JobRowProps {
   job: Job;
   canManage: boolean;
-  onAction: (action: JobActionName) => void;
+  /** Bound to this row's job by the row itself, so the parent can pass a stable callback. */
+  onAction: (job: Job, action: JobActionName) => void;
   queuedStarts?: Map<string, number>;
   /** Measured runtimes per job class, used for the queued estimates. */
   averages?: RuntimeAverages;
   expanded?: boolean;
-  onToggle?: () => void;
+  onToggleExpand?: (uid: string) => void;
 }
 
-export function JobRow({
+/**
+ * Rows are pure: given the same job object and expansion state they render the
+ * same markup. A `status` update replaces only the affected job object, so
+ * comparing the props lets every untouched row skip re-rendering — the
+ * dashboard can update one job without reconciling the whole list.
+ *
+ * `queuedStarts` and `averages` are recomputed (with a fresh identity) on every
+ * update, but they only feed a queued row's duration cell, so they are compared
+ * by the values that row actually uses.
+ */
+function areRowsEqual(prev: JobRowProps, next: JobRowProps): boolean {
+  if (prev.job !== next.job) return false;
+  if (prev.canManage !== next.canManage) return false;
+  if (prev.expanded !== next.expanded) return false;
+  if (prev.onAction !== next.onAction) return false;
+  if (prev.onToggleExpand !== next.onToggleExpand) return false;
+
+  if (next.job.state === 'queued') {
+    if (prev.queuedStarts?.get(next.job.uid) !== next.queuedStarts?.get(next.job.uid)) return false;
+    if (prev.averages?.full !== next.averages?.full) return false;
+    if (prev.averages?.normal !== next.averages?.normal) return false;
+    if (prev.averages?.skip !== next.averages?.skip) return false;
+  }
+
+  return true;
+}
+
+export const JobRow = memo(function JobRow({
   job,
   canManage,
   onAction,
   queuedStarts,
   averages,
   expanded = false,
-  onToggle,
+  onToggleExpand,
 }: JobRowProps) {
+  const toggle = () => onToggleExpand?.(job.uid);
   const start = jobStartDate(job);
   const end = jobEnd(job);
 
@@ -146,7 +176,7 @@ export function JobRow({
     <li
       className={`${jobs.jobRow} ${expanded ? jobs.isExpanded : ''}`}
       data-state={job.state}
-      onClick={() => onToggle?.()}
+      onClick={toggle}
     >
       <div className={jobs.jobRef}>
         {refLink ? (
@@ -176,7 +206,7 @@ export function JobRow({
           aria-label={`${expanded ? 'Collapse' : 'Expand'} job ${job.uid.slice(0, 7)}`}
           onClick={(event) => {
             event.stopPropagation();
-            onToggle?.();
+            toggle();
           }}
         >
           <Icon
@@ -216,8 +246,8 @@ export function JobRow({
       <DurationCell job={job} averages={averages} />
 
       <div className={jobs.jobState} onClick={(event) => event.stopPropagation()}>
-        <StateCell job={job} canManage={canManage} onAction={onAction} />
+        <StateCell job={job} canManage={canManage} onAction={(action) => onAction(job, action)} />
       </div>
     </li>
   );
-}
+}, areRowsEqual);

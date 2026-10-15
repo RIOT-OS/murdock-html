@@ -16,6 +16,7 @@ import {
   prState,
   refRepr,
   runtimeAverages,
+  withJobStatus,
 } from './job';
 import type { Job, QueueJob } from '../types';
 
@@ -487,5 +488,25 @@ describe('jobRefLink', () => {
     expect(link?.label).toBe('commit');
     expect(link?.icon).toBe('gitCommit');
     expect(link?.kind).toBe('commit');
+  });
+});
+
+describe('withJobStatus', () => {
+  it('replaces the matching job status and leaves the others intact', () => {
+    const a = job({ uid: 'a', state: 'running' });
+    const b = job({ uid: 'b' });
+    const jobs = [a, b];
+
+    const next = withJobStatus(jobs, 'a', { passed: 3 });
+
+    expect(next).not.toBe(jobs);
+    expect(next[0]).not.toBe(a);
+    expect(next[0].status).toEqual({ passed: 3 });
+    expect(next[1]).toBe(b);
+  });
+
+  it('returns the same array when no job matches', () => {
+    const jobs = [job({ uid: 'a' })];
+    expect(withJobStatus(jobs, 'missing', { passed: 1 })).toBe(jobs);
   });
 });

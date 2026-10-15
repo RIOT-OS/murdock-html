@@ -50,6 +50,19 @@ export function jobMatchesSearch(
   return haystack.includes(needle);
 }
 
+/**
+ * Return a copy of `jobs` with the matching job's `status` replaced by a live
+ * update. When no job matches, the original array is returned unchanged so a
+ * caller can skip re-rendering for a job it is not showing.
+ */
+export function withJobStatus(jobs: Job[], uid: string, status: JobStatus): Job[] {
+  const index = jobs.findIndex((job) => job.uid === uid);
+  if (index === -1) return jobs;
+  const next = jobs.slice();
+  next[index] = { ...next[index], status };
+  return next;
+}
+
 /** Human representation of a job's ref (branch/tag/merge-queue). */
 export function refRepr(job: Pick<Job, 'ref' | 'commit'>): string {
   const ref = job.ref;

@@ -28,6 +28,7 @@ import {
   jobLabels,
   jobMatchesSearch,
   runtimeAverages,
+  withJobStatus,
 } from '../utils/job';
 import dashboard from '../components/JobListPage.module.css';
 import { withViewTransition } from '../utils/viewTransition';
@@ -136,12 +137,8 @@ export function JobListPage() {
     if (message.cmd === 'reload') {
       setRefreshToken((token) => token + 1);
     } else if (message.cmd === 'status') {
-      setJobs((list) =>
-        list.map((job) => (job.uid === message.uid ? { ...job, status: message.status } : job)),
-      );
-      setQueue((list) =>
-        list.map((job) => (job.uid === message.uid ? { ...job, status: message.status } : job)),
-      );
+      setJobs((list) => withJobStatus(list, message.uid, message.status));
+      setQueue((list) => withJobStatus(list, message.uid, message.status));
     }
   });
 

@@ -44,11 +44,11 @@ export function JobList({
               <JobRow
                 job={job}
                 canManage={canManage}
-                onAction={(action) => onAction(job, action)}
+                onAction={onAction}
                 queuedStarts={queuedStarts}
                 averages={averages}
                 expanded={expanded}
-                onToggle={() => onToggleExpand?.(job.uid)}
+                onToggleExpand={onToggleExpand}
               />
               {expanded && (
                 <li className={styles.jobEmbed} data-state={job.state}>
