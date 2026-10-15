@@ -128,6 +128,10 @@ export function JobListPage() {
   const averages = useMemo(() => runtimeAverages(jobs), [jobs]);
   const queuedStarts = useMemo(() => estimateQueuedStarts(queue, { averages }), [queue, averages]);
 
+  // Only `reload` and `status` matter here: the rows never render a job's
+  // `output`, and the inline detail embed streams that itself, so `output`
+  // messages are intentionally ignored to avoid re-rendering the dashboard per
+  // log line.
   useMurdockSocket((message) => {
     if (message.cmd === 'reload') {
       setRefreshToken((token) => token + 1);
@@ -137,12 +141,6 @@ export function JobListPage() {
       );
       setQueue((list) =>
         list.map((job) => (job.uid === message.uid ? { ...job, status: message.status } : job)),
-      );
-    } else if (message.cmd === 'output') {
-      setJobs((list) =>
-        list.map((job) =>
-          job.uid === message.uid ? { ...job, output: `${job.output ?? ''}${message.line}` } : job,
-        ),
       );
     }
   });
