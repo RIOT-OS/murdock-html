@@ -382,6 +382,30 @@ describe('activeTimeTimeline', () => {
     expect(segments).toHaveLength(1);
     expect(segments[0]).toMatchObject({ uid: 'q', state: 'queued', future: true, seconds: 180 });
   });
+
+  it('keeps a running job without an ETA expected, not idle', () => {
+    // While the build is still "collecting jobs" the status carries no ETA, so
+    // the remaining runtime has to fall back to the estimate. Otherwise the
+    // gap before the queued jobs is rendered as idle time.
+    const segments = activeTimeTimeline(
+      [
+        {
+          uid: 'r',
+          state: 'running',
+          start_time: now / 1000 - 100,
+          status: { status: 'collecting jobs' },
+          env: { CI_PULL_LABELS: 'CI: skip compile test' },
+        },
+        { uid: 'q', state: 'queued', env: { CI_PULL_LABELS: 'CI: skip compile test' } },
+      ],
+      { now, averages: { skip: 180 } },
+    );
+
+    expect(segments.some((seg) => seg.idle)).toBe(false);
+    expect(segments[0]).toMatchObject({ uid: 'r', future: false, seconds: 100 });
+    expect(segments[1]).toMatchObject({ uid: 'r', future: true, seconds: 80 });
+    expect(segments[2]).toMatchObject({ uid: 'q', future: true, seconds: 180 });
+  });
 });
 
 describe('prState', () => {

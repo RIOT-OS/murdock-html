@@ -379,9 +379,10 @@ interface Interval {
 /**
  * Builds a chronological timeline of the loaded jobs for the active-time bar,
  * oldest first. Finished jobs contribute their runtime and a running job its
- * elapsed time; the running ETA and the queued jobs' estimated runtimes form
- * the future. Gaps between jobs become explicit idle segments, so the bar
- * covers wall-clock time without holes.
+ * elapsed time; the running job's ETA (or its estimated runtime while the ETA
+ * is not yet known) and the queued jobs' estimated runtimes form the future.
+ * Gaps between jobs become explicit idle segments, so the bar covers wall-clock
+ * time without holes.
  *
  * Each segment is `{ start, end, seconds, idle, future, uid?, state? }` with
  * `start`/`end` in milliseconds and `seconds` as the duration.
@@ -417,14 +418,18 @@ export function activeTimeTimeline(
           end: now,
         });
       }
-      const eta = job.status?.eta;
-      if (eta != null && eta > 0) {
+      // While the build is still setting up ("fetching code", "collecting
+      // jobs", ...) there is no live ETA yet. Fall back to the estimated
+      // runtime for the expected remainder, so the running job does not leave
+      // an idle gap in front of the queued jobs.
+      const remaining = remainingRuntime(job, now, averages) * 1000;
+      if (remaining > 0) {
         intervals.push({
           uid: job.uid,
           state: job.state,
           future: true,
           start: now,
-          end: now + eta * 1000,
+          end: now + remaining,
         });
       }
     } else if (FINISHED_STATES.includes(job.state) && (job.runtime ?? 0) > 0) {
