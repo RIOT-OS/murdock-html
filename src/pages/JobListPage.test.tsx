@@ -144,6 +144,32 @@ describe('JobListPage', () => {
     expect(screen.getByText(/past: already done/)).toBeInTheDocument();
   });
 
+  it('flags the current job when one of its tasks has failed', async () => {
+    const runningJob = (failed: number): Job => ({
+      ...job,
+      uid: 'run',
+      state: 'running',
+      start_time: 1700000010,
+      status: { eta: 30, total: 4, passed: 1, failed },
+    });
+    const respondWith = (running: Job) => {
+      fetchMock.mockImplementation((url: RequestInfo | URL) =>
+        String(url).includes('/jobs') ? jsonResponse([running]) : Promise.reject(),
+      );
+    };
+
+    respondWith(runningJob(0));
+    const { unmount } = renderPage();
+    const healthy = await screen.findByText('Current Job');
+    expect(healthy.closest('section')).toHaveAttribute('data-state', 'running');
+    unmount();
+
+    respondWith(runningJob(1));
+    renderPage();
+    const failing = await screen.findByText('Current Job');
+    expect(failing.closest('section')).toHaveAttribute('data-state', 'errored');
+  });
+
   it('shows only merge-queue jobs for the merges kind', async () => {
     const master: Job = {
       ...job,

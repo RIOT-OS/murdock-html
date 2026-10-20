@@ -219,6 +219,9 @@ export function JobListPage() {
   // The dashboard groups the (filtered) job stream into three panels. The
   // queue is worked oldest-first, so the next job to run heads the list.
   const running = visibleJobs.find((job) => job.state === 'running');
+  // A running job stays "running", but once any task has failed the Current
+  // Job panel switches to the errored palette so the failure is unmissable.
+  const runningFailed = (running?.status?.failed ?? 0) > 0;
   const queued = visibleJobs
     .filter((job) => job.state === 'queued')
     .sort((a, b) => (a.creation_time ?? 0) - (b.creation_time ?? 0));
@@ -251,7 +254,11 @@ export function JobListPage() {
           <Spinner />
         ) : visibleJobs.length ? (
           <>
-            <JobSection title="Current Job" icon="gear" state={running?.state}>
+            <JobSection
+              title="Current Job"
+              icon={runningFailed ? 'warning' : 'gear'}
+              state={runningFailed ? 'errored' : running?.state}
+            >
               {running ? (
                 <>
                   <CurrentJob

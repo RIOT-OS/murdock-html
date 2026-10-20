@@ -35,6 +35,13 @@
   }
 }
 
+/* The Current Job panel switches to data-state="errored" as soon as one of
+   its live tasks fails. Besides the red title bar and ring that the box gets
+   from its state, tint the body so the failure cannot be missed. */
+.jobSection[data-state='errored'] {
+  background: color-mix(in srgb, var(--state-errored) 10%, var(--base-background-color));
+}
+
 .currentJob {
   position: relative;
   display: flex;
